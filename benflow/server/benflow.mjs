@@ -7203,7 +7203,7 @@ var require_dist = __commonJS({
 });
 
 // connector/cli.ts
-import { existsSync as existsSync7, realpathSync as realpathSync5, statSync as statSync11 } from "node:fs";
+import { existsSync as existsSync8, realpathSync as realpathSync5, statSync as statSync11 } from "node:fs";
 import { resolve as resolve5 } from "node:path";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
 import { parseArgs } from "node:util";
@@ -7934,10 +7934,10 @@ function describeToken(token) {
 
 // connector/executor.ts
 import { execFile, execFileSync, spawn as spawn4 } from "node:child_process";
-import { existsSync as existsSync6, mkdirSync as mkdirSync4, mkdtempSync as mkdtempSync4, readFileSync as readFileSync8, realpathSync as realpathSync3, rmSync as rmSync5, statSync as statSync9, writeFileSync as writeFileSync7 } from "node:fs";
+import { existsSync as existsSync7, mkdirSync as mkdirSync5, mkdtempSync as mkdtempSync4, readFileSync as readFileSync8, realpathSync as realpathSync3, rmSync as rmSync5, statSync as statSync9, writeFileSync as writeFileSync7 } from "node:fs";
 import { createRequire } from "node:module";
-import os6 from "node:os";
-import { isAbsolute as isAbsolute2, join as join10, relative as relative2, resolve as resolve3 } from "node:path";
+import os7 from "node:os";
+import { isAbsolute as isAbsolute2, join as join11, relative as relative2, resolve as resolve3 } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath as fileURLToPath2, pathToFileURL } from "node:url";
 
@@ -9981,8 +9981,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.9") {
-    cached = "0.1.9";
+  if ("0.1.10") {
+    cached = "0.1.10";
     return cached;
   }
   let dir = dirname5(fileURLToPath(import.meta.url));
@@ -10004,6 +10004,92 @@ function connectorVersion() {
   }
   cached = "0.0.0";
   return cached;
+}
+
+// connector/repoProvision.ts
+import { existsSync as existsSync6, mkdirSync as mkdirSync4 } from "node:fs";
+import os6 from "node:os";
+import { basename as basename3, dirname as dirname6, join as join10 } from "node:path";
+var REPO_RE = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
+var CLONE_TIMEOUT_MS = 15 * 6e4;
+var MSG_NO_ACCESS_PREFIX = "Sem acesso ao reposit\xF3rio";
+function msgNoAccess(name, detail) {
+  const why = detail ? ` (${detail})` : "";
+  return `${MSG_NO_ACCESS_PREFIX} ${name} pelo GitHub desta m\xE1quina${why}. Quem administra o reposit\xF3rio precisa dar acesso \xE0 conta do GitHub usada aqui; depois \xE9 s\xF3 reiniciar o trabalho.`;
+}
+function cloneBase(servers) {
+  for (const s2 of servers) {
+    for (const path2 of Object.values(s2.repos ?? {})) {
+      if (path2 && existsSync6(path2)) return dirname6(path2);
+    }
+  }
+  return join10(os6.homedir(), "Developer", "benflow-ia");
+}
+function freeTarget(base, name) {
+  const repo = basename3(name);
+  let target = join10(base, repo);
+  for (let i = 2; existsSync6(target); i++) target = join10(base, `${repo}-${i}`);
+  return target;
+}
+function originMatches(url2, name) {
+  const clean = url2.trim().replace(/\.git$/i, "").replace(/\/+$/, "");
+  const m = /github\.com[/:](.+)$/i.exec(clean);
+  return !!m && m[1].toLowerCase() === name.toLowerCase();
+}
+function gitReason(stderr) {
+  const lines = stderr.split(/\r?\n/).map((l) => l.replace(/https?:\/\/[^@\s]*@/g, "https://").trim()).filter((l) => l && !/^Cloning into/i.test(l));
+  const main = lines.find((l) => /not found|denied|permission|authentication|could not read|403|404/i.test(l)) ?? lines[0] ?? "";
+  return main.replace(/^(remote|fatal):\s*/i, "").slice(0, 200);
+}
+async function provisionRepo(name, deps) {
+  if (!REPO_RE.test(name)) return { ok: false, error: `Reposit\xF3rio inv\xE1lido: ${name}.` };
+  const log = deps.log ?? (() => {
+  });
+  let servers = [];
+  try {
+    servers = loadConfig(deps.configFile).servers;
+  } catch {
+    servers = [];
+  }
+  let path2 = findLocalRepos(servers, deps.entry, [name]).found[name] ?? null;
+  let how = "outra_entrada";
+  if (!path2) {
+    const base = cloneBase([deps.entry, ...servers]);
+    const manual = join10(base, basename3(name));
+    if (existsSync6(join10(manual, ".git"))) {
+      const origin = await deps.exec("git", ["-C", manual, "remote", "get-url", "origin"]);
+      if (origin.code === 0 && originMatches(origin.stdout, name)) path2 = manual;
+    }
+  }
+  if (!path2) {
+    const base = cloneBase([deps.entry, ...servers]);
+    const target = freeTarget(base, name);
+    try {
+      mkdirSync4(base, { recursive: true });
+    } catch (err) {
+      return { ok: false, error: `N\xE3o consegui criar a pasta ${base} para clonar ${name}: ${err instanceof Error ? err.message : String(err)}` };
+    }
+    log(`Clonando ${name} em ${target}...`);
+    const res = await deps.exec("git", ["clone", "--quiet", `https://github.com/${name}.git`, target], { timeoutMs: CLONE_TIMEOUT_MS });
+    if (res.code !== 0) return { ok: false, error: msgNoAccess(name, gitReason(res.stderr)) };
+    path2 = target;
+    how = "clonado";
+  }
+  deps.entry.repos = { ...deps.entry.repos, [name]: path2 };
+  try {
+    const cfg = loadConfig(deps.configFile);
+    const { config: config2 } = upsertServer(cfg, {
+      url: deps.entry.url,
+      token: deps.entry.token,
+      orgSlug: deps.entry.orgSlug,
+      repos: { [name]: path2 },
+      personalVault: deps.entry.personalVault
+    });
+    saveConfig(config2, deps.configFile);
+  } catch (err) {
+    log(`Usei ${path2} para ${name}, mas n\xE3o consegui gravar no config: ${err instanceof Error ? err.message : String(err)}`);
+  }
+  return { ok: true, path: path2, how };
 }
 
 // connector/executor.ts
@@ -10065,7 +10151,7 @@ async function gitRepoState(exec, path2) {
 async function repoState(exec, fullName, path2, deps) {
   const cached3 = deps.repoCache?.get(path2);
   if (cached3 && deps.busyPaths?.has(path2)) return { ...cached3, fullName, path: path2 };
-  if (!existsSync6(path2)) return { fullName, path: path2, branch: null, dirty: false };
+  if (!existsSync7(path2)) return { fullName, path: path2, branch: null, dirty: false };
   const st = await gitRepoState(exec, path2);
   const state = { fullName, path: path2, branch: st.branch, dirty: st.dirty };
   deps.repoCache?.set(path2, state);
@@ -10081,11 +10167,11 @@ async function claudeVersionOf(exec, bin, launch = resolveClaudeLaunch(bin)) {
   if (res.code !== 0) return null;
   return res.stdout.trim().split(/\r?\n/)[0]?.trim() || null;
 }
-function claudeConfigOf(env = process.env, home = os6.homedir()) {
+function claudeConfigOf(env = process.env, home = os7.homedir()) {
   let settings = {};
   try {
-    const dir = env.CLAUDE_CONFIG_DIR?.trim() || join10(home, ".claude");
-    const parsed = JSON.parse(readFileSync8(join10(dir, "settings.json"), "utf8"));
+    const dir = env.CLAUDE_CONFIG_DIR?.trim() || join11(home, ".claude");
+    const parsed = JSON.parse(readFileSync8(join11(dir, "settings.json"), "utf8"));
     if (parsed && typeof parsed === "object") settings = parsed;
   } catch {
     settings = {};
@@ -10101,7 +10187,7 @@ async function collectHeartbeat(entry, busyExecutionId, deps) {
   const vault = entry.personalVault;
   return {
     version: deps.version ?? connectorVersion(),
-    machine: (deps.hostname ?? os6.hostname)(),
+    machine: (deps.hostname ?? os7.hostname)(),
     repos,
     personalVault: vault ? { path: vault, notes: await (deps.vaultNotes ?? countNotes)(vault) } : null,
     busyExecutionId,
@@ -10448,9 +10534,16 @@ async function runJob(opts, job) {
   if (!names.length) return fail("O trabalho n\xE3o indica o reposit\xF3rio e este conector n\xE3o tem exatamente um reposit\xF3rio configurado.");
   const repos = [];
   for (const name of names) {
-    const path2 = entry.repos[name];
-    if (!path2) return fail(`O reposit\xF3rio ${name} n\xE3o est\xE1 configurado neste conector. Rode: configurar --repo ${name}=/caminho/local`);
-    if (!existsSync6(path2) || !statSync9(path2).isDirectory()) return fail(`A pasta do reposit\xF3rio ${name} n\xE3o existe: ${path2}`);
+    let path2 = entry.repos[name];
+    if (!path2) {
+      const notify = (text) => sink.log([{ at: (/* @__PURE__ */ new Date()).toISOString(), kind: "texto", text }], {}).catch(() => {
+      });
+      const got = await provisionRepo(name, { entry, configFile: opts.configFile, exec: opts.exec ?? defaultExec, log: (m) => (log(m), void notify(m)) });
+      if (!got.ok) return fail(got.error);
+      path2 = got.path;
+      await notify(got.how === "clonado" ? `Reposit\xF3rio ${name} clonado em ${path2} e ligado a este Claude.` : `Usando a c\xF3pia de ${name} que j\xE1 estava nesta m\xE1quina (${path2}).`);
+    }
+    if (!existsSync7(path2) || !statSync9(path2).isDirectory()) return fail(`A pasta do reposit\xF3rio ${name} n\xE3o existe: ${path2}`);
     repos.push({ fullName: name, path: path2 });
   }
   let tag = `${entry.orgSlug ?? "chamado"}-${job.taskNumber}`;
@@ -10470,8 +10563,8 @@ async function runJob(opts, job) {
     if (!sessionId) log(`Trabalho ${job.id}: sem a sess\xE3o anterior do Claude; come\xE7ando uma sess\xE3o nova com a instru\xE7\xE3o.`);
   }
   const input2 = { job, tag, repos, instructions };
-  const tmp = mkdtempSync4(join10(os6.tmpdir(), "benflow-job-"));
-  const mcpConfigPath = join10(tmp, "mcp.json");
+  const tmp = mkdtempSync4(join11(os7.tmpdir(), "benflow-job-"));
+  const mcpConfigPath = join11(tmp, "mcp.json");
   const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
   const mcpConfig = {
     mcpServers: {
@@ -10494,7 +10587,7 @@ async function runJob(opts, job) {
   const systemRules = buildSystemRules(input2);
   let systemRulesFile = null;
   if (launch.shell) {
-    systemRulesFile = join10(tmp, "regras.txt");
+    systemRulesFile = join11(tmp, "regras.txt");
     writeFileSync7(systemRulesFile, systemRules, { mode: 384 });
   }
   const args = buildClaudeArgs({
@@ -10560,10 +10653,10 @@ async function runSugestoesJob(opts, job, finish, redact) {
   let prompt = req.prompt;
   try {
     if (req.analyzeCode && req.codeRepos?.length) {
-      base = mkdtempSync4(join10(os6.tmpdir(), "benflow-codigo-"));
+      base = mkdtempSync4(join11(os7.tmpdir(), "benflow-codigo-"));
       for (const fullName of req.codeRepos) {
         const path2 = opts.entry.repos[fullName];
-        if (!path2 || !existsSync6(path2) || !statSync9(path2).isDirectory()) continue;
+        if (!path2 || !existsSync7(path2) || !statSync9(path2).isDirectory()) continue;
         try {
           const copy = await openCodeCopy(opts.exec ?? defaultExec, path2, base, fullName);
           closers.push(copy.close);
@@ -10681,14 +10774,14 @@ async function runConversa(opts, job, h) {
   if (!list.length) return h.fail("Este conector n\xE3o tem nenhum reposit\xF3rio configurado. Rode: configurar --repo owner/nome=/caminho/local");
   const repos = [];
   for (const [fullName, path2] of list) {
-    if (existsSync6(path2) && statSync9(path2).isDirectory()) repos.push({ fullName, path: path2 });
+    if (existsSync7(path2) && statSync9(path2).isDirectory()) repos.push({ fullName, path: path2 });
   }
   if (!repos.length) return h.fail(`A pasta do reposit\xF3rio ${list[0][0]} n\xE3o existe: ${list[0][1]}`);
   const text = jobInstruction({ ...job, type: "continuar" }) ?? "";
-  const tmp = mkdtempSync4(join10(os6.tmpdir(), "benflow-conversa-"));
+  const tmp = mkdtempSync4(join11(os7.tmpdir(), "benflow-conversa-"));
   try {
-    const filesDir = join10(tmp, "arquivos");
-    mkdirSync4(filesDir, { mode: 448 });
+    const filesDir = join11(tmp, "arquivos");
+    mkdirSync5(filesDir, { mode: 448 });
     const files = [];
     for (const a of job.attachments ?? []) {
       try {
@@ -10700,7 +10793,7 @@ async function runConversa(opts, job, h) {
       }
     }
     if (!text && !files.length) return h.fail("A mensagem veio vazia. Nada foi mandado para o Claude.");
-    const mcpConfigPath = join10(tmp, "mcp.json");
+    const mcpConfigPath = join11(tmp, "mcp.json");
     const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
     writeFileSync7(
       mcpConfigPath,
@@ -10724,7 +10817,7 @@ async function runConversa(opts, job, h) {
     const systemRules = buildConversaRules({ orgName: job.orgName ?? null, ownerName: job.ownerName ?? null, instructions: job.instructions ?? null });
     let systemRulesFile = null;
     if (launch.shell) {
-      systemRulesFile = join10(tmp, "regras.txt");
+      systemRulesFile = join11(tmp, "regras.txt");
       writeFileSync7(systemRulesFile, systemRules, { mode: 384 });
     }
     const exec = opts.exec ?? defaultExec;
@@ -11194,8 +11287,8 @@ var Executor = class {
 
 // connector/mcp.ts
 import { closeSync as closeSync2, mkdtempSync as mkdtempSync5, openSync as openSync2, readFileSync as readFileSync9, readSync, realpathSync as realpathSync4, rmSync as rmSync6, statSync as statSync10 } from "node:fs";
-import os7 from "node:os";
-import { basename as basename3, extname as extname2, isAbsolute as isAbsolute3, join as join11, resolve as resolve4, sep as sep2 } from "node:path";
+import os8 from "node:os";
+import { basename as basename4, extname as extname2, isAbsolute as isAbsolute3, join as join12, resolve as resolve4, sep as sep2 } from "node:path";
 
 // ../benflow/node_modules/zod/v3/helpers/util.js
 var util;
@@ -40739,7 +40832,7 @@ function posixLower(p) {
   return p.split(sep2).join("/").toLowerCase();
 }
 function isSensitivePath(fullPath) {
-  const home = posixLower(os7.homedir()).replace(/\/+$/, "");
+  const home = posixLower(os8.homedir()).replace(/\/+$/, "");
   const lower = posixLower(fullPath);
   const name = lower.split("/").pop() ?? "";
   if (SECRET_DIRS.some((d) => lower === `${home}/${d}` || lower.startsWith(`${home}/${d}/`))) return true;
@@ -40807,31 +40900,31 @@ function resolveEvidenceFile(input2, opts) {
   }
   const text = readFileSync9(real, "utf8");
   if (PRIVATE_KEY_RE.test(text)) throw new Error("Esse arquivo parece conter segredos e n\xE3o pode ser enviado como evid\xEAncia.");
-  return { path: real, upload: { name: basename3(real), data: Buffer.from(opts.redact(text), "utf8"), type: guessMime(real) } };
+  return { path: real, upload: { name: basename4(real), data: Buffer.from(opts.redact(text), "utf8"), type: guessMime(real) } };
 }
 function resolveAttachmentFile(input2, opts) {
-  const abs = isAbsolute3(input2) ? input2 : resolve4(opts.cwd, input2.replace(/^~(?=$|\/)/, os7.homedir()));
+  const abs = isAbsolute3(input2) ? input2 : resolve4(opts.cwd, input2.replace(/^~(?=$|\/)/, os8.homedir()));
   const real = realOrNull(abs);
   if (!real) throw new Error(`Arquivo n\xE3o encontrado: ${abs}`);
   const st = statSync10(real);
   if (!st.isFile()) throw new Error(`N\xE3o \xE9 um arquivo: ${abs}`);
-  if (isSensitivePath(abs) || isSensitivePath(real)) throw new Error(`${basename3(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
-  if (st.size === 0) throw new Error(`${basename3(abs)} est\xE1 vazio.`);
-  if (st.size > (opts.maxBytes ?? MAX_EVIDENCE_BYTES)) throw new Error(`${basename3(abs)} \xE9 grande demais para anexar (m\xE1ximo 25 MB).`);
+  if (isSensitivePath(abs) || isSensitivePath(real)) throw new Error(`${basename4(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
+  if (st.size === 0) throw new Error(`${basename4(abs)} est\xE1 vazio.`);
+  if (st.size > (opts.maxBytes ?? MAX_EVIDENCE_BYTES)) throw new Error(`${basename4(abs)} \xE9 grande demais para anexar (m\xE1ximo 25 MB).`);
   const ext = extname2(real).toLowerCase();
   const head = readHead(real, 8192);
   const looksText = TEXT_EXT.has(ext) || !IMAGE_EXT.has(ext) && !head.includes(0);
   if (!looksText) {
-    if (PRIVATE_KEY_RE.test(head.toString("latin1"))) throw new Error(`${basename3(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
+    if (PRIVATE_KEY_RE.test(head.toString("latin1"))) throw new Error(`${basename4(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
     return { path: real, upload: real };
   }
   const text = readFileSync9(real, "utf8");
-  if (PRIVATE_KEY_RE.test(text)) throw new Error(`${basename3(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
-  return { path: real, upload: { name: basename3(real), data: Buffer.from(opts.redact(text), "utf8"), type: guessMime(real) } };
+  if (PRIVATE_KEY_RE.test(text)) throw new Error(`${basename4(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
+  return { path: real, upload: { name: basename4(real), data: Buffer.from(opts.redact(text), "utf8"), type: guessMime(real) } };
 }
 function defaultEvidenceRoots(entry, cwd, extra = []) {
-  const home = realOrNull(os7.homedir()) ?? os7.homedir();
-  const roots = [...Object.values(entry.repos), os7.tmpdir()];
+  const home = realOrNull(os8.homedir()) ?? os8.homedir();
+  const roots = [...Object.values(entry.repos), os8.tmpdir()];
   if (process.platform !== "win32") roots.push("/tmp");
   const realCwd = realOrNull(cwd);
   if (realCwd && !isInsideFolder(realCwd, home)) roots.push(realCwd);
@@ -40883,7 +40976,7 @@ function createChamadosMcpServer(deps) {
   }
   function ensureDownloadDir() {
     if (!downloadDir) {
-      downloadDir = mkdtempSync5(join11(os7.tmpdir(), "benflow-anexos-"));
+      downloadDir = mkdtempSync5(join12(os8.tmpdir(), "benflow-anexos-"));
       const dir = downloadDir;
       process.once("exit", () => rmSync6(dir, { recursive: true, force: true }));
     }
@@ -41092,7 +41185,7 @@ function createChamadosMcpServer(deps) {
         },
         file2?.upload ?? null
       );
-      return `Evid\xEAncia "${a.titulo}" registrada no chamado #${a.numero}${file2 ? ` com o arquivo ${basename3(file2.path)}` : ""}.`;
+      return `Evid\xEAncia "${a.titulo}" registrada no chamado #${a.numero}${file2 ? ` com o arquivo ${basename4(file2.path)}` : ""}.`;
     }
   );
   register(
@@ -41398,7 +41491,7 @@ Vari\xE1veis: BENFLOW_CONFIG troca o caminho do config; BENFLOW_ORG escolhe a or
 (entregues pelo plugin) valem no lugar do config para o mcp e o sessao. Os nomes antigos BORA_* e
 CHAMADOS_* (como CHAMADOS_CONFIG e CHAMADOS_TOKEN) continuam valendo. O executor n\xE3o repassa nenhum token ao claude.
 Os configs antigos ~/.bora/config.json e ~/.chamados/config.json s\xE3o lidos enquanto o novo n\xE3o existir.`;
-var REPO_RE = /^[\w.-]+\/[\w.-]+$/;
+var REPO_RE2 = /^[\w.-]+\/[\w.-]+$/;
 function defaultIO() {
   return { out: (l) => process.stdout.write(`${l}
 `), err: (l) => process.stderr.write(`${l}
@@ -41468,7 +41561,7 @@ function parseRepoArgs(values) {
     if (eq <= 0) throw new Error(`Use --repo owner/nome=/caminho (recebido: ${raw}).`);
     const name = raw.slice(0, eq).trim();
     const path2 = resolve5(expandHome(raw.slice(eq + 1).trim()));
-    if (!REPO_RE.test(name)) throw new Error(`Reposit\xF3rio inv\xE1lido: ${name}. Use owner/nome.`);
+    if (!REPO_RE2.test(name)) throw new Error(`Reposit\xF3rio inv\xE1lido: ${name}. Use owner/nome.`);
     if (!isDir2(path2)) throw new Error(`A pasta do reposit\xF3rio ${name} n\xE3o existe: ${path2}`);
     repos[name] = path2;
   }
@@ -41557,7 +41650,7 @@ async function cmdStatus(args, deps, io) {
   const { values } = parseArgs({ args, options: { "sem-rede": { type: "boolean" } }, strict: true, allowPositionals: false });
   const file2 = readableConfigPath(configPath(env));
   io.out(`Conector do Benflow, vers\xE3o ${connectorVersion()}`);
-  if (!existsSync7(file2)) {
+  if (!existsSync8(file2)) {
     io.out(`Arquivo de configura\xE7\xE3o: ${file2} (n\xE3o existe)`);
     io.out("Rode: configurar --url <endere\xE7o> --token <token>");
     return 1;
