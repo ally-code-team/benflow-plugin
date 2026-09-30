@@ -1,0 +1,18 @@
+{
+  "name": "benflow-marketplace",
+  "owner": {
+    "name": "Ally Code",
+    "url": "https://allycode.com.br"
+  },
+  "description": "Plugins da Ally Code para o Claude Code.",
+  "plugins": [
+    {
+      "name": "benflow",
+      "source": "./benflow",
+      "description": "Chamados do Benflow dentro do Claude Code: lista as tarefas da organização, abre o card, abre cards novos e anexa arquivos, trabalha no código e vai atualizando etapa, evidências e ambiente local no painel.",
+      "author": { "name": "Ally Code" },
+      "category": "productivity",
+      "keywords": ["benflow", "chamados", "tarefas", "kanban"]
+    }
+  ]
+}

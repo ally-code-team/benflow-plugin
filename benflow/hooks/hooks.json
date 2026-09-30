@@ -1,0 +1,18 @@
+{
+  "description": "Ao abrir o Claude Code numa pasta de repositório da organização, mostra um resumo curto dos chamados abertos do Benflow.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/server/benflow.mjs", "sessao"],
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "benflow",
+  "displayName": "Benflow",
+  "version": "0.1.8",
+  "description": "Chamados do Benflow dentro do Claude Code: lista as tarefas da organização, mostra o card, abre cards novos e anexa arquivos (por exemplo a partir de um documento técnico), trabalha no código e vai atualizando etapa, evidências e ambiente local no painel. Nada vai para o repositório remoto sem a pessoa pedir.",
+  "author": {
+    "name": "Ally Code",
+    "url": "https://allycode.com.br"
+  },
+  "keywords": ["benflow", "chamados", "tarefas", "cards", "equipe-ia"],
+  "userConfig": {
+    "url": {
+      "type": "string",
+      "title": "Endereço do Benflow",
+      "description": "Endereço do painel do Benflow da sua organização, por exemplo https://benflow.suaempresa.com.br (aparece em Equipe IA > Ligar meu Claude)."
+    },
+    "token": {
+      "type": "string",
+      "title": "Token do agente",
+      "description": "Token do seu agente, gerado em Equipe IA > Ligar meu Claude. Fica guardado no cofre do sistema, não no arquivo de configuração.",
+      "sensitive": true
+    }
+  }
+}

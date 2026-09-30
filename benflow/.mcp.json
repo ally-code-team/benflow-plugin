@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "benflow": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/server/benflow.mjs", "mcp"],
+      "env": {
+        "BENFLOW_URL": "${user_config.url}",
+        "BENFLOW_TOKEN": "${user_config.token}"
+      }
+    }
+  }
+}
