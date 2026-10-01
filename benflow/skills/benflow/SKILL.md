@@ -9,8 +9,8 @@ allowed-tools: mcp__plugin_benflow_benflow__listar_chamados mcp__plugin_benflow_
 # Benflow: chamados no Claude Code
 
 As ferramentas vêm do servidor MCP "benflow" deste plugin: listar_chamados, ver_chamado, baixar_anexo,
-criar_chamado, anexar_arquivo, iniciar_execucao, atualizar_progresso, registrar_evidencia, comentar, concluir_local,
-informar_publicacao, buscar_conhecimento, ler_nota, ambientes e informar_ambiente_local.
+criar_chamado, anexar_arquivo, iniciar_execucao, atualizar_progresso, registrar_evidencia, capturar_tela, comentar,
+concluir_local, informar_publicacao, buscar_conhecimento, ler_nota, ambientes e informar_ambiente_local.
 
 Pedido da pessoa: $ARGUMENTS
 
@@ -48,10 +48,17 @@ Pedido da pessoa: $ARGUMENTS
 8. Se subir um servidor de desenvolvimento (npm run dev, vite, next dev), chame `informar_ambiente_local` com o
    repositório (owner/nome), o endereço (ex.: `http://localhost:5173`) e o rótulo (`front` ou `API`).
 9. Rode os testes (e typecheck ou lint, se houver) e registre com `registrar_evidencia` tipo `teste` (passou, total e
-   falhas). Capturas de tela vão com tipo `captura` e `caminho_arquivo`; commits, branch e PR com tipo `link`.
-10. No fim, chame `concluir_local` com o resumo (o que mudou), `como_testar` (o passo a passo de quem vai validar em homologação: por onde entrar, o que clicar e o que deve aparecer), a branch e os commits (sha e mensagem).
+   falhas). Commits, branch e PR vão com tipo `link`.
+10. Mudança com tela: registre um print de cada tela que mudou com `capturar_tela` (numero, url local da tela no
+    servidor de desenvolvimento e um título que diga o que o print mostra, como "Lista de pedidos com o filtro de
+    prazo"); quando der, o antes também, com "antes" no título. A ferramenta usa o Chrome sem tela desta máquina e já
+    registra a captura no card. Tela com login: entre pelas `acoes` (preencher e clicar) com o usuário de teste do
+    projeto, nunca com senha real. Print tirado por outra ferramenta vai com `registrar_evidencia` tipo `captura` e
+    `caminho_arquivo`. Os prints aparecem em "O que foi feito" no relatório de validação, e é por eles que quem valida
+    confere. Sem como capturar, diga o motivo no resumo.
+11. No fim, chame `concluir_local` com o resumo (o que mudou), `como_testar` (o passo a passo de quem vai validar em homologação: por onde entrar, o que clicar e o que deve aparecer), a branch e os commits (sha e mensagem).
     Conte à pessoa o resultado e lembre que a subida para homologação é pelo painel.
-11. Ficou bloqueado (falta informação, teste que não passa, conflito)? Registre com `comentar` (publico false) e
+12. Ficou bloqueado (falta informação, teste que não passa, conflito)? Registre com `comentar` (publico false) e
     pergunte à pessoa o que fazer.
 
 ## Abrir cards e anexar arquivos
