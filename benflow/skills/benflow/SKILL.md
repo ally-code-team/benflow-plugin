@@ -49,7 +49,7 @@ Pedido da pessoa: $ARGUMENTS
    repositório (owner/nome), o endereço (ex.: `http://localhost:5173`) e o rótulo (`front` ou `API`).
 9. Rode os testes (e typecheck ou lint, se houver) e registre com `registrar_evidencia` tipo `teste` (passou, total e
    falhas). Capturas de tela vão com tipo `captura` e `caminho_arquivo`; commits, branch e PR com tipo `link`.
-10. No fim, chame `concluir_local` com o resumo (o que mudou e como testar), a branch e os commits (sha e mensagem).
+10. No fim, chame `concluir_local` com o resumo (o que mudou), `como_testar` (o passo a passo de quem vai validar em homologação: por onde entrar, o que clicar e o que deve aparecer), a branch e os commits (sha e mensagem).
     Conte à pessoa o resultado e lembre que a subida para homologação é pelo painel.
 11. Ficou bloqueado (falta informação, teste que não passa, conflito)? Registre com `comentar` (publico false) e
     pergunte à pessoa o que fazer.

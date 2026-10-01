@@ -22,6 +22,6 @@ Chamado pedido: $ARGUMENTS
    (10 a 60), `testes` (60 a 80) e `evidencias` (80 a 90).
 5. Servidor de desenvolvimento no ar? `informar_ambiente_local` com repo (owner/nome), url e rótulo (front ou API).
 6. Testes: `registrar_evidencia` tipo `teste` (passou, total, falhas); capturas com tipo `captura` e `caminho_arquivo`.
-7. Termine com `concluir_local` (resumo e como testar, branch e commits) e conte o resultado à pessoa.
+7. Termine com `concluir_local` (resumo, `como_testar` com o passo a passo de quem vai validar em homologação, branch e commits) e conte o resultado à pessoa.
 8. Nunca faça `git push` nem mexa na main ou na develop remota sem a pessoa pedir com todas as letras. A publicação é
    pelo painel ("Subir para homologação"). Bloqueio: `comentar` (publico false) e pergunte.
