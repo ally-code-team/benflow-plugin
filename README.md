@@ -65,10 +65,20 @@ Ele também:
 - manda os tokens ao vivo e os detalhes da sessão (modelo, versão do Claude Code, turnos, ferramentas) para a Janela
   da IA enquanto o Claude trabalha;
 - atende o **modo Claude** do Telegram (`/claude` no privado do bot): cada mensagem vira um `claude -p` na pasta do
-  primeiro repositório do config, com o MCP do Benflow e sem push, retomando a sessão da conversa.
+  primeiro repositório do config, com o MCP do Benflow e sem push, retomando a sessão da conversa;
+- atende o **Terminal do Claude** do painel (Criar cards > Terminal do Claude), a mesma conversa por mensagens dentro
+  da tela, com os cards no nome de quem pediu. São três níveis, decididos pelo servidor: o **dono** do Claude roda com
+  as preferências dele; um **administrador** do projeto usando o Claude liberado de outra pessoa pode pedir
+  desenvolvimento, só nas pastas do projeto e sem as liberações pessoais do dono; os **outros membros** conversam,
+  consultam o código do projeto e abrem cards, sem Bash, sem edição e sem começar trabalho. No turno de quem não é o
+  dono, o Claude roda só com uma lista fechada de ferramentas (`--tools`: ler e buscar para os outros membros; ler,
+  buscar, editar e Bash para o administrador), mais as do Benflow, e sem a memória automática do dono;
+- em nenhum trabalho (card, publicação ou conversa) o Claude usa as ferramentas que alcançam outras sessões do Claude
+  Code da máquina ou a conta do dono: `SendMessage`, `ListAgents`, `RemoteTrigger`, `CronCreate`, `CronDelete`,
+  `CronList` e `PushNotification` ficam negadas.
 
-Depois de atualizar o plugin, reinicie o `executar`: o executor antigo não anuncia o modo Claude e o bot pede para
-reiniciar.
+Depois de atualizar o plugin, reinicie o `executar`: o executor antigo não anuncia o modo Claude (o bot pede para
+reiniciar) nem a conversa pelo painel (a tela mostra "Plugin antigo").
 Quem já usava o conector antigo não precisa refazer nada: os antigos `~/.bora/config.json` e
 `~/.chamados/config.json` continuam sendo lidos.
 

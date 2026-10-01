@@ -70,6 +70,12 @@ arquivo num card:
 4. Para um card que já existe, use `anexar_arquivo` com o número e os caminhos. Arquivos de segredo são recusados.
 5. No fim, mostre os números e os links dos cards abertos. Os cards saem no nome do dono deste agente, em A fazer.
 
+Esta conversa também existe dentro do painel, em **Criar cards > Terminal do Claude**: a pessoa escreve o pedido na tela
+e este Claude responde pelo executor ligado nesta máquina. Lá os cards saem no nome de quem pediu e nada é publicado
+pela conversa. Quem conversa tem um de três níveis: o **dono** deste Claude usa como aqui; um **administrador** do
+projeto, com o Claude liberado, também pede trabalho em card, só nas pastas do projeto; os **outros colegas** conversam,
+consultam o código do projeto e abrem cards, sem editar, rodar comando nem começar trabalho.
+
 ## Configuração
 
 Se as ferramentas responderem que o Benflow não está configurado, oriente a pessoa:
