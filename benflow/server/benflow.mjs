@@ -7928,6 +7928,7 @@ var AgentClient = class _AgentClient {
   pluginInfo(opts = {}) {
     return this.requestJson("GET", "/api/agent/plugin", opts);
   }
+  // limit: limite de uso do plano do Claude que acabou (servidor antigo ignora o campo).
   finishJob(id, body) {
     return this.requestJson("POST", `/api/agent/jobs/${id}/finish`, { json: body });
   }
@@ -11099,8 +11100,8 @@ function anchor(source) {
 }
 var date = /* @__PURE__ */ anchor(dateSource);
 function timeSource(args) {
-  const hhmm = `(?:[01]\\d|2[0-3]):[0-5]\\d`;
-  const regex = typeof args.precision === "number" ? args.precision === -1 ? `${hhmm}` : args.precision === 0 ? `${hhmm}:[0-5]\\d` : `${hhmm}:[0-5]\\d\\.\\d{${args.precision}}` : args.seconds ? `${hhmm}:[0-5]\\d(?:\\.\\d+)?` : `${hhmm}(?::[0-5]\\d(?:\\.\\d+)?)?`;
+  const hhmm2 = `(?:[01]\\d|2[0-3]):[0-5]\\d`;
+  const regex = typeof args.precision === "number" ? args.precision === -1 ? `${hhmm2}` : args.precision === 0 ? `${hhmm2}:[0-5]\\d` : `${hhmm2}:[0-5]\\d\\.\\d{${args.precision}}` : args.seconds ? `${hhmm2}:[0-5]\\d(?:\\.\\d+)?` : `${hhmm2}(?::[0-5]\\d(?:\\.\\d+)?)?`;
   return regex;
 }
 function time(args) {
@@ -29338,6 +29339,149 @@ var StreamTracker = class {
   }
 };
 
+// server/services/usageLimit.ts
+var BRAZIL_TIMEZONE = "America/Sao_Paulo";
+var CLAUDE_USAGE_URL = "https://claude.ai/settings/usage";
+var RATE_KINDS = {
+  five_hour: "sessao",
+  seven_day: "semana",
+  seven_day_opus: "modelo",
+  seven_day_sonnet: "modelo",
+  seven_day_overage_included: "modelo",
+  overage: "creditos"
+};
+function epochIso(seconds) {
+  const n2 = typeof seconds === "number" ? seconds : typeof seconds === "string" && /^\d{9,11}$/.test(seconds) ? Number(seconds) : NaN;
+  if (!Number.isFinite(n2) || n2 <= 0) return null;
+  const d = new Date(n2 * 1e3);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
+function limitFromRateEvent(info) {
+  if (!info || typeof info !== "object") return null;
+  const i = info;
+  if (i.status !== "rejected") return null;
+  const kind = typeof i.rateLimitType === "string" ? RATE_KINDS[i.rateLimitType] ?? "outro" : "outro";
+  return { kind, resetsAt: epochIso(i.resetsAt) };
+}
+var PATTERNS = [
+  [/Claude AI usage limit reached/i, "sessao"],
+  [/You[’']ve hit your session limit/i, "sessao"],
+  [/You[’']ve hit your weekly limit/i, "semana"],
+  [/You[’']ve (?:hit|reached) your (?:Opus|Sonnet|Fable|Haiku|fast) limit/i, "modelo"],
+  [/You[’']ve hit your (?:usage credit limit|(?:channel[’']s )?monthly spend limit|team[’']s shared budget)/i, "creditos"],
+  [/You[’']re out of (?:usage credits|extra usage)|requires usage credits/i, "creditos"],
+  [/Your org is out of usage|Your seat type doesn[’']t include|Your usage allocation has been disabled|Your group[’']s usage limit is set to \$0/i, "organizacao"],
+  [/You[’']ve (?:hit|reached) your (?:[\w'’]+ )?limit/i, "outro"]
+];
+var MONTHS = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+function validZone(tz) {
+  if (!tz) return null;
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: tz });
+    return tz;
+  } catch {
+    return null;
+  }
+}
+function wallOf(ts, tz) {
+  if (!tz) {
+    const d = new Date(ts);
+    return { year: d.getFullYear(), month: d.getMonth(), day: d.getDate(), hour: d.getHours(), minute: d.getMinutes() };
+  }
+  const parts = new Intl.DateTimeFormat("en-US", { timeZone: tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).formatToParts(new Date(ts));
+  const get = (t) => Number(parts.find((p) => p.type === t)?.value ?? 0);
+  return { year: get("year"), month: get("month") - 1, day: get("day"), hour: get("hour") % 24, minute: get("minute") };
+}
+function wallToTs(w, tz) {
+  if (!tz) return new Date(w.year, w.month, w.day, w.hour, w.minute).getTime();
+  const guess = Date.UTC(w.year, w.month, w.day, w.hour, w.minute);
+  const offsetAt = (ts2) => {
+    const x = wallOf(ts2, tz);
+    return Date.UTC(x.year, x.month, x.day, x.hour, x.minute) - ts2;
+  };
+  let ts = guess - offsetAt(guess);
+  const again = guess - offsetAt(ts);
+  if (again !== ts) ts = again;
+  return ts;
+}
+function parseResetTime(text, now = /* @__PURE__ */ new Date()) {
+  const rel = /resets in (?:(\d+)\s*d(?:ays?)?\s*)?(?:(\d+)\s*h(?:ours?)?\s*)?(?:(\d+)\s*m(?:in(?:utes?)?)?)?/i.exec(text);
+  if (rel && (rel[1] || rel[2] || rel[3])) {
+    const ms = ((Number(rel[1] ?? 0) * 24 + Number(rel[2] ?? 0)) * 60 + Number(rel[3] ?? 0)) * 6e4;
+    return new Date(now.getTime() + ms).toISOString();
+  }
+  const m = /resets\s+(?:([A-Za-z]{3})[a-z]*\.?\s+(\d{1,2}),?\s+(?:(\d{4}),?\s+)?)?(?:at\s+)?(\d{1,2})(?::(\d{2}))?\s*([ap])\.?m\.?(?:\s*\(([^)]+)\))?/i.exec(text);
+  if (!m) return null;
+  const tz = validZone(m[7]?.trim());
+  let hour = Number(m[4]) % 12;
+  if (m[6].toLowerCase() === "p") hour += 12;
+  const minute = Number(m[5] ?? 0);
+  if (hour > 23 || minute > 59) return null;
+  const today = wallOf(now.getTime(), tz);
+  if (m[1]) {
+    const month = MONTHS[m[1].toLowerCase()];
+    if (month === void 0) return null;
+    const day = Number(m[2]);
+    let year = m[3] ? Number(m[3]) : today.year;
+    let ts2 = wallToTs({ year, month, day, hour, minute }, tz);
+    if (!m[3] && ts2 < now.getTime() - 24 * 36e5) {
+      year += 1;
+      ts2 = wallToTs({ year, month, day, hour, minute }, tz);
+    }
+    return new Date(ts2).toISOString();
+  }
+  let ts = wallToTs({ ...today, hour, minute }, tz);
+  if (ts <= now.getTime()) {
+    const tomorrow = wallOf(ts + 24 * 36e5, tz);
+    ts = wallToTs({ ...tomorrow, hour, minute }, tz);
+  }
+  return new Date(ts).toISOString();
+}
+function detectUsageLimit(text, now = /* @__PURE__ */ new Date()) {
+  if (!text) return null;
+  const found = PATTERNS.find(([re]) => re.test(text));
+  if (!found) return null;
+  const legacy = /Claude AI usage limit reached\|(\d{9,11})/i.exec(text);
+  return { kind: found[1], resetsAt: legacy ? epochIso(legacy[1]) : parseResetTime(text, now) };
+}
+function mergeUsageLimit(fromEvent, fromText) {
+  if (!fromEvent) return fromText;
+  if (!fromText) return fromEvent;
+  return { kind: fromEvent.kind !== "outro" ? fromEvent.kind : fromText.kind, resetsAt: fromEvent.resetsAt ?? fromText.resetsAt };
+}
+var TITLES = {
+  sessao: "O limite de uso do Claude acabou",
+  semana: "O limite semanal do Claude acabou",
+  modelo: "O limite deste modelo do Claude acabou",
+  creditos: "Os cr\xE9ditos de uso do Claude acabaram",
+  organizacao: "A conta do Claude est\xE1 sem uso liberado",
+  outro: "O limite de uso do Claude acabou"
+};
+function hhmm(ts, tz) {
+  const w = wallOf(ts, validZone(tz));
+  return `${String(w.hour).padStart(2, "0")}:${String(w.minute).padStart(2, "0")}`;
+}
+function resetWhen(resetsAt, now = /* @__PURE__ */ new Date(), timeZone = BRAZIL_TIMEZONE, absolute = false) {
+  const ts = Date.parse(resetsAt);
+  const tz = validZone(timeZone) ?? BRAZIL_TIMEZONE;
+  const at = wallOf(ts, tz);
+  const today = wallOf(now.getTime(), tz);
+  const tomorrow = wallOf(now.getTime() + 24 * 36e5, tz);
+  const same = (a, b) => a.year === b.year && a.month === b.month && a.day === b.day;
+  const time3 = hhmm(ts, tz);
+  if (absolute) return `em ${String(at.day).padStart(2, "0")}/${String(at.month + 1).padStart(2, "0")} \xE0s ${time3}`;
+  if (same(at, today)) return `hoje \xE0s ${time3}`;
+  if (same(at, tomorrow)) return `amanh\xE3 \xE0s ${time3}`;
+  return `em ${String(at.day).padStart(2, "0")}/${String(at.month + 1).padStart(2, "0")} \xE0s ${time3}`;
+}
+function usageLimitMessage(limit, opts = {}) {
+  const now = opts.now ?? /* @__PURE__ */ new Date();
+  const future = limit.resetsAt && Date.parse(limit.resetsAt) > now.getTime() ? limit.resetsAt : null;
+  const when = future ? `Volta ${resetWhen(future, now, opts.timeZone, opts.absolute)}.` : `Confira quando volta em ${CLAUDE_USAGE_URL.replace(/^https:\/\//, "")} (ou com /usage no Claude Code).`;
+  const extra = limit.kind === "modelo" ? " D\xE1 para continuar agora com outro modelo." : limit.kind === "organizacao" ? " Quem administra a conta do Claude libera o uso por l\xE1." : limit.kind === "creditos" ? " D\xE1 para comprar mais cr\xE9ditos na conta do Claude." : "";
+  return { title: TITLES[limit.kind], detail: `${when}${extra}` };
+}
+
 // connector/suggestions.ts
 import { spawn } from "node:child_process";
 import { mkdtempSync, rmSync as rmSync3, writeFileSync as writeFileSync4 } from "node:fs";
@@ -30215,8 +30359,8 @@ import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.18") {
-    cached2 = "0.1.18";
+  if ("0.1.19") {
+    cached2 = "0.1.19";
     return cached2;
   }
   let dir = dirname6(fileURLToPath(import.meta.url));
@@ -30891,9 +31035,10 @@ async function runJob(opts, job) {
   });
   const redact = (text) => maskSecrets(entry.token.length >= 8 ? text.split(entry.token).join("***") : text);
   const sink = sinkFor(client, job, redact);
-  const finish2 = async (status, error62) => {
+  const finish2 = async (status, error62, limit) => {
+    const reached = status === "erro" ? limit ?? detectUsageLimit(error62) : null;
     try {
-      await client.finishJob(job.id, error62 ? { status, error: redact(error62).slice(0, 4e3) } : { status });
+      await client.finishJob(job.id, { status, ...error62 ? { error: redact(error62).slice(0, 4e3) } : {}, ...reached ? { limit: reached } : {} });
     } catch (err) {
       log(`N\xE3o foi poss\xEDvel finalizar o trabalho ${job.id} no servidor: ${msgOf(err)}`);
     }
@@ -31338,6 +31483,7 @@ async function supervise(opts, job, cwd, args, finish2, redact, extraEnv = {}, l
   let killTimer = null;
   let postResultTimer = null;
   let result = null;
+  let limitEvent = null;
   let initSessionId = null;
   let statsSent = Promise.resolve();
   const stderrTail = [];
@@ -31409,6 +31555,7 @@ async function supervise(opts, job, cwd, args, finish2, redact, extraEnv = {}, l
       }
       const e = asObj2(ev);
       if (e.type === "system" && e.subtype === "init" && typeof e.session_id === "string") initSessionId = e.session_id;
+      if (e.type === "rate_limit_event") limitEvent = limitFromRateEvent(e.rate_limit_info) ?? limitEvent;
       if (e.type === "result") onResult(ev);
       else {
         tracker.feed(ev);
@@ -31482,8 +31629,13 @@ ${tail}` : ""}`;
     return { status, error: error62, result: finalResult, exitCode: exit.code, vanishedSession: true };
   }
   if (error62) push([{ at: (/* @__PURE__ */ new Date()).toISOString(), kind: "erro", text: error62 }]);
+  const limit = status === "erro" && killReason !== "cancelado" ? mergeUsageLimit(limitEvent, detectUsageLimit(error62) ?? detectUsageLimit(stderrTail.join("\n"))) : null;
+  if (limit) {
+    const m = usageLimitMessage(limit, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    push([{ at: (/* @__PURE__ */ new Date()).toISOString(), kind: "erro", text: `${m.title}. ${m.detail}` }]);
+  }
   await flush();
-  await finish2(status, error62);
+  await finish2(status, error62, limit);
   log(`Trabalho ${job.id} terminou: ${status}${error62 ? ` (${oneLine(error62, 200)})` : ""}.`);
   return { status, error: error62, result: finalResult, exitCode: exit.code };
 }
