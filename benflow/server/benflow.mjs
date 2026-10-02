@@ -8175,7 +8175,7 @@ var AgentClient = class _AgentClient {
 
 // connector/executor.ts
 import { execFile, execFileSync, spawn as spawn4 } from "node:child_process";
-import { existsSync as existsSync9, mkdirSync as mkdirSync7, mkdtempSync as mkdtempSync4, readFileSync as readFileSync10, realpathSync as realpathSync5, rmSync as rmSync7, statSync as statSync11, writeFileSync as writeFileSync8 } from "node:fs";
+import { existsSync as existsSync9, mkdirSync as mkdirSync7, mkdtempSync as mkdtempSync4, readFileSync as readFileSync10, realpathSync as realpathSync5, rmSync as rmSync7, statSync as statSync11, writeFileSync as writeFileSync9 } from "node:fs";
 import { createRequire } from "node:module";
 import os8 from "node:os";
 import { isAbsolute as isAbsolute3, join as join13, relative as relative2, resolve as resolve5 } from "node:path";
@@ -8740,7 +8740,7 @@ function buildSystemRules(input2) {
     "7. Se subir um servidor de desenvolvimento (npm run dev, vite, next dev etc.), chame informar_ambiente_local com o reposit\xF3rio (owner/nome), o endere\xE7o (ex.: http://localhost:5173) e o r\xF3tulo (front ou API), para o painel mostrar o link do ambiente local.",
     "8. S\xF3 os comandos liberados nesta m\xE1quina rodam direto. Qualquer outro vira um pedido de confirma\xE7\xE3o no card, que o dono do agente permite ou nega: n\xE3o insista nem tente varia\xE7\xF5es do mesmo comando. Para ler arquivos use Read, Grep e Glob no lugar de cat, ls, sed e head; no Bash, rode um comando por vez, sem encadear com ;, && ou |. Se o trabalho n\xE3o fecha sem um comando que ficou esperando confirma\xE7\xE3o, termine dizendo o que falta.",
     ...input2.copy ? [
-      "9. Este computador pode estar rodando outros trabalhos ao mesmo tempo. Voc\xEA est\xE1 numa c\xF3pia de trabalho s\xF3 deste trabalho (git worktree), nas pastas listadas: n\xE3o troque de branch, n\xE3o rode git checkout develop nem git checkout main (elas podem estar abertas em outras pastas), n\xE3o rode git worktree e n\xE3o pare servidores ou processos que voc\xEA n\xE3o subiu. Para o servidor de desenvolvimento, use uma porta livre (se a padr\xE3o estiver ocupada, use outra e informe a certa)."
+      "9. Este computador pode estar rodando outros trabalhos ao mesmo tempo, cada um na sua pasta. O Benflow j\xE1 deixou as pastas listadas no ponto deste trabalho: trabalhe s\xF3 nelas, n\xE3o troque de branch, n\xE3o rode git checkout develop nem git checkout main (elas podem estar abertas em outras pastas), n\xE3o rode git worktree e n\xE3o pare servidores ou processos que voc\xEA n\xE3o subiu. Para o servidor de desenvolvimento, use uma porta livre (se a padr\xE3o estiver ocupada, use outra e informe a certa)."
     ] : []
   ];
   const instructions = input2.instructions?.trim();
@@ -8785,7 +8785,7 @@ function executarPrompt(input2) {
     `1. Chame ver_chamado com numero ${n2} e leia tudo: pedido original, descri\xE7\xE3o, coment\xE1rios, anexos (use baixar_anexo para abrir os que importarem), instru\xE7\xF5es da organiza\xE7\xE3o, ambientes e permiss\xF5es.`,
     '2. Chame atualizar_progresso com etapa "planejamento" e uma mensagem curta com o plano.',
     '3. Antes de varrer o c\xF3digo, use buscar_conhecimento (onde "ambos") com os termos do chamado e leia com ler_nota as notas que parecerem \xFAteis.',
-    input2.copy ? `4. Cada reposit\xF3rio j\xE1 est\xE1 numa c\xF3pia de trabalho s\xF3 deste card (git worktree), na branch ${branch}. Confira com git status (mudan\xE7a sem commit ali \xE9 de um trabalho anterior deste card: continue a partir dela). Rode git fetch origin e traga a develop atualizada com git merge origin/develop. N\xE3o troque de branch. Se faltarem as depend\xEAncias do projeto na c\xF3pia (node_modules, por exemplo), instale com o comando do projeto antes de rodar testes.` : `4. Em cada reposit\xF3rio: confira com git status que n\xE3o h\xE1 mudan\xE7as que n\xE3o sejam suas (se houver, explique com comentar e pare). Rode git fetch origin, atualize a develop (git checkout develop e git pull --ff-only origin develop) e crie a branch ${branch} a partir dela. Se a branch j\xE1 existir, continue nela e traga a develop atualizada.`,
+    input2.copy ? `4. Cada reposit\xF3rio j\xE1 est\xE1 na branch ${branch}, na pasta que o Benflow preparou para este card. Confira com git status (mudan\xE7a sem commit ali \xE9 de um trabalho anterior deste card: continue a partir dela). Rode git fetch origin e traga a develop atualizada com git merge origin/develop. N\xE3o troque de branch. Se faltarem as depend\xEAncias do projeto na pasta (node_modules ou vendor, por exemplo), instale com o comando do projeto antes de rodar testes.` : `4. Em cada reposit\xF3rio: confira com git status que n\xE3o h\xE1 mudan\xE7as que n\xE3o sejam suas (se houver, explique com comentar e pare). Rode git fetch origin, atualize a develop (git checkout develop e git pull --ff-only origin develop) e crie a branch ${branch} a partir dela. Se a branch j\xE1 existir, continue nela e traga a develop atualizada.`,
     "5. Implemente a mudan\xE7a com o menor escopo que resolva o chamado. Chame atualizar_progresso ao mudar de etapa: desenvolvimento (10 a 60), testes (60 a 80), evidencias (80 a 90).",
     "   Se precisar subir o servidor de desenvolvimento (para testar ou capturar a tela), rode em segundo plano e chame informar_ambiente_local com repo, url (ex.: http://localhost:5173) e rotulo (front ou API).",
     `6. Fa\xE7a commits pequenos com a etiqueta no in\xEDcio da mensagem, por exemplo: "[${tag}] Corrige o c\xE1lculo do prazo".`,
@@ -8804,7 +8804,7 @@ function homologacaoPrompt(input2) {
     "",
     "Passo a passo:",
     `1. Chame ver_chamado com numero ${n2}. Confira nas permiss\xF5es que o dono do agente pode subir para develop; se n\xE3o puder, explique com comentar e pare.`,
-    input2.copy ? "2. Cada reposit\xF3rio j\xE1 est\xE1 numa c\xF3pia separada s\xF3 para esta publica\xE7\xE3o (git worktree), solta (HEAD destacado) na develop atualizada de origin. Confira com git status que est\xE1 limpa. N\xE3o rode git checkout develop: a develop pode estar aberta em outra pasta." : "2. Em cada reposit\xF3rio: confira com git status que est\xE1 limpo. Rode git fetch origin, git checkout develop e git pull --ff-only origin develop.",
+    input2.copy ? "2. Cada reposit\xF3rio j\xE1 est\xE1 pronto para esta publica\xE7\xE3o, solto (HEAD destacado) na develop atualizada de origin. Confira com git status que est\xE1 limpo. N\xE3o rode git checkout develop: a develop pode estar aberta em outra pasta." : "2. Em cada reposit\xF3rio: confira com git status que est\xE1 limpo. Rode git fetch origin, git checkout develop e git pull --ff-only origin develop.",
     `3. Integre a branch do chamado: git merge --no-ff ${branch} -m "[${tag}] Integra ${branch} na develop".`,
     "4. Se houver conflito, resolva com cuidado: preserve o que j\xE1 est\xE1 na develop e a mudan\xE7a do chamado, e nunca descarte mudan\xE7as de outras pessoas. Se n\xE3o tiver certeza, rode git merge --abort, explique com comentar e pare.",
     '5. Rode os testes de novo e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: explique com comentar e pare.',
@@ -8824,7 +8824,7 @@ function producaoPrompt(input2) {
     "Passo a passo:",
     `1. Chame ver_chamado com numero ${n2}. Confira nas permiss\xF5es que o dono do agente pode subir para main; se n\xE3o puder, explique com comentar e pare.`,
     `2. Entenda a mudan\xE7a do chamado: commits com a etiqueta [${tag}] (git log --all --grep "${tag}") e a branch ${branch}.`,
-    input2.copy ? `3. Cada reposit\xF3rio j\xE1 est\xE1 numa c\xF3pia separada s\xF3 para esta publica\xE7\xE3o (git worktree), solta na main atualizada. Confira com git status que est\xE1 limpa e crie a branch ${hotfix} a partir de origin/main (git checkout -B ${hotfix} origin/main). N\xE3o rode git checkout main nem git checkout develop.` : `3. Em cada reposit\xF3rio: confira com git status que est\xE1 limpo, rode git fetch origin e crie a branch ${hotfix} a partir de origin/main (git checkout -B ${hotfix} origin/main).`,
+    input2.copy ? `3. Cada reposit\xF3rio j\xE1 est\xE1 pronto para esta publica\xE7\xE3o, solto na main atualizada. Confira com git status que est\xE1 limpo e crie a branch ${hotfix} a partir de origin/main (git checkout -B ${hotfix} origin/main). N\xE3o rode git checkout main nem git checkout develop.` : `3. Em cada reposit\xF3rio: confira com git status que est\xE1 limpo, rode git fetch origin e crie a branch ${hotfix} a partir de origin/main (git checkout -B ${hotfix} origin/main).`,
     "4. Refa\xE7a S\xD3 a mudan\xE7a do chamado, adaptando ao c\xF3digo da main. Nunca fa\xE7a merge da develop nem da branch do chamado: a develop tem outras mudan\xE7as que n\xE3o podem ir para produ\xE7\xE3o. Se usar git cherry-pick de commits do chamado, confira que eles n\xE3o trazem nada al\xE9m da mudan\xE7a.",
     `5. Fa\xE7a commits com a etiqueta: "[${tag}] ...".`,
     '6. Rode os testes e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: explique com comentar e pare.',
@@ -8864,7 +8864,7 @@ function continuarPrompt(input2) {
     wrapData("instrucao", text),
     "",
     "Passo a passo:",
-    input2.copy ? `1. Siga a instru\xE7\xE3o nas pastas listadas (a c\xF3pia de trabalho s\xF3 deste card, na branch ${branch}; n\xE3o troque de branch). Se precisar rever o chamado, chame ver_chamado com numero ${n2}.` : `1. Siga a instru\xE7\xE3o nas mesmas pastas e na branch ${branch}. Se precisar rever o chamado, chame ver_chamado com numero ${n2}.`,
+    input2.copy ? `1. Siga a instru\xE7\xE3o nas pastas listadas (j\xE1 na branch ${branch}; n\xE3o troque de branch). Se precisar rever o chamado, chame ver_chamado com numero ${n2}.` : `1. Siga a instru\xE7\xE3o nas mesmas pastas e na branch ${branch}. Se precisar rever o chamado, chame ver_chamado com numero ${n2}.`,
     "2. Chame atualizar_progresso a cada mudan\xE7a de etapa (desenvolvimento, testes, evidencias), com o percentual e uma frase do que est\xE1 fazendo.",
     `3. Fa\xE7a commits com a etiqueta no in\xEDcio da mensagem, por exemplo: "[${tag}] Ajusta o texto do bot\xE3o".`,
     '4. Rode os testes de novo e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se subir um servidor de desenvolvimento, chame informar_ambiente_local. Se a instru\xE7\xE3o mudou alguma tela, registre o print novo de cada uma com capturar_tela e grave um v\xEDdeo novo com gravar_tela at\xE9 o que mudou.',
@@ -9101,16 +9101,18 @@ function pushBlockEnv(remotes, base = {}) {
 }
 
 // connector/workspace.ts
-import { copyFileSync, existsSync as existsSync4, mkdirSync as mkdirSync4, readdirSync, readFileSync as readFileSync5, readlinkSync as readlinkSync3, realpathSync as realpathSync3, rmSync as rmSync3, statSync as statSync6 } from "node:fs";
+import { copyFileSync, existsSync as existsSync4, mkdirSync as mkdirSync4, readdirSync, readFileSync as readFileSync5, readlinkSync as readlinkSync3, realpathSync as realpathSync3, rmSync as rmSync3, statSync as statSync6, writeFileSync as writeFileSync4 } from "node:fs";
 import { basename as basename2, dirname as dirname4, isAbsolute, join as join5, resolve as resolve3, sep as sep2 } from "node:path";
+var MAX_SLOTS = 5;
 function workspaceRoot(configFile) {
   const dir = dirname4(resolve3(configFile));
   return join5(dirname4(dir), `${basename2(dir)}-trabalhos`);
 }
-function workspacePath(root, fullName, tag, kind) {
-  const repo = fullName.replace(/[^A-Za-z0-9._-]+/g, "__").replace(/^\.+/, "_");
-  const name = tag.replace(/[^A-Za-z0-9._-]+/g, "-").replace(/^\.+/, "_");
-  return join5(root, repo, kind === "publicar" ? `${name}-publicar` : name);
+function repoKey(fullName) {
+  return fullName.replace(/[^A-Za-z0-9._-]+/g, "__").replace(/^\.+/, "_");
+}
+function slotPath(root, fullName, n2) {
+  return join5(root, repoKey(fullName), `vaga-${n2}`);
 }
 function real(path2) {
   try {
@@ -9259,8 +9261,16 @@ async function isWorktree(exec, path2) {
 }
 async function dropCopy(exec, main, path2, root) {
   await git(exec, main, ["worktree", "remove", "--force", path2]);
-  if (existsSync4(path2) && inside(root, path2)) rmSync3(path2, { recursive: true, force: true });
+  let problem = null;
+  if (existsSync4(path2) && inside(root, path2)) {
+    try {
+      rmSync3(path2, { recursive: true, force: true });
+    } catch (err) {
+      problem = err instanceof Error ? err.message : String(err);
+    }
+  }
   await git(exec, main, ["worktree", "prune"]);
+  return problem;
 }
 var CLAUDE_LOCAL_FILES = [".claude/settings.local.json", "CLAUDE.local.md"];
 async function ignoredExtras(exec, main) {
@@ -9321,67 +9331,239 @@ function extrasNote(fullName, extras) {
   if (extras.missingModules > 0) return `Na c\xF3pia de ${fullName} faltam as depend\xEAncias (node_modules): instale antes de rodar testes ou o servidor.`;
   return null;
 }
-async function prepareOne(repo, opts) {
-  const { exec, root, kind, tag, branch } = opts;
-  const platform = opts.platform ?? process.platform;
-  const main = repo.path;
-  const path2 = workspacePath(root, repo.fullName, tag, kind);
-  mkdirSync4(dirname4(path2), { recursive: true });
-  const fetched = await git(exec, main, ["fetch", "origin", "--quiet"], 18e4);
-  if (fetched.code !== 0) opts.log?.(`git fetch em ${repo.fullName} falhou (${firstLine(fetched.stderr) || `c\xF3digo ${fetched.code}`}); a c\xF3pia sai do que j\xE1 est\xE1 nesta m\xE1quina.`);
-  if (kind === "publicar") {
-    if (existsSync4(path2)) await dropCopy(exec, main, path2, root);
-    const candidates = [opts.base ?? "origin/develop", (opts.base ?? "origin/develop").replace(/^origin\//, "")];
-    let base = null;
-    for (const c of candidates) if (await refExists(exec, main, c)) {
-      base = c;
-      break;
-    }
-    if (!base) return { ok: false, error: `O reposit\xF3rio ${repo.fullName} n\xE3o tem a branch ${candidates[1]} para publicar.` };
-    const added2 = await git(exec, main, ["worktree", "add", "--detach", path2, base], 18e4);
-    if (added2.code !== 0) return { ok: false, error: `N\xE3o consegui criar a c\xF3pia para publicar ${repo.fullName}: ${firstLine(added2.stderr) || `c\xF3digo ${added2.code}`}` };
-    const extras2 = await copyExtras(exec, main, path2, platform);
-    return { ok: true, copy: { fullName: repo.fullName, main, path: path2, kind, reused: false }, path: path2, note: extrasNote(repo.fullName, extras2) };
+async function busyTree(exec, path2) {
+  const st = await git(exec, path2, ["status", "--porcelain", "--untracked-files=no"], 12e4);
+  if (st.code !== 0 || st.stdout.trim()) return true;
+  return await operationInProgress(exec, path2) !== null;
+}
+async function currentRef(exec, path2) {
+  const sym = await git(exec, path2, ["symbolic-ref", "-q", "--short", "HEAD"]);
+  if (sym.code === 0 && sym.stdout.trim()) return sym.stdout.trim();
+  const sha = await git(exec, path2, ["rev-parse", "HEAD"]);
+  return sha.code === 0 && sha.stdout.trim() ? sha.stdout.trim() : null;
+}
+function stateFile(root, fullName) {
+  return join5(root, repoKey(fullName), "vagas.json");
+}
+function readState(root, fullName) {
+  try {
+    const data = JSON.parse(readFileSync5(stateFile(root, fullName), "utf8"));
+    return data && typeof data === "object" && !Array.isArray(data) ? data : {};
+  } catch {
+    return {};
   }
-  if (await isWorktree(exec, path2)) {
-    const extras2 = await copyExtras(exec, main, path2, platform);
-    return { ok: true, copy: { fullName: repo.fullName, main, path: path2, kind, reused: true }, path: path2, note: extrasNote(repo.fullName, extras2) };
+}
+function writeState(root, fullName, branch, path2) {
+  try {
+    const data = readState(root, fullName);
+    data[branch] = path2;
+    writeFileSync4(stateFile(root, fullName), JSON.stringify(data, null, 1) + "\n");
+  } catch {
   }
-  if (existsSync4(path2)) await dropCopy(exec, main, path2, root);
-  const freed = await freeBranch(exec, main, branch, { root, platform, folderUsers: opts.folderUsers });
-  if (!freed.ok) return { ok: false, error: freed.error };
-  const where = freed.where;
-  if (where) {
-    if (inside(root, where)) {
-      const extras2 = await copyExtras(exec, main, where, platform);
-      return { ok: true, copy: { fullName: repo.fullName, main, path: where, kind, reused: true }, path: where, note: extrasNote(repo.fullName, extras2) };
-    }
-    if (!opts.mainBusy?.(main)) {
-      return { ok: true, copy: null, path: main, note: `A branch ${branch} j\xE1 estava aberta na pasta do projeto (${main}): o trabalho roda nela.` };
-    }
-    return {
-      ok: false,
-      error: `A branch ${branch} est\xE1 aberta na pasta do projeto (${where}), que est\xE1 com outro trabalho agora. Espere o outro trabalho terminar (ou troque a branch dessa pasta, por exemplo git checkout develop) e mande de novo.`
-    };
+}
+async function existingSlots(exec, root, fullName) {
+  const dir = join5(root, repoKey(fullName));
+  let names = [];
+  try {
+    names = readdirSync(dir);
+  } catch {
+    return [];
   }
-  let added;
-  const freedNote = freed.note;
+  const out = [];
+  for (const name of names) {
+    const m = /^vaga-(\d+)$/.exec(name);
+    if (!m) continue;
+    const path2 = join5(dir, name);
+    if (await isWorktree(exec, path2)) out.push({ n: Number(m[1]), path: path2 });
+  }
+  return out.sort((a, b) => a.n - b.n);
+}
+function slotKindOf(root, fullName, main, path2) {
+  if (real(path2) === real(main)) return "principal";
+  const dir = join5(root, repoKey(fullName));
+  return real(dirname4(path2)) === real(dir) && /^vaga-\d+$/.test(basename2(path2)) ? "vaga" : "antiga";
+}
+function translateClaudeSettings(text, main, slot, home = process.env.HOME ?? "") {
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  if (!data || typeof data !== "object") return null;
+  const pairs = [[main, slot]];
+  const mainReal = real(main);
+  if (mainReal !== main) pairs.push([mainReal, slot]);
+  if (home && main.startsWith(home + sep2) && slot.startsWith(home + sep2)) pairs.push([`~${main.slice(home.length)}`, `~${slot.slice(home.length)}`]);
+  const swap = (rule) => {
+    let out = rule;
+    for (const [from, to] of pairs) out = out.split(from).join(to);
+    return out === rule ? null : out;
+  };
+  const perms = data.permissions;
+  if (perms && typeof perms === "object") {
+    for (const key of ["allow", "ask", "deny", "additionalDirectories"]) {
+      const list = perms[key];
+      if (!Array.isArray(list)) continue;
+      const extra = [];
+      for (const rule of list) {
+        if (typeof rule !== "string") continue;
+        const other = swap(rule);
+        if (other && !list.includes(other) && !extra.includes(other)) extra.push(other);
+      }
+      perms[key] = [...list, ...extra];
+    }
+  }
+  return JSON.stringify(data, null, 2) + "\n";
+}
+async function tracked(exec, path2, rel) {
+  return (await git(exec, path2, ["ls-files", "--error-unmatch", "--", rel])).code === 0;
+}
+async function syncClaudeLocal(exec, main, path2) {
+  const settings = ".claude/settings.local.json";
+  const from = join5(main, settings);
+  if (existsSync4(from) && !await tracked(exec, path2, settings)) {
+    try {
+      const text = translateClaudeSettings(readFileSync5(from, "utf8"), main, path2);
+      if (text) {
+        mkdirSync4(join5(path2, ".claude"), { recursive: true });
+        writeFileSync4(join5(path2, settings), text);
+      }
+    } catch {
+    }
+  }
+  const notes = "CLAUDE.local.md";
+  if (existsSync4(join5(main, notes)) && !existsSync4(join5(path2, notes)) && !await tracked(exec, path2, notes)) {
+    try {
+      copyFileSync(join5(main, notes), join5(path2, notes));
+    } catch {
+    }
+  }
+}
+async function firstRef(exec, main, refs) {
+  for (const r of refs) if (await refExists(exec, main, r)) return r;
+  return null;
+}
+async function checkoutFor(exec, main, path2, opts) {
+  if (opts.kind === "publicar") {
+    const b = opts.base ?? "origin/develop";
+    const base2 = await firstRef(exec, main, [b, b.replace(/^origin\//, "")]);
+    if (!base2) return `n\xE3o tem a branch ${b.replace(/^origin\//, "")} para publicar`;
+    const res2 = await git(exec, path2, ["checkout", "--quiet", "--detach", base2], 12e4);
+    return res2.code === 0 ? null : firstLine(res2.stderr) || `c\xF3digo ${res2.code}`;
+  }
+  const branch = opts.branch;
   if (await refExists(exec, main, `refs/heads/${branch}`)) {
-    added = await git(exec, main, ["worktree", "add", path2, branch], 18e4);
-  } else {
-    const bases = await refExists(exec, main, `refs/remotes/origin/${branch}`) ? [`origin/${branch}`] : ["origin/develop", "develop", "origin/main", "main", "HEAD"];
-    let base = null;
-    for (const c of bases) if (await refExists(exec, main, c)) {
-      base = c;
-      break;
-    }
-    if (!base) return { ok: false, error: `N\xE3o achei de onde criar a branch ${branch} em ${repo.fullName}.` };
-    added = await git(exec, main, ["worktree", "add", "--no-track", "-b", branch, path2, base], 18e4);
+    const res2 = await git(exec, path2, ["checkout", "--quiet", branch], 12e4);
+    return res2.code === 0 ? null : firstLine(res2.stderr) || `c\xF3digo ${res2.code}`;
   }
-  if (added.code !== 0) return { ok: false, error: `N\xE3o consegui criar a c\xF3pia do card em ${repo.fullName}: ${firstLine(added.stderr) || `c\xF3digo ${added.code}`}` };
-  const extras = await copyExtras(exec, main, path2, platform);
-  const note = [freedNote, extrasNote(repo.fullName, extras)].filter(Boolean).join(" ") || null;
-  return { ok: true, copy: { fullName: repo.fullName, main, path: path2, kind, reused: false }, path: path2, note };
+  const base = await firstRef(exec, main, [`refs/remotes/origin/${branch}`, "origin/develop", "develop", "origin/main", "main", "HEAD"]);
+  if (!base) return `n\xE3o achei de onde criar a branch ${branch}`;
+  const res = await git(exec, path2, ["checkout", "--quiet", "--no-track", "-b", branch, base], 12e4);
+  return res.code === 0 ? null : firstLine(res.stderr) || `c\xF3digo ${res.code}`;
+}
+async function prepareOne(repo, opts) {
+  const { exec, root, kind } = opts;
+  const platform = opts.platform ?? process.platform;
+  const claim2 = opts.claim ?? (() => true);
+  const unclaim = opts.unclaim ?? (() => {
+  });
+  const main = repo.path;
+  const dir = join5(root, repoKey(repo.fullName));
+  mkdirSync4(dir, { recursive: true });
+  const fetched = await git(exec, main, ["fetch", "origin", "--quiet"], 18e4);
+  if (fetched.code !== 0) opts.log?.(`git fetch em ${repo.fullName} falhou (${firstLine(fetched.stderr) || `c\xF3digo ${fetched.code}`}); o trabalho sai do que j\xE1 est\xE1 nesta m\xE1quina.`);
+  const notes = [];
+  const done = (path2, slot, reused, restore) => {
+    if (kind === "card") writeState(root, repo.fullName, opts.branch, path2);
+    return { ok: true, copy: { fullName: repo.fullName, main, path: path2, kind, slot, reused, restore }, note: notes.join(" ") || null };
+  };
+  if (kind === "card") {
+    const branch = opts.branch;
+    const freed = await freeBranch(exec, main, branch, { root, platform, folderUsers: opts.folderUsers });
+    if (!freed.ok) return { ok: false, error: freed.error };
+    if (freed.note) notes.push(freed.note);
+    if (freed.where) {
+      const slot = slotKindOf(root, repo.fullName, main, freed.where);
+      const where = slot === "principal" ? main : slot === "vaga" ? slotPath(root, repo.fullName, Number(basename2(freed.where).slice("vaga-".length))) : freed.where;
+      const pending = slot === "antiga" ? await pendingChanges(exec, where) : null;
+      if (slot === "antiga" && pending && !pending.length && !await operationInProgress(exec, where)) {
+        const problem = await dropCopy(exec, main, where, root);
+        if (problem || existsSync4(where)) {
+          await git(exec, where, ["checkout", "--quiet", "--detach"]);
+          notes.push(`N\xE3o consegui apagar a pasta antiga ${where} (${problem ?? "arquivo sem permiss\xE3o"}); a branch foi solta dela. Apague a pasta \xE0 m\xE3o quando puder (no Linux, com sudo se os arquivos forem de outro usu\xE1rio).`);
+        }
+      } else {
+        if (!claim2(where)) {
+          return {
+            ok: false,
+            error: slot === "principal" ? `A branch ${branch} est\xE1 aberta na pasta do projeto (${where}), que est\xE1 com outro trabalho agora. Espere o outro trabalho terminar e mande de novo.` : `A branch ${branch} est\xE1 aberta em ${where}, que est\xE1 com outro trabalho agora. Espere o outro trabalho terminar e mande de novo.`
+          };
+        }
+        if (slot === "vaga") await syncClaudeLocal(exec, main, where);
+        if (slot !== "principal") {
+          const extras = await copyExtras(exec, main, where, platform);
+          const note = extrasNote(repo.fullName, extras);
+          if (note) notes.push(note);
+        }
+        return done(where, slot, true, null);
+      }
+    }
+  }
+  const max = Math.max(2, Math.min(opts.maxSlots ?? MAX_SLOTS, MAX_SLOTS));
+  const existing = await existingSlots(exec, root, repo.fullName);
+  const candidates = [{ path: main, slot: "principal", n: 1 }, ...existing.map((e) => ({ path: e.path, slot: "vaga", n: e.n }))];
+  const last = kind === "card" ? readState(root, repo.fullName)[opts.branch] : void 0;
+  if (last) {
+    const i = candidates.findIndex((c) => real(c.path) === real(last));
+    if (i > 0) candidates.unshift(...candidates.splice(i, 1));
+  }
+  const used = new Set(existing.map((e) => e.n));
+  for (let n2 = 2; n2 <= max && candidates.length < max; n2++) if (!used.has(n2)) candidates.push({ path: slotPath(root, repo.fullName, n2), slot: "vaga", n: n2 });
+  const skipped = [];
+  for (const c of candidates) {
+    if (!claim2(c.path)) {
+      skipped.push(`${c.path} (com outro trabalho)`);
+      continue;
+    }
+    const fresh = c.slot === "vaga" && !await isWorktree(exec, c.path);
+    if (fresh) {
+      if (existsSync4(c.path)) {
+        unclaim(c.path);
+        skipped.push(`${c.path} (pasta que n\xE3o \xE9 do git)`);
+        continue;
+      }
+      const start = await firstRef(exec, main, ["origin/develop", "develop", "origin/main", "main", "HEAD"]) ?? "HEAD";
+      const added = await git(exec, main, ["worktree", "add", "--detach", c.path, start], 18e4);
+      if (added.code !== 0) {
+        unclaim(c.path);
+        skipped.push(`${c.path} (${firstLine(added.stderr) || `c\xF3digo ${added.code}`})`);
+        continue;
+      }
+    } else if (await busyTree(exec, c.path)) {
+      unclaim(c.path);
+      skipped.push(`${c.path} (com mudan\xE7a sem commit)`);
+      continue;
+    }
+    const restore = c.slot === "principal" ? await currentRef(exec, c.path) : null;
+    const failed = await checkoutFor(exec, main, c.path, opts);
+    if (failed) {
+      unclaim(c.path);
+      skipped.push(`${c.path} (${failed})`);
+      continue;
+    }
+    if (c.slot === "vaga") {
+      const extras = await copyExtras(exec, main, c.path, platform);
+      await syncClaudeLocal(exec, main, c.path);
+      const note = extrasNote(repo.fullName, extras);
+      if (note) notes.push(note);
+    }
+    return done(c.path, c.slot, !fresh && c.slot === "vaga", restore);
+  }
+  return {
+    ok: false,
+    error: `Nenhuma pasta livre para este trabalho em ${repo.fullName}: ${skipped.join("; ")}. Termine ou fa\xE7a commit do que est\xE1 em uma delas e mande de novo.`
+  };
 }
 async function prepareWorkspace(repos, opts) {
   const copies = [];
@@ -9390,24 +9572,33 @@ async function prepareWorkspace(repos, opts) {
   for (const repo of repos) {
     const got = await prepareOne(repo, opts);
     if (!got.ok) return { ok: false, error: got.error, copies };
-    if (got.copy) copies.push(got.copy);
+    copies.push(got.copy);
     if (got.note) notes.push(got.note);
-    out.push({ fullName: repo.fullName, path: got.path });
+    out.push({ fullName: repo.fullName, path: got.copy.path });
   }
   return { ok: true, repos: out, copies, notes };
 }
 async function releaseWorkspace(copies, opts) {
   const kept = [];
   for (const c of copies) {
-    if (!inside(opts.root, c.path)) continue;
-    if (c.kind === "card") {
-      const st = await git(opts.exec, c.path, ["status", "--porcelain"]);
-      if (st.code !== 0 || st.stdout.trim()) {
-        kept.push(c);
-        continue;
-      }
+    if (await busyTree(opts.exec, c.path)) {
+      kept.push(c);
+      continue;
     }
-    await dropCopy(opts.exec, c.main, c.path, opts.root);
+    if (c.slot === "principal") {
+      if (c.restore) {
+        const back = await git(opts.exec, c.path, ["checkout", "--quiet", c.restore], 12e4);
+        if (back.code !== 0) opts.log?.(`A pasta do projeto ${c.path} n\xE3o voltou para ${c.restore}: ${firstLine(back.stderr) || `c\xF3digo ${back.code}`}`);
+      }
+    } else if (c.slot === "vaga") {
+      await git(opts.exec, c.path, ["checkout", "--quiet", "--detach"]);
+    } else {
+      const pending = await pendingChanges(opts.exec, c.path);
+      if (pending && !pending.length) {
+        const problem = await dropCopy(opts.exec, c.main, c.path, opts.root);
+        if (problem) opts.log?.(`N\xE3o consegui apagar a pasta antiga ${c.path}: ${problem}`);
+      } else kept.push(c);
+    }
   }
   return kept;
 }
@@ -29814,7 +30005,7 @@ function usageLimitMessage(limit, opts = {}) {
 
 // connector/suggestions.ts
 import { spawn } from "node:child_process";
-import { mkdtempSync, rmSync as rmSync4, writeFileSync as writeFileSync4 } from "node:fs";
+import { mkdtempSync, rmSync as rmSync4, writeFileSync as writeFileSync5 } from "node:fs";
 import os4 from "node:os";
 import { join as join6 } from "node:path";
 var CODE_READ_TOOLS = ["Read", "Grep", "Glob"];
@@ -29871,7 +30062,7 @@ async function runSuggestionsOnce(req, opts) {
     let systemFile = null;
     if (opts.launch.shell) {
       systemFile = join6(tmp, "regras.txt");
-      writeFileSync4(systemFile, `${req.system}
+      writeFileSync5(systemFile, `${req.system}
 
 Formato da resposta (JSON Schema):
 ${JSON.stringify(req.schema)}`, { mode: 384 });
@@ -29942,7 +30133,7 @@ async function openCodeCopy(exec, repoPath, baseDir, name) {
 
 // connector/vaultUpdate.ts
 import { spawn as spawn2 } from "node:child_process";
-import { mkdtempSync as mkdtempSync2, readdirSync as readdirSync2, rmSync as rmSync5, statSync as statSync7, writeFileSync as writeFileSync5 } from "node:fs";
+import { mkdtempSync as mkdtempSync2, readdirSync as readdirSync2, rmSync as rmSync5, statSync as statSync7, writeFileSync as writeFileSync6 } from "node:fs";
 import os5 from "node:os";
 import { join as join7 } from "node:path";
 var VAULT_TOOLS = ["Read", "Edit", "Write", "Glob", "Grep"];
@@ -30146,11 +30337,11 @@ async function runClaudeInVault(vaultDir, input2, opts) {
   const tmp = mkdtempSync2(join7(os5.tmpdir(), "benflow-cofre-"));
   try {
     const settingsFile = join7(tmp, "permissoes.json");
-    writeFileSync5(settingsFile, JSON.stringify({ permissions: { ...permissions, defaultMode: "dontAsk" } }, null, 2), { mode: 384 });
+    writeFileSync6(settingsFile, JSON.stringify({ permissions: { ...permissions, defaultMode: "dontAsk" } }, null, 2), { mode: 384 });
     let rulesFile = null;
     if (opts.launch.shell) {
       rulesFile = join7(tmp, "regras.txt");
-      writeFileSync5(rulesFile, `${rules}
+      writeFileSync6(rulesFile, `${rules}
 
 Formato da resposta (JSON Schema):
 ${JSON.stringify(VAULT_OUTPUT_SCHEMA)}`, { mode: 384 });
@@ -30218,7 +30409,7 @@ ${JSON.stringify(VAULT_OUTPUT_SCHEMA)}`, { mode: 384 });
 }
 
 // connector/vaultSend.ts
-import { existsSync as existsSync5, mkdirSync as mkdirSync5, mkdtempSync as mkdtempSync3, readFileSync as readFileSync7, rmSync as rmSync6, statSync as statSync9, writeFileSync as writeFileSync6 } from "node:fs";
+import { existsSync as existsSync5, mkdirSync as mkdirSync5, mkdtempSync as mkdtempSync3, readFileSync as readFileSync7, rmSync as rmSync6, statSync as statSync9, writeFileSync as writeFileSync7 } from "node:fs";
 import os6 from "node:os";
 import { dirname as dirname5, join as join9 } from "node:path";
 import { gunzipSync, gzipSync } from "node:zlib";
@@ -30483,7 +30674,7 @@ function unpackVault(pkg, dir) {
     if (!/\.md$/i.test(f.path) || parts.some((p) => !p || p === "." || p === ".." || p.startsWith(".") || p.includes("\\") || p.includes("\0"))) continue;
     const abs = join9(dir, ...parts);
     mkdirSync5(dirname5(abs), { recursive: true });
-    writeFileSync6(abs, f.content, { mode: 384 });
+    writeFileSync7(abs, f.content, { mode: 384 });
     n2++;
   }
   return n2;
@@ -30581,7 +30772,7 @@ async function runVaultRead(job, opts) {
         if (existsSync5(target)) continue;
         try {
           mkdirSync5(dirname5(target), { recursive: true });
-          writeFileSync6(target, f.content, { flag: "wx" });
+          writeFileSync7(target, f.content, { flag: "wx" });
           copied++;
         } catch {
         }
@@ -30596,7 +30787,7 @@ async function runVaultRead(job, opts) {
 
 // connector/links.ts
 import { spawn as spawn3 } from "node:child_process";
-import { closeSync, existsSync as existsSync6, openSync, readFileSync as readFileSync8, statSync as statSync10, writeFileSync as writeFileSync7 } from "node:fs";
+import { closeSync, existsSync as existsSync6, openSync, readFileSync as readFileSync8, statSync as statSync10, writeFileSync as writeFileSync8 } from "node:fs";
 import { dirname as dirname6, join as join10 } from "node:path";
 var isDir = (p) => {
   try {
@@ -30643,7 +30834,7 @@ function defaultStartExecutor(url2, orgSlug, files) {
   try {
     const child = spawn3(process.execPath, [script, "executar", "--url", url2, "--org", orgSlug], { detached: true, stdio: ["ignore", out, out], env: process.env });
     child.unref();
-    if (child.pid) writeFileSync7(files.pid, `${child.pid}
+    if (child.pid) writeFileSync8(files.pid, `${child.pid}
 `);
     return child.pid ?? null;
   } finally {
@@ -30689,8 +30880,8 @@ import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.24") {
-    cached2 = "0.1.24";
+  if ("0.1.25") {
+    cached2 = "0.1.25";
     return cached2;
   }
   let dir = dirname7(fileURLToPath(import.meta.url));
@@ -31443,17 +31634,22 @@ async function runJob(opts, job) {
       tag,
       branch: kind === "card" ? workBranch(job, tag) : "",
       base: job.environment === "producao" ? "origin/main" : "origin/develop",
-      mainBusy: opts.mainBusy,
+      claim: opts.claim,
+      unclaim: opts.unclaim,
       log
     });
     if (!prepared.ok) {
-      await releaseWorkspace(prepared.copies, { exec, root }).catch(() => []);
+      await releaseWorkspace(prepared.copies, { exec, root, log }).catch(() => []);
       return fail(prepared.error);
     }
     copies = prepared.copies;
     workRepos = prepared.repos;
-    const where = copies.map((c) => `${c.fullName} em ${c.path}`).join("; ");
-    const text = [where ? `${kind === "publicar" ? "Publicando a partir de uma c\xF3pia separada" : "Trabalhando numa c\xF3pia s\xF3 deste card"} (${where}). A pasta do projeto n\xE3o muda de branch.` : "", ...prepared.notes].filter(Boolean).join(" ");
+    const where = copies.map((c) => `${c.fullName} ${c.slot === "principal" ? "na pasta do projeto" : c.slot === "vaga" ? "na vaga extra" : "na c\xF3pia antiga"} (${c.path})`).join("; ");
+    const principal = copies.some((c) => c.slot === "principal");
+    const text = [
+      where ? `${kind === "publicar" ? "Publicando" : "Trabalhando"} ${where}.${principal ? " No fim, a pasta do projeto volta para a branch em que estava." : " A pasta do projeto est\xE1 com outro trabalho e n\xE3o muda de branch."}` : "",
+      ...prepared.notes
+    ].filter(Boolean).join(" ");
     if (text) await sink.log([{ at: (/* @__PURE__ */ new Date()).toISOString(), kind: "texto", text }], {}).catch(() => {
     });
   }
@@ -31462,8 +31658,8 @@ async function runJob(opts, job) {
     return await runInRepos(opts, job, { tag, instructions, sessionId, repos: workRepos, copy: copies.length > 0 }, { finish: finish2, redact, sink });
   } finally {
     if (copies.length) {
-      const kept = await releaseWorkspace(copies, { exec, root }).catch(() => copies);
-      for (const c of kept) log(`Trabalho ${job.id}: a c\xF3pia de ${c.fullName} em ${c.path} ficou com mudan\xE7a sem commit; o pr\xF3ximo trabalho do card continua nela.`);
+      const kept = await releaseWorkspace(copies, { exec, root, log }).catch(() => copies);
+      for (const c of kept) log(`Trabalho ${job.id}: ${c.path} (${c.fullName}) ficou com mudan\xE7a sem commit; o pr\xF3ximo trabalho do card continua nela.`);
     }
   }
 }
@@ -31502,14 +31698,14 @@ async function runInRepos(opts, job, w, h) {
       }
     }
   };
-  writeFileSync8(mcpConfigPath, JSON.stringify(mcpConfig, null, 2), { mode: 384 });
+  writeFileSync9(mcpConfigPath, JSON.stringify(mcpConfig, null, 2), { mode: 384 });
   const launch = opts.claudeLaunch ?? resolveClaudeLaunch(entry.claude.bin);
   const prompt = buildJobPrompt(input2);
   const systemRules = buildSystemRules(input2);
   let systemRulesFile = null;
   if (launch.shell) {
     systemRulesFile = join13(tmp, "regras.txt");
-    writeFileSync8(systemRulesFile, systemRules, { mode: 384 });
+    writeFileSync9(systemRulesFile, systemRules, { mode: 384 });
   }
   const args = buildClaudeArgs({
     prompt,
@@ -31726,7 +31922,7 @@ async function runConversa(opts, job, h) {
     if (!text && !files.length) return h.fail("A mensagem veio vazia. Nada foi mandado para o Claude.");
     const mcpConfigPath = join13(tmp, "mcp.json");
     const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
-    writeFileSync8(
+    writeFileSync9(
       mcpConfigPath,
       JSON.stringify(
         {
@@ -31765,7 +31961,7 @@ async function runConversa(opts, job, h) {
     let systemRulesFile = null;
     if (launch.shell) {
       systemRulesFile = join13(tmp, "regras.txt");
-      writeFileSync8(systemRulesFile, systemRules, { mode: 384 });
+      writeFileSync9(systemRulesFile, systemRules, { mode: 384 });
     }
     const exec = opts.exec ?? defaultExec;
     const remotes = (await Promise.all(repos.map((r) => gitRemotes(exec, r.path)))).flat();
@@ -32111,10 +32307,15 @@ var Executor = class {
     const n2 = this.agent?.maxParallel;
     return typeof n2 === "number" && Number.isFinite(n2) && n2 >= 1 ? Math.min(Math.floor(n2), PARALLEL_HARD_MAX) : 1;
   }
-  // A pasta do projeto está com outro trabalho (uma conversa, ou um card que rodou nela)?
-  mainBusy(path2, except) {
-    for (const [id, r] of this.running) if (id !== except && r.paths.has(path2)) return true;
-    return false;
+  // Reserva a pasta para o trabalho `id`, se nenhum outro rodando estiver nela. Síncrono: dois trabalhos que começam
+  // juntos nunca ficam com a mesma pasta.
+  claimPath(path2, id) {
+    for (const [other, r] of this.running) if (other !== id && r.paths.has(path2)) return false;
+    this.running.get(id)?.paths.add(path2);
+    return true;
+  }
+  unclaimPath(path2, id) {
+    this.running.get(id)?.paths.delete(path2);
   }
   waitSlot(signal) {
     if (signal.aborted) return Promise.resolve();
@@ -32367,7 +32568,8 @@ var Executor = class {
             ...this.opts,
             signal,
             copies,
-            mainBusy: (path2) => this.mainBusy(path2, job.id),
+            claim: (path2) => this.claimPath(path2, job.id),
+            unclaim: (path2) => this.unclaimPath(path2, job.id),
             onPaths: (paths) => {
               item.paths = new Set(paths);
             }
@@ -42057,7 +42259,7 @@ var StdioServerTransport = class {
 
 // connector/captura.ts
 import { spawn as spawn5 } from "node:child_process";
-import { existsSync as existsSync10, mkdtempSync as mkdtempSync5, rmSync as rmSync8, writeFileSync as writeFileSync9 } from "node:fs";
+import { existsSync as existsSync10, mkdtempSync as mkdtempSync5, rmSync as rmSync8, writeFileSync as writeFileSync10 } from "node:fs";
 import os9 from "node:os";
 import { join as join14 } from "node:path";
 var SCREENS = {
@@ -42273,7 +42475,7 @@ async function shoot(tab, req) {
   }
   const shot = await tab.send("Page.captureScreenshot", clip ? { format: "png", captureBeyondViewport: true, clip } : { format: "png" });
   if (!shot.data) throw new Error("O Chrome sem tela n\xE3o devolveu a imagem.");
-  writeFileSync9(req.out, Buffer.from(shot.data, "base64"), { mode: 384 });
+  writeFileSync10(req.out, Buffer.from(shot.data, "base64"), { mode: 384 });
   const where = await evaluate(tab, "({ url: location.href, title: document.title })");
   return { path: req.out, width: screen.width, height, url: where?.url ?? req.url, title: where?.title ?? "" };
 }
@@ -42361,7 +42563,7 @@ function createScreenCapture(opts = {}) {
 }
 
 // connector/gravacao.ts
-import { writeFileSync as writeFileSync10 } from "node:fs";
+import { writeFileSync as writeFileSync11 } from "node:fs";
 
 // connector/webm.ts
 var ID = {
@@ -42903,7 +43105,7 @@ async function recordNavigation(conn, req) {
     const totalSlots = Math.max(1, Math.ceil(durationMs * RECORD_FPS / 1e3));
     const { frames, width, height } = await encode3(conn, slots, totalSlots);
     const webm = buildWebm({ width, height, durationMs: totalSlots * 1e3 / RECORD_FPS, frames });
-    writeFileSync10(req.out, webm, { mode: 384 });
+    writeFileSync11(req.out, webm, { mode: 384 });
     return { path: req.out, width, height, durationMs: Math.round(totalSlots * 1e3 / RECORD_FPS), bytes: webm.length, url: where?.url ?? req.url, title: where?.title ?? "", truncated };
   } finally {
     recording = false;
