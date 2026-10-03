@@ -25,8 +25,10 @@ Chamado pedido: $ARGUMENTS
 7. Mudança com tela: com o servidor de desenvolvimento no ar, um print de cada tela que mudou com `capturar_tela`
    (numero, url local da tela e um título que diga o que o print mostra; o antes também, quando der, com "antes" no
    título). Tela com login: entre pelas `acoes` com o usuário de teste do projeto, nunca com senha real. Os prints vão
-   para o card e para "O que foi feito" no relatório de validação. Depois, um vídeo curto com `gravar_tela` até cada
-   mudança, destacando cada uma com legenda (quem valida assiste no card). Sem como capturar, diga o motivo no resumo.
+   para o card e para "O que foi feito" no relatório de validação. Vídeo: só com o vídeo de evidência ligado no
+   trabalho (o `ver_chamado` mostra na execução: "vídeo de evidência ligado" ou "desligado (só os prints)"). Ligado,
+   um vídeo curto com `gravar_tela` até cada mudança, destacando cada uma com legenda (quem valida assiste no card);
+   desligado, só os prints. Sem como capturar, diga o motivo no resumo.
 8. Termine com `concluir_local` (resumo, `como_testar` com o passo a passo de quem vai validar em homologação, branch e commits) e conte o resultado à pessoa.
 9. Nunca faça `git push` nem mexa na main ou na develop remota sem a pessoa pedir com todas as letras. A publicação é
    pelo painel ("Subir para homologação"). Bloqueio: `comentar` (publico false) e pergunte.

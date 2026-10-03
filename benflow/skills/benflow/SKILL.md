@@ -55,9 +55,12 @@ Pedido da pessoa: $ARGUMENTS
     registra a captura no card. Tela com login: entre pelas `acoes` (preencher e clicar) com o usuário de teste do
     projeto, nunca com senha real. Print tirado por outra ferramenta vai com `registrar_evidencia` tipo `captura` e
     `caminho_arquivo`. Os prints aparecem em "O que foi feito" no relatório de validação, e é por eles que quem valida
-    confere. Depois, grave UM vídeo curto com `gravar_tela` (numero, url local onde começa, título e `passos`: entrar se
-    precisar, clicar até cada tela que mudou e `destacar` cada mudança com uma legenda curta, como "Campo CPF novo").
-    Quem valida assiste no card em vez de testar. Sem como capturar ou gravar, diga o motivo no resumo.
+    confere. O vídeo é opcional: o `ver_chamado` mostra na execução se o vídeo de evidência está ligado ou desligado
+    (só os prints). Ligado, grave UM vídeo curto com `gravar_tela` (numero, url local onde começa, título e `passos`:
+    entrar se precisar, clicar até cada tela que mudou e `destacar` cada mudança com uma legenda curta, como "Campo CPF
+    novo"); quem valida assiste no card em vez de testar. Desligado, fique só com os prints. No executor do painel o
+    vídeo não é gravado na sessão do trabalho: o Benflow grava depois do `concluir_local`, num trabalho à parte, sem
+    segurar a subida (o `gravar_tela` avisa). Sem como capturar ou gravar, diga o motivo no resumo.
 11. No fim, chame `concluir_local` com o resumo (o que mudou), `como_testar` (o passo a passo de quem vai validar em homologação: por onde entrar, o que clicar e o que deve aparecer), a branch e os commits (sha e mensagem).
     Conte à pessoa o resultado e lembre que a subida para homologação é pelo painel.
 12. Ficou bloqueado (falta informação, teste que não passa, conflito)? Registre com `comentar` (publico false) e
