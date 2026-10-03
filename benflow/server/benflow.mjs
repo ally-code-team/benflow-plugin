@@ -8740,7 +8740,7 @@ function buildSystemRules(input2) {
     "3. N\xE3o leia, n\xE3o imprima e n\xE3o envie segredos: arquivos .env, chaves (.pem, .key, id_rsa), tokens, senhas, as pastas ~/.benflow, ~/.bora e ~/.chamados, ~/.ssh e credenciais de nuvem. Se precisar saber se uma vari\xE1vel existe, confira s\xF3 o nome, nunca o valor. Nunca coloque segredos em coment\xE1rios, evid\xEAncias ou commits.",
     `4. Push: ${pushRule(input2.job, input2.tag)}`,
     "5. Nunca use git push --force, nunca reescreva o hist\xF3rico da develop ou da main e nunca apague branches remotas.",
-    '6. Informe progresso, evid\xEAncias e conclus\xE3o pelas ferramentas do MCP "benflow": \xE9 por elas que o painel acompanha o trabalho. Chame atualizar_progresso a cada mudan\xE7a de etapa (planejamento, desenvolvimento, testes, evidencias), com o percentual e uma frase do que est\xE1 fazendo.',
+    '6. Informe progresso, evid\xEAncias e conclus\xE3o pelas ferramentas do MCP "benflow": \xE9 por elas que o painel acompanha o trabalho. Chame atualizar_progresso a cada mudan\xE7a de etapa (planejamento, desenvolvimento, testes, evidencias), com o percentual e uma frase do que est\xE1 fazendo. N\xE3o termine a resposta com testes ou comandos cujo resultado voc\xEA precisa ainda rodando em segundo plano para "retomar depois": quando voc\xEA termina, o trabalho acaba e nada retoma. Espere terminar e registre o resultado.',
     "7. Se subir um servidor de desenvolvimento (npm run dev, vite, next dev etc.), chame informar_ambiente_local com o reposit\xF3rio (owner/nome), o endere\xE7o (ex.: http://localhost:5173) e o r\xF3tulo (front ou API), para o painel mostrar o link do ambiente local.",
     "8. S\xF3 os comandos liberados nesta m\xE1quina rodam direto. Qualquer outro vira um pedido de confirma\xE7\xE3o no card, que o dono do agente permite ou nega: n\xE3o insista nem tente varia\xE7\xF5es do mesmo comando. Para ler arquivos use Read, Grep e Glob no lugar de cat, ls, sed e head; no Bash, rode um comando por vez, sem encadear com ;, && ou |. Se o trabalho n\xE3o fecha sem um comando que ficou esperando confirma\xE7\xE3o, termine dizendo o que falta.",
     ...input2.copy ? [
@@ -8793,7 +8793,7 @@ function executarPrompt(input2) {
     "5. Implemente a mudan\xE7a com o menor escopo que resolva o chamado. Chame atualizar_progresso ao mudar de etapa: desenvolvimento (10 a 60), testes (60 a 80), evidencias (80 a 90).",
     "   Se precisar subir o servidor de desenvolvimento (para testar ou capturar a tela), rode em segundo plano e chame informar_ambiente_local com repo, url (ex.: http://localhost:5173) e rotulo (front ou API).",
     `6. Fa\xE7a commits pequenos com a etiqueta no in\xEDcio da mensagem, por exemplo: "[${tag}] Corrige o c\xE1lculo do prazo".`,
-    '7. Rode os testes do projeto (e o typecheck ou lint, se existirem). Registre com registrar_evidencia tipo "teste" a sa\xEDda resumida e os n\xFAmeros: passou, total e falhas.',
+    '7. Rode os testes do projeto (e o typecheck ou lint, se existirem) em primeiro plano, esperando terminar (su\xEDte longa: aumente o timeout do Bash). Registre com registrar_evidencia tipo "teste" a sa\xEDda resumida e os n\xFAmeros: passou, total e falhas.',
     `8. Prints do que foi feito: se a mudan\xE7a tiver tela, suba o servidor de desenvolvimento (passo 5) e registre um print de cada tela que mudou com capturar_tela (numero ${n2}, a url local da tela e um t\xEDtulo que diga o que o print mostra, como "Lista de pedidos com o filtro de prazo"). Quando der, tire tamb\xE9m o antes, ainda sem a mudan\xE7a, com "antes" no t\xEDtulo. Se a tela pedir login, entre pelas acoes do capturar_tela com o usu\xE1rio de teste do projeto (seed ou README; nunca senha real). Os prints aparecem junto do resumo no relat\xF3rio de valida\xE7\xE3o e \xE9 por eles que quem valida em homologa\xE7\xE3o confere. Depois dos prints, grave UM v\xEDdeo curto com gravar_tela (numero ${n2}, a url local onde come\xE7a, um t\xEDtulo que diga o que o v\xEDdeo mostra e os passos: entrar se a tela pedir login, clicar at\xE9 cada tela que mudou e destacar cada mudan\xE7a, com uma legenda curta do que mudou, como "Bot\xE3o Salvar agora em verde" ou "Campo CPF novo"). Quem valida assiste ao v\xEDdeo no card em vez de testar. Mudan\xE7a sem tela (s\xF3 API ou regra): sem v\xEDdeo. Se n\xE3o der para capturar ou gravar, diga o motivo no resumo.`,
     "9. No fim, chame concluir_local com o resumo do que foi feito, como_testar (o passo a passo de quem vai validar em homologa\xE7\xE3o: por onde entrar, o que clicar e o que deve aparecer, um passo por linha), a branch e a lista de commits (sha e mensagem).",
     "10. N\xC3O fa\xE7a push e N\xC3O mexa na main. Se ficar bloqueado (falta informa\xE7\xE3o, teste que n\xE3o passa, conflito), explique com comentar e pare."
@@ -30906,8 +30906,8 @@ import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.26") {
-    cached2 = "0.1.26";
+  if ("0.1.27") {
+    cached2 = "0.1.27";
     return cached2;
   }
   let dir = dirname7(fileURLToPath(import.meta.url));
