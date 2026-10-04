@@ -88,6 +88,11 @@ pela conversa. Quem conversa tem um de três níveis: o **dono** deste Claude us
 projeto, com o Claude liberado, também pede trabalho em card, só nas pastas do projeto; os **outros colegas** conversam,
 consultam o código do projeto e abrem cards, sem editar, rodar comando nem começar trabalho.
 
+No painel há também o **Orquestrador** (tela Executar chamados, aba Orquestrador): uma conversa à parte com este Claude
+para cuidar da esteira. Lá ele lê os cards presos, os entregues e os abandonados (`ver_esteira`) e mexe no quadro com as
+permissões de quem pediu (`mudar_card` para um card; `propor_mudancas` e, depois do ok, `aplicar_mudancas` para mais de
+um), sem editar código, rodar comando, abrir card ou publicar.
+
 ## Configuração
 
 Se as ferramentas responderem que o Benflow não está configurado, oriente a pessoa:
