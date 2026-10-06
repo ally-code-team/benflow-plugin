@@ -21,7 +21,8 @@ Chamado pedido: $ARGUMENTS
    atualizada, com commits `[<etiqueta>] Mensagem`. Chame `atualizar_progresso` a cada etapa: `desenvolvimento`
    (10 a 60), `testes` (60 a 80) e `evidencias` (80 a 90).
 5. Servidor de desenvolvimento no ar? `informar_ambiente_local` com repo (owner/nome), url e rótulo (front ou API).
-6. Testes: `registrar_evidencia` tipo `teste` (passou, total, falhas).
+6. Testes: `registrar_evidencia` tipo `teste` (passou, total, falhas). Faltou um programa na máquina (ex.: `unzip`,
+   `gh`, Chrome)? Instale e chame `registrar_dependencia` (nome, motivo, como conferir, como instalar, situação).
 7. Mudança com tela: com o servidor de desenvolvimento no ar, um print de cada tela que mudou com `capturar_tela`
    (numero, url local da tela e um título que diga o que o print mostra; o antes também, quando der, com "antes" no
    título). Tela com login: entre pelas `acoes` com o usuário de teste do projeto, nunca com senha real. Os prints vão

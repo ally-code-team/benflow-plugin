@@ -10,7 +10,8 @@ allowed-tools: mcp__plugin_benflow_benflow__listar_chamados mcp__plugin_benflow_
 
 As ferramentas vêm do servidor MCP "benflow" deste plugin: listar_chamados, ver_chamado, baixar_anexo,
 criar_chamado, anexar_arquivo, iniciar_execucao, atualizar_progresso, registrar_evidencia, capturar_tela, gravar_tela, comentar,
-analisar_chamado, concluir_local, informar_publicacao, buscar_conhecimento, ler_nota, ambientes e informar_ambiente_local.
+analisar_chamado, concluir_local, informar_publicacao, buscar_conhecimento, ler_nota, ambientes, informar_ambiente_local e
+registrar_dependencia.
 
 Pedido da pessoa: $ARGUMENTS
 
@@ -48,7 +49,9 @@ Pedido da pessoa: $ARGUMENTS
 8. Se subir um servidor de desenvolvimento (npm run dev, vite, next dev), chame `informar_ambiente_local` com o
    repositório (owner/nome), o endereço (ex.: `http://localhost:5173`) e o rótulo (`front` ou `API`).
 9. Rode os testes (e typecheck ou lint, se houver) e registre com `registrar_evidencia` tipo `teste` (passou, total e
-   falhas). Commits, branch e PR vão com tipo `link`.
+   falhas). Commits, branch e PR vão com tipo `link`. Se faltou um programa, ferramenta ou plugin na máquina (ex.:
+   `unzip`, `gh`, Chrome, compilador), instale e chame `registrar_dependencia` com o nome, o motivo, como conferir, como
+   instalar e a situação: os próximos trabalhos do projeto já preparam a máquina antes de começar.
 10. Mudança com tela: registre um print de cada tela que mudou com `capturar_tela` (numero, url local da tela no
     servidor de desenvolvimento e um título que diga o que o print mostra, como "Lista de pedidos com o filtro de
     prazo"); quando der, o antes também, com "antes" no título. A ferramenta usa o Chrome sem tela desta máquina e já
