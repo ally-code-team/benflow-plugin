@@ -3877,49 +3877,49 @@ var require_fast_uri = __commonJS({
       schemelessOptions.skipEscape = true;
       return serialize(resolved, schemelessOptions);
     }
-    function resolveComponent(base, relative3, options, skipNormalization) {
+    function resolveComponent(base, relative4, options, skipNormalization) {
       const target = {};
       if (!skipNormalization) {
         base = parse3(serialize(base, options), options);
-        relative3 = parse3(serialize(relative3, options), options);
+        relative4 = parse3(serialize(relative4, options), options);
       }
       options = options || {};
-      if (!options.tolerant && relative3.scheme) {
-        target.scheme = relative3.scheme;
-        target.userinfo = relative3.userinfo;
-        target.host = relative3.host;
-        target.port = relative3.port;
-        target.path = removeDotSegments(relative3.path || "");
-        target.query = relative3.query;
+      if (!options.tolerant && relative4.scheme) {
+        target.scheme = relative4.scheme;
+        target.userinfo = relative4.userinfo;
+        target.host = relative4.host;
+        target.port = relative4.port;
+        target.path = removeDotSegments(relative4.path || "");
+        target.query = relative4.query;
       } else {
-        if (relative3.userinfo !== void 0 || relative3.host !== void 0 || relative3.port !== void 0) {
-          target.userinfo = relative3.userinfo;
-          target.host = relative3.host;
-          target.port = relative3.port;
-          target.path = removeDotSegments(relative3.path || "");
-          target.query = relative3.query;
+        if (relative4.userinfo !== void 0 || relative4.host !== void 0 || relative4.port !== void 0) {
+          target.userinfo = relative4.userinfo;
+          target.host = relative4.host;
+          target.port = relative4.port;
+          target.path = removeDotSegments(relative4.path || "");
+          target.query = relative4.query;
         } else {
-          if (!relative3.path) {
+          if (!relative4.path) {
             target.path = base.path;
-            if (relative3.query !== void 0) {
-              target.query = relative3.query;
+            if (relative4.query !== void 0) {
+              target.query = relative4.query;
             } else {
               target.query = base.query;
             }
           } else {
-            if (relative3.path[0] === "/") {
-              target.path = removeDotSegments(relative3.path);
+            if (relative4.path[0] === "/") {
+              target.path = removeDotSegments(relative4.path);
             } else {
               if ((base.userinfo !== void 0 || base.host !== void 0 || base.port !== void 0) && !base.path) {
-                target.path = "/" + relative3.path;
+                target.path = "/" + relative4.path;
               } else if (!base.path) {
-                target.path = relative3.path;
+                target.path = relative4.path;
               } else {
-                target.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative3.path;
+                target.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative4.path;
               }
               target.path = removeDotSegments(target.path);
             }
-            target.query = relative3.query;
+            target.query = relative4.query;
           }
           target.userinfo = base.userinfo;
           target.host = base.host;
@@ -3927,7 +3927,7 @@ var require_fast_uri = __commonJS({
         }
         target.scheme = base.scheme;
       }
-      target.fragment = relative3.fragment;
+      target.fragment = relative4.fragment;
       return target;
     }
     function equal(uriA, uriB, options) {
@@ -7204,8 +7204,8 @@ var require_dist = __commonJS({
 
 // connector/cli.ts
 import { spawn as spawn6 } from "node:child_process";
-import { existsSync as existsSync13, realpathSync as realpathSync8, statSync as statSync14 } from "node:fs";
-import { dirname as dirname10, join as join18, resolve as resolve8 } from "node:path";
+import { existsSync as existsSync14, realpathSync as realpathSync9, statSync as statSync15 } from "node:fs";
+import { dirname as dirname10, join as join19, resolve as resolve8 } from "node:path";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
 import { parseArgs } from "node:util";
 
@@ -7757,7 +7757,10 @@ var CONNECTOR_CAPABILITIES = [
   // Sugestões com arquivos (as referências do Marketing): o executor baixa os arquivos do trabalho numa pasta temporária
   // e o Claude abre só ela com Read (suggestions.ts). No batimento, o servidor sabe que este Claude vê as imagens; a
   // entrega do trabalho com arquivos vem pela marca no pedido de trabalho.
-  "sugestoes-arquivos"
+  "sugestoes-arquivos",
+  // Trazer os valores da aba Chaves (keyFetch.ts): o pedido chega na resposta do batimento e o conector lê o arquivo de
+  // ambiente (o .env do repositório ou o do servidor, por SSH) e manda os valores direto para o cofre, sem o Claude.
+  "chaves-valores"
 ];
 var PROJECT_VAULT_CAPABILITY = "cofre-projeto";
 var JOB_REQUEST_CAPS = ["conversa-painel", "paralelo", "orquestrador", "sugestoes-arquivos"];
@@ -7975,6 +7978,10 @@ var AgentClient = class _AgentClient {
   // Resultado da conferência de merge pedida no batimento (ou o motivo de não ter dado).
   mergeCheckResult(id, body) {
     return this.requestJson("POST", `/api/agent/merge-checks/${id}`, { json: body });
+  }
+  // Os valores lidos para o Trazer os valores (vão direto para o cofre; a resposta não traz nada de volta).
+  keyFetchResult(id, body) {
+    return this.requestJson("POST", `/api/agent/chaves-valores/${id}`, { json: body });
   }
   // Pedido de usar este Claude em outro projeto: a entrada foi gravada e o executor ligado (ou o motivo de não ter dado).
   linkResult(id, body) {
@@ -8283,10 +8290,10 @@ var AgentClient = class _AgentClient {
 
 // connector/executor.ts
 import { execFile as execFile2, execFileSync, spawn as spawn5 } from "node:child_process";
-import { existsSync as existsSync12, mkdirSync as mkdirSync8, mkdtempSync as mkdtempSync6, readFileSync as readFileSync11, realpathSync as realpathSync6, rmSync as rmSync9, statSync as statSync12, writeFileSync as writeFileSync11 } from "node:fs";
+import { existsSync as existsSync13, mkdirSync as mkdirSync8, mkdtempSync as mkdtempSync6, readFileSync as readFileSync12, realpathSync as realpathSync7, rmSync as rmSync9, statSync as statSync13, writeFileSync as writeFileSync11 } from "node:fs";
 import { createRequire } from "node:module";
 import os10 from "node:os";
-import { isAbsolute as isAbsolute4, join as join16, relative as relative2, resolve as resolve6 } from "node:path";
+import { isAbsolute as isAbsolute4, join as join17, relative as relative3, resolve as resolve6 } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath as fileURLToPath2, pathToFileURL } from "node:url";
 
@@ -32773,6 +32780,155 @@ function applyLinkOffer(offer, deps) {
   }
 }
 
+// connector/keyFetch.ts
+import { existsSync as existsSync10, readFileSync as readFileSync10, realpathSync as realpathSync6, statSync as statSync12 } from "node:fs";
+import { homedir } from "node:os";
+import { join as join14, relative as relative2, sep as sep4 } from "node:path";
+
+// server/services/keySources.ts
+var KEY_SOURCE_PATH_MAX = 200;
+var KEY_SOURCE_FILE_MAX = 256 * 1024;
+var SEGMENT_RE = /^[A-Za-z0-9._-]+$/;
+var ENV_FILE_RE = /^(?:\.env(?:\.[A-Za-z0-9_-]+)*|[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*\.env)$/;
+var EXAMPLE_RE = /(?:^|[.-])(?:example|sample|template|dist|defaults?)(?:[.-]|$)/i;
+var HOST_RE = /^(?:[A-Za-z0-9_][A-Za-z0-9._-]{0,63}@)?[A-Za-z0-9][A-Za-z0-9.-]{0,252}$/;
+var IDENTITY_RE = /^~\/\.ssh\/[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/;
+function segmentsOk(parts) {
+  return parts.length > 0 && parts.every((p) => SEGMENT_RE.test(p) && p !== "." && p !== "..");
+}
+function isEnvFileName(name) {
+  return ENV_FILE_RE.test(name) && !EXAMPLE_RE.test(name);
+}
+function keySourceProblem(s2) {
+  const path2 = typeof s2.path === "string" ? s2.path.trim() : "";
+  if (!path2) return "Informe o caminho do arquivo.";
+  if (path2.length > KEY_SOURCE_PATH_MAX) return "Caminho muito comprido.";
+  const absolute = path2.startsWith("/");
+  const parts = (absolute ? path2.slice(1) : path2).split("/");
+  if (!segmentsOk(parts)) return 'O caminho s\xF3 pode ter letras, n\xFAmeros, ponto, h\xEDfen, sublinhado e barra, sem "..".';
+  if (!isEnvFileName(parts[parts.length - 1])) return "Use um arquivo de ambiente com valores (.env, .env.production, app.env), n\xE3o o de exemplo.";
+  if (s2.kind === "arquivo") {
+    if (absolute) return "No arquivo da pasta do reposit\xF3rio, use o caminho a partir da pasta (ex.: .env ou site/.env).";
+    return null;
+  }
+  if (s2.kind !== "ssh") return "Origem inv\xE1lida.";
+  if (!absolute) return "No servidor, use o caminho completo do arquivo (ex.: /etc/app.env ou /srv/app/.env).";
+  const host = typeof s2.host === "string" ? s2.host.trim() : "";
+  if (!host) return "Informe o servidor (usuario@endereco ou o nome do ~/.ssh/config).";
+  if (!HOST_RE.test(host)) return "Servidor inv\xE1lido. Use usuario@endereco ou o nome do ~/.ssh/config.";
+  if (s2.port != null && (!Number.isInteger(s2.port) || s2.port < 1 || s2.port > 65535)) return "Porta inv\xE1lida.";
+  const identity = typeof s2.identity === "string" ? s2.identity.trim() : "";
+  if (identity && !IDENTITY_RE.test(identity)) return "A chave SSH precisa estar em ~/.ssh (ex.: ~/.ssh/id_ed25519).";
+  return null;
+}
+function sshArgs(s2, home) {
+  const args = ["-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=15", "-o", "StrictHostKeyChecking=accept-new", "-o", "ForwardAgent=no", "-o", "ClearAllForwardings=yes"];
+  if (s2.port) args.push("-p", String(s2.port));
+  if (s2.identity) args.push("-i", `${home}${s2.identity.slice(1)}`, "-o", "IdentitiesOnly=yes");
+  args.push("--", s2.host ?? "", `cat -- ${s2.path}`);
+  return args;
+}
+function parseDotenv(text) {
+  const out = /* @__PURE__ */ new Map();
+  const lines2 = text.replace(/^\uFEFF/, "").split(/\r?\n/);
+  for (let i = 0; i < lines2.length; i++) {
+    const m = /^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/.exec(lines2[i]);
+    if (!m) continue;
+    let raw = m[2];
+    const quote = raw[0];
+    if (quote === '"' || quote === "'") {
+      let body = raw.slice(1);
+      let end = closingQuote(body, quote);
+      while (end < 0 && i + 1 < lines2.length) {
+        i++;
+        body += `
+${lines2[i]}`;
+        end = closingQuote(body, quote);
+      }
+      raw = end < 0 ? body : body.slice(0, end);
+      out.set(m[1], quote === '"' ? raw.replace(/\\([nr"\\$])/g, (_s, c) => c === "n" ? "\n" : c === "r" ? "\r" : c) : raw);
+      continue;
+    }
+    out.set(m[1], raw.replace(/\s+#.*$/, "").trim());
+  }
+  return out;
+}
+function closingQuote(body, quote) {
+  for (let i = 0; i < body.length; i++) {
+    if (body[i] === "\\" && quote === '"') {
+      i++;
+      continue;
+    }
+    if (body[i] === quote) return i;
+  }
+  return -1;
+}
+
+// connector/keyFetch.ts
+var SSH_TIMEOUT_MS = 6e4;
+var ERROR_MAX = 300;
+function shortError(text) {
+  const line = text.split("\n").map((l) => l.trim()).filter(Boolean).pop() ?? "";
+  return (maskSecrets(line) ?? "").slice(0, ERROR_MAX);
+}
+function pick2(text, names) {
+  const all = parseDotenv(text);
+  const out = {};
+  for (const n2 of names) {
+    const v = all.get(n2);
+    if (typeof v === "string" && v.trim()) out[n2] = v;
+  }
+  return out;
+}
+function readRepoFile(repos, path2) {
+  const dirs = Object.values(repos).filter((d) => d && existsSync10(d));
+  if (!dirs.length) return { error: "Esta m\xE1quina n\xE3o tem a pasta do reposit\xF3rio do projeto." };
+  for (const dir of dirs) {
+    const file2 = join14(dir, path2);
+    if (!existsSync10(file2)) continue;
+    try {
+      const realDir2 = realpathSync6(dir);
+      const real2 = realpathSync6(file2);
+      const rel = relative2(realDir2, real2);
+      if (!rel || rel.startsWith("..") || rel.startsWith(sep4)) return { error: `${path2} aponta para fora da pasta do reposit\xF3rio.` };
+      const st = statSync12(real2);
+      if (!st.isFile()) return { error: `${path2} n\xE3o \xE9 um arquivo.` };
+      if (st.size > KEY_SOURCE_FILE_MAX) return { error: `${path2} \xE9 grande demais para ser um arquivo de ambiente.` };
+      return { text: readFileSync10(real2, "utf8") };
+    } catch (err) {
+      return { error: `N\xE3o deu para ler ${path2}: ${err instanceof Error ? err.message : String(err)}` };
+    }
+  }
+  return { error: `N\xE3o achei ${path2} na pasta do reposit\xF3rio nesta m\xE1quina.` };
+}
+async function readServerFile(exec, s2, home) {
+  const res = await exec("ssh", sshArgs(s2, home), { timeoutMs: SSH_TIMEOUT_MS });
+  if (res.code !== 0) {
+    const why = shortError(res.stderr || res.stdout || "");
+    return { error: `ssh ${s2.host} n\xE3o leu ${s2.path}${why ? `: ${why}` : ` (c\xF3digo ${res.code})`}` };
+  }
+  if (res.stdout.length > KEY_SOURCE_FILE_MAX) return { error: `${s2.path} \xE9 grande demais para ser um arquivo de ambiente.` };
+  return { text: res.stdout };
+}
+async function runKeyFetch(exec, repos, req, home = homedir()) {
+  const names = req.names.filter((n2) => typeof n2 === "string" && /^[A-Za-z_][A-Za-z0-9_]{0,99}$/.test(n2));
+  const out = [];
+  for (const s2 of req.sources) {
+    const problem = keySourceProblem(s2);
+    if (problem) {
+      out.push({ environment: s2.environment, ok: false, error: `Origem recusada pelo conector: ${problem}` });
+      continue;
+    }
+    const read = s2.kind === "arquivo" ? readRepoFile(repos, s2.path) : await readServerFile(exec, s2, home);
+    if ("error" in read) out.push({ environment: s2.environment, ok: false, error: read.error });
+    else out.push({ environment: s2.environment, ok: true, values: pick2(read.text, names) });
+  }
+  return out;
+}
+function keyFetchLogLine(results) {
+  return results.map((r) => r.ok ? `${r.environment}: ${Object.keys(r.values ?? {}).length} valores lidos` : `${r.environment}: n\xE3o leu (${r.error})`).join("; ");
+}
+
 // connector/mergeCheck.ts
 var MAX_FILES2 = 50;
 var MAX_OTHERS = 30;
@@ -32867,22 +33023,22 @@ async function runMergeCheck(exec, repos, req) {
 }
 
 // connector/version.ts
-import { existsSync as existsSync10, readFileSync as readFileSync10 } from "node:fs";
-import { dirname as dirname8, join as join14 } from "node:path";
+import { existsSync as existsSync11, readFileSync as readFileSync11 } from "node:fs";
+import { dirname as dirname8, join as join15 } from "node:path";
 import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.38") {
-    cached2 = "0.1.38";
+  if ("0.1.39") {
+    cached2 = "0.1.39";
     return cached2;
   }
   let dir = dirname8(fileURLToPath(import.meta.url));
   for (let i = 0; i < 5; i++) {
-    const file2 = join14(dir, "package.json");
-    if (existsSync10(file2)) {
+    const file2 = join15(dir, "package.json");
+    if (existsSync11(file2)) {
       try {
-        const pkg = JSON.parse(readFileSync10(file2, "utf8"));
+        const pkg = JSON.parse(readFileSync11(file2, "utf8"));
         if (pkg.version) {
           cached2 = pkg.version;
           return cached2;
@@ -33026,9 +33182,9 @@ function toolChange(name, input2, path2) {
 }
 
 // connector/repoProvision.ts
-import { existsSync as existsSync11, mkdirSync as mkdirSync7 } from "node:fs";
+import { existsSync as existsSync12, mkdirSync as mkdirSync7 } from "node:fs";
 import os9 from "node:os";
-import { basename as basename4, dirname as dirname9, join as join15 } from "node:path";
+import { basename as basename4, dirname as dirname9, join as join16 } from "node:path";
 var REPO_RE = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 var CLONE_TIMEOUT_MS = 15 * 6e4;
 var MSG_NO_ACCESS_PREFIX = "Sem acesso ao reposit\xF3rio";
@@ -33039,15 +33195,15 @@ function msgNoAccess(name, detail) {
 function cloneBase(servers) {
   for (const s2 of servers) {
     for (const path2 of Object.values(s2.repos ?? {})) {
-      if (path2 && existsSync11(path2)) return dirname9(path2);
+      if (path2 && existsSync12(path2)) return dirname9(path2);
     }
   }
-  return join15(os9.homedir(), "Developer", "benflow-ia");
+  return join16(os9.homedir(), "Developer", "benflow-ia");
 }
 function freeTarget(base, name) {
   const repo = basename4(name);
-  let target = join15(base, repo);
-  for (let i = 2; existsSync11(target); i++) target = join15(base, `${repo}-${i}`);
+  let target = join16(base, repo);
+  for (let i = 2; existsSync12(target); i++) target = join16(base, `${repo}-${i}`);
   return target;
 }
 function originMatches(url2, name) {
@@ -33074,8 +33230,8 @@ async function provisionRepo(name, deps) {
   let how = "outra_entrada";
   if (!path2) {
     const base = cloneBase([deps.entry, ...servers]);
-    const manual = join15(base, basename4(name));
-    if (existsSync11(join15(manual, ".git"))) {
+    const manual = join16(base, basename4(name));
+    if (existsSync12(join16(manual, ".git"))) {
       const origin = await deps.exec("git", ["-C", manual, "remote", "get-url", "origin"]);
       if (origin.code === 0 && originMatches(origin.stdout, name)) path2 = manual;
     }
@@ -33173,7 +33329,7 @@ async function gitRepoState(exec, path2) {
 async function repoState(exec, fullName, path2, deps) {
   const cached3 = deps.repoCache?.get(path2);
   if (cached3 && deps.busyPaths?.has(path2)) return { ...cached3, fullName, path: path2 };
-  if (!existsSync12(path2)) return { fullName, path: path2, branch: null, dirty: false };
+  if (!existsSync13(path2)) return { fullName, path: path2, branch: null, dirty: false };
   const st = await gitRepoState(exec, path2);
   const state = { fullName, path: path2, branch: st.branch, dirty: st.dirty };
   deps.repoCache?.set(path2, state);
@@ -33192,8 +33348,8 @@ async function claudeVersionOf(exec, bin, launch = resolveClaudeLaunch(bin)) {
 function claudeConfigOf(env = process.env, home = os10.homedir()) {
   let settings = {};
   try {
-    const dir = env.CLAUDE_CONFIG_DIR?.trim() || join16(home, ".claude");
-    const parsed = JSON.parse(readFileSync11(join16(dir, "settings.json"), "utf8"));
+    const dir = env.CLAUDE_CONFIG_DIR?.trim() || join17(home, ".claude");
+    const parsed = JSON.parse(readFileSync12(join17(dir, "settings.json"), "utf8"));
     if (parsed && typeof parsed === "object") settings = parsed;
   } catch {
     settings = {};
@@ -33280,14 +33436,14 @@ function shortPath(p, cwd) {
   if (typeof p !== "string" || !p) return "";
   if (!isAbsolute4(p)) return p;
   for (const base of Array.isArray(cwd) ? cwd : [cwd]) {
-    const rel = relative2(base, p);
+    const rel = relative3(base, p);
     if (rel && !rel.startsWith("..") && !isAbsolute4(rel)) return rel;
   }
   return p;
 }
 function cwdVariants(cwd) {
   try {
-    const real2 = realpathSync6(cwd);
+    const real2 = realpathSync7(cwd);
     return real2 === cwd ? [cwd] : [cwd, real2];
   } catch {
     return [cwd];
@@ -33648,7 +33804,7 @@ async function runJob(opts, job) {
       path2 = got.path;
       await notify(got.how === "clonado" ? `Reposit\xF3rio ${name} clonado em ${path2} e ligado a este Claude.` : `Usando a c\xF3pia de ${name} que j\xE1 estava nesta m\xE1quina (${path2}).`);
     }
-    if (!existsSync12(path2) || !statSync12(path2).isDirectory()) return fail(`A pasta do reposit\xF3rio ${name} n\xE3o existe: ${path2}`);
+    if (!existsSync13(path2) || !statSync13(path2).isDirectory()) return fail(`A pasta do reposit\xF3rio ${name} n\xE3o existe: ${path2}`);
     repos.push({ fullName: name, path: path2 });
   }
   let tag = `${entry.orgSlug ?? "chamado"}-${job.taskNumber}`;
@@ -33789,8 +33945,8 @@ async function runInRepos(opts, job, w, h) {
   const { tag, instructions, sessionId, repos } = w;
   const { finish: finish2, redact, sink } = h;
   const input2 = { job, tag, repos, instructions, copy: w.copy, sync: w.sync ?? [], preparo: w.preparo ?? [] };
-  const tmp = mkdtempSync6(join16(os10.tmpdir(), "benflow-job-"));
-  const mcpConfigPath = join16(tmp, "mcp.json");
+  const tmp = mkdtempSync6(join17(os10.tmpdir(), "benflow-job-"));
+  const mcpConfigPath = join17(tmp, "mcp.json");
   const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
   const mcpConfig = {
     mcpServers: {
@@ -33826,7 +33982,7 @@ async function runInRepos(opts, job, w, h) {
   const systemRules = buildSystemRules(input2);
   let systemRulesFile = null;
   if (launch.shell) {
-    systemRulesFile = join16(tmp, "regras.txt");
+    systemRulesFile = join17(tmp, "regras.txt");
     writeFileSync11(systemRulesFile, systemRules, { mode: 384 });
   }
   const args = buildClaudeArgs({
@@ -33890,11 +34046,11 @@ async function runTesteJob(opts, job, h) {
   } catch (err) {
     log(`N\xE3o foi poss\xEDvel ler o chamado #${job.taskNumber} antes do teste: ${msgOf(err)}`);
   }
-  const tmp = mkdtempSync6(join16(os10.tmpdir(), "benflow-teste-"));
+  const tmp = mkdtempSync6(join17(os10.tmpdir(), "benflow-teste-"));
   try {
-    const work = join16(tmp, "teste");
+    const work = join17(tmp, "teste");
     mkdirSync8(work, { mode: 448 });
-    const mcpConfigPath = join16(tmp, "mcp.json");
+    const mcpConfigPath = join17(tmp, "mcp.json");
     const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
     const mcpEnv = {
       CHAMADOS_CONFIG: opts.configFile,
@@ -33914,7 +34070,7 @@ async function runTesteJob(opts, job, h) {
     const systemRules = buildTesteRules({ instructions });
     let systemRulesFile = null;
     if (launch.shell) {
-      systemRulesFile = join16(tmp, "regras.txt");
+      systemRulesFile = join17(tmp, "regras.txt");
       writeFileSync11(systemRulesFile, systemRules, { mode: 384 });
     }
     const args = buildClaudeArgs({
@@ -33947,11 +34103,11 @@ async function runVideoEnvJob(opts, job, h) {
   } catch (err) {
     log(`N\xE3o foi poss\xEDvel ler o chamado #${job.taskNumber} antes da grava\xE7\xE3o: ${msgOf(err)}`);
   }
-  const tmp = mkdtempSync6(join16(os10.tmpdir(), "benflow-video-"));
+  const tmp = mkdtempSync6(join17(os10.tmpdir(), "benflow-video-"));
   try {
-    const work = join16(tmp, "video");
+    const work = join17(tmp, "video");
     mkdirSync8(work, { mode: 448 });
-    const mcpConfigPath = join16(tmp, "mcp.json");
+    const mcpConfigPath = join17(tmp, "mcp.json");
     const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
     const mcpEnv = {
       CHAMADOS_CONFIG: opts.configFile,
@@ -33971,7 +34127,7 @@ async function runVideoEnvJob(opts, job, h) {
     const systemRules = buildVideoEnvRules({ instructions });
     let systemRulesFile = null;
     if (launch.shell) {
-      systemRulesFile = join16(tmp, "regras.txt");
+      systemRulesFile = join17(tmp, "regras.txt");
       writeFileSync11(systemRulesFile, systemRules, { mode: 384 });
     }
     const args = buildClaudeArgs({
@@ -34034,11 +34190,11 @@ async function runSugestoesJob(opts, job, finish2, redact) {
   let prompt = req.prompt;
   try {
     if (req.analyzeCode && req.codeRepos?.length) {
-      base = mkdtempSync6(join16(os10.tmpdir(), "benflow-codigo-"));
+      base = mkdtempSync6(join17(os10.tmpdir(), "benflow-codigo-"));
       for (const fullName of req.codeRepos) {
         if (ctrl.signal.aborted) break;
         const path2 = opts.entry.repos[fullName];
-        if (!path2 || !existsSync12(path2) || !statSync12(path2).isDirectory()) continue;
+        if (!path2 || !existsSync13(path2) || !statSync13(path2).isDirectory()) continue;
         try {
           const copy = await openCodeCopy(opts.exec ?? defaultExec, path2, base, fullName);
           closers.push(copy.close);
@@ -34056,7 +34212,7 @@ Pastas do c\xF3digo nesta m\xE1quina: ${checked.map((r, i) => `${r} = ${i === 0 
     }
     const wanted = (Array.isArray(req.files) ? req.files : []).filter((f) => f && Number.isSafeInteger(f.id) && f.id > 0).slice(0, MAX_SUGGESTION_FILES);
     if (wanted.length && !ctrl.signal.aborted) {
-      filesDir = mkdtempSync6(join16(os10.tmpdir(), "benflow-referencias-"));
+      filesDir = mkdtempSync6(join17(os10.tmpdir(), "benflow-referencias-"));
       const files = [];
       for (const f of wanted) {
         const name = typeof f.name === "string" ? f.name : "";
@@ -34214,13 +34370,13 @@ async function runConversa(opts, job, h) {
   if (!list.length) return noRepo("Este conector n\xE3o tem nenhum reposit\xF3rio configurado. Rode: configurar --repo owner/nome=/caminho/local");
   const repos = [];
   for (const [fullName, path2] of list) {
-    if (existsSync12(path2) && statSync12(path2).isDirectory()) repos.push({ fullName, path: path2 });
+    if (existsSync13(path2) && statSync13(path2).isDirectory()) repos.push({ fullName, path: path2 });
   }
   if (!repos.length) return noRepo(`A pasta do reposit\xF3rio ${list[0][0]} n\xE3o existe: ${list[0][1]}`);
   const text = jobInstruction({ ...job, type: "continuar" }) ?? "";
-  const tmp = mkdtempSync6(join16(os10.tmpdir(), "benflow-conversa-"));
+  const tmp = mkdtempSync6(join17(os10.tmpdir(), "benflow-conversa-"));
   try {
-    const filesDir = join16(tmp, "arquivos");
+    const filesDir = join17(tmp, "arquivos");
     mkdirSync8(filesDir, { mode: 448 });
     const files = [];
     for (const a of job.attachments ?? []) {
@@ -34233,7 +34389,7 @@ async function runConversa(opts, job, h) {
       }
     }
     if (!text && !files.length) return h.fail("A mensagem veio vazia. Nada foi mandado para o Claude.");
-    const mcpConfigPath = join16(tmp, "mcp.json");
+    const mcpConfigPath = join17(tmp, "mcp.json");
     const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
     writeFileSync11(
       mcpConfigPath,
@@ -34275,7 +34431,7 @@ async function runConversa(opts, job, h) {
     const systemRules = panel ? (orchestrating ? buildOrquestradorRules : buildPainelRules)({ orgName: job.orgName ?? null, ownerName: job.ownerName ?? null, panel, instructions: job.instructions ?? null }) : buildConversaRules({ orgName: job.orgName ?? null, ownerName: job.ownerName ?? null, instructions: job.instructions ?? null });
     let systemRulesFile = null;
     if (launch.shell) {
-      systemRulesFile = join16(tmp, "regras.txt");
+      systemRulesFile = join17(tmp, "regras.txt");
       writeFileSync11(systemRulesFile, systemRules, { mode: 384 });
     }
     const exec = opts.exec ?? defaultExec;
@@ -34600,6 +34756,7 @@ var Executor = class {
   linksDone = /* @__PURE__ */ new Set();
   // Conferências de merge já feitas por este processo (o pedido segue no batimento até o resultado chegar).
   mergeChecksDone = /* @__PURE__ */ new Set();
+  keyFetchesDone = /* @__PURE__ */ new Set();
   // Atualização do plugin: a versão publicada que o servidor informou e ainda não está instalada aqui, quando cada
   // versão foi buscada pela última vez, a última conferência e a versão instalada já avisada (sem o supervisor).
   wantedVersion = null;
@@ -34721,6 +34878,7 @@ var Executor = class {
         }
         if (res?.links?.length) void this.applyLinks(res.links);
         if (res?.mergeChecks?.length) void this.runMergeChecks(res.mergeChecks);
+        if (res?.keyFetches?.length) void this.runKeyFetches(res.keyFetches);
         return this.agent;
       } catch (err) {
         const message = msgOf(err);
@@ -34755,6 +34913,27 @@ var Executor = class {
         await this.opts.client.mergeCheckResult(req.id, body);
       } catch (err) {
         this.log(`N\xE3o consegui mandar a confer\xEAncia de merge do chamado #${req.taskNumber}: ${msgOf(err)}`);
+      }
+    }
+  }
+  // Trazer os valores pedido na aba Chaves (keyFetch.ts): lê os arquivos de ambiente e manda os valores direto para o
+  // cofre, uma vez por pedido, mesmo com os trabalhos ocupando as vagas. O log só tem ambientes e contagens.
+  async runKeyFetches(requests) {
+    for (const req of requests) {
+      if (this.keyFetchesDone.has(req.id)) continue;
+      this.keyFetchesDone.add(req.id);
+      this.log(`Trazendo os valores das chaves de ${req.sources.map((s2) => s2.environment).join(", ")} (s\xF3 nomes no log).`);
+      let results;
+      try {
+        results = await (this.opts.keyFetch ?? runKeyFetch)(this.exec, this.opts.entry.repos, req);
+      } catch (err) {
+        results = req.sources.map((s2) => ({ environment: s2.environment, ok: false, error: `Erro no conector: ${msgOf(err)}` }));
+      }
+      this.log(`Chaves: ${keyFetchLogLine(results)}.`);
+      try {
+        await this.opts.client.keyFetchResult(req.id, { results });
+      } catch (err) {
+        this.log(`N\xE3o consegui mandar os valores das chaves ao Benflow: ${msgOf(err)}`);
       }
     }
   }
@@ -34996,9 +35175,9 @@ var Executor = class {
 };
 
 // connector/mcp.ts
-import { closeSync as closeSync2, mkdirSync as mkdirSync9, mkdtempSync as mkdtempSync7, openSync as openSync2, readFileSync as readFileSync12, readSync, realpathSync as realpathSync7, rmSync as rmSync10, statSync as statSync13 } from "node:fs";
+import { closeSync as closeSync2, mkdirSync as mkdirSync9, mkdtempSync as mkdtempSync7, openSync as openSync2, readFileSync as readFileSync13, readSync, realpathSync as realpathSync8, rmSync as rmSync10, statSync as statSync14 } from "node:fs";
 import os11 from "node:os";
-import { basename as basename5, extname as extname3, isAbsolute as isAbsolute5, join as join17, resolve as resolve7, sep as sep4 } from "node:path";
+import { basename as basename5, extname as extname3, isAbsolute as isAbsolute5, join as join18, resolve as resolve7, sep as sep5 } from "node:path";
 
 // ../benflow/node_modules/zod/v3/helpers/util.js
 var util;
@@ -45519,7 +45698,7 @@ var SECRET_NAMES = /* @__PURE__ */ new Set([
   ".histfile"
 ]);
 function posixLower(p) {
-  return p.split(sep4).join("/").toLowerCase();
+  return p.split(sep5).join("/").toLowerCase();
 }
 function isSensitivePath(fullPath) {
   const home = posixLower(os11.homedir()).replace(/\/+$/, "");
@@ -45554,7 +45733,7 @@ function isImageData(head) {
 }
 function realOrNull(p) {
   try {
-    return realpathSync7.native(p);
+    return realpathSync8.native(p);
   } catch {
     return null;
   }
@@ -45568,7 +45747,7 @@ function resolveEvidenceFile(input2, opts) {
   const abs = isAbsolute5(input2) ? input2 : resolve7(opts.cwd, input2);
   const real2 = realOrNull(abs);
   if (!real2) throw new Error(`Arquivo n\xE3o encontrado: ${abs}`);
-  const st = statSync13(real2);
+  const st = statSync14(real2);
   if (!st.isFile()) throw new Error(`N\xE3o \xE9 um arquivo: ${abs}`);
   if (isSensitivePath(abs) || isSensitivePath(real2)) throw new Error("Esse arquivo parece conter segredos e n\xE3o pode ser enviado como evid\xEAncia.");
   const roots = opts.roots.map(realOrNull).filter((r) => !!r);
@@ -45588,7 +45767,7 @@ function resolveEvidenceFile(input2, opts) {
     if (PRIVATE_KEY_RE.test(head.toString("latin1"))) throw new Error("Esse arquivo parece conter segredos e n\xE3o pode ser enviado como evid\xEAncia.");
     return { path: real2, upload: real2 };
   }
-  const text = readFileSync12(real2, "utf8");
+  const text = readFileSync13(real2, "utf8");
   if (PRIVATE_KEY_RE.test(text)) throw new Error("Esse arquivo parece conter segredos e n\xE3o pode ser enviado como evid\xEAncia.");
   return { path: real2, upload: { name: basename5(real2), data: Buffer.from(opts.redact(text), "utf8"), type: guessMime(real2) } };
 }
@@ -45596,7 +45775,7 @@ function resolveAttachmentFile(input2, opts) {
   const abs = isAbsolute5(input2) ? input2 : resolve7(opts.cwd, input2.replace(/^~(?=$|\/)/, os11.homedir()));
   const real2 = realOrNull(abs);
   if (!real2) throw new Error(`Arquivo n\xE3o encontrado: ${abs}`);
-  const st = statSync13(real2);
+  const st = statSync14(real2);
   if (!st.isFile()) throw new Error(`N\xE3o \xE9 um arquivo: ${abs}`);
   if (isSensitivePath(abs) || isSensitivePath(real2)) throw new Error(`${basename5(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
   if (st.size === 0) throw new Error(`${basename5(abs)} est\xE1 vazio.`);
@@ -45608,7 +45787,7 @@ function resolveAttachmentFile(input2, opts) {
     if (PRIVATE_KEY_RE.test(head.toString("latin1"))) throw new Error(`${basename5(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
     return { path: real2, upload: real2 };
   }
-  const text = readFileSync12(real2, "utf8");
+  const text = readFileSync13(real2, "utf8");
   if (PRIVATE_KEY_RE.test(text)) throw new Error(`${basename5(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
   return { path: real2, upload: { name: basename5(real2), data: Buffer.from(opts.redact(text), "utf8"), type: guessMime(real2) } };
 }
@@ -45766,12 +45945,12 @@ ${text}` : text;
     };
   }
   function ensureDownloadDir() {
-    if (!downloadDir && painelFilesDir && statSync13(painelFilesDir, { throwIfNoEntry: false })?.isDirectory()) {
-      downloadDir = join17(painelFilesDir, "anexos");
+    if (!downloadDir && painelFilesDir && statSync14(painelFilesDir, { throwIfNoEntry: false })?.isDirectory()) {
+      downloadDir = join18(painelFilesDir, "anexos");
       mkdirSync9(downloadDir, { recursive: true, mode: 448 });
     }
     if (!downloadDir) {
-      downloadDir = mkdtempSync7(join17(os11.tmpdir(), "benflow-anexos-"));
+      downloadDir = mkdtempSync7(join18(os11.tmpdir(), "benflow-anexos-"));
       const dir = downloadDir;
       process.once("exit", () => rmSync10(dir, { recursive: true, force: true }));
     }
@@ -46325,7 +46504,7 @@ ${wrapData("nota", note.content)}`;
   const MSG_URL_SCREEN = qaProducao ? "Use o endere\xE7o de produ\xE7\xE3o (ou de homologa\xE7\xE3o) do projeto cadastrado em Ambientes, ou o servidor de desenvolvimento desta m\xE1quina. Outros sites ficam de fora." : "Use o servidor de desenvolvimento desta m\xE1quina (http://localhost:porta/caminho, 127.0.0.1 ou [::1]) ou o endere\xE7o de homologa\xE7\xE3o do projeto cadastrado em Ambientes. A produ\xE7\xE3o e outros sites ficam de fora.";
   function ensureCaptureDir() {
     if (!captureDir) {
-      captureDir = mkdtempSync7(join17(os11.tmpdir(), "benflow-capturas-"));
+      captureDir = mkdtempSync7(join18(os11.tmpdir(), "benflow-capturas-"));
       const dir = captureDir;
       process.once("exit", () => rmSync10(dir, { recursive: true, force: true }));
     }
@@ -46362,7 +46541,7 @@ ${wrapData("nota", note.content)}`;
       const problem = actionsProblem(acoes);
       if (problem) throw new Error(problem);
       const work = a.registrar === false ? null : await workFor(a.numero);
-      const out = join17(ensureCaptureDir(), captureFileName(a.titulo, ++captureSeq));
+      const out = join18(ensureCaptureDir(), captureFileName(a.titulo, ++captureSeq));
       const shot = await capture({ url: a.url, out, celular: a.celular, paginaInteira: a.pagina_inteira, esperarMs: a.esperar_ms, acoes, login: loginFor });
       const size = `${shot.width} x ${shot.height}${a.celular ? ", celular" : ""}`;
       const page = `A p\xE1gina ficou em ${plain(shot.url)}${shot.title ? `, com o t\xEDtulo ${inlineData("titulo", shot.title, 150)}` : ""}.`;
@@ -46415,7 +46594,7 @@ ${wrapData("nota", note.content)}`;
       const work = a.registrar === false ? null : await workFor(a.numero);
       const tell = (stage, reason) => work === null || testMode ? Promise.resolve() : client.videoProgress(work.id, { stage, reason: reason ?? null }).then(() => void 0, () => void 0);
       await tell("gravando");
-      const out = join17(ensureCaptureDir(), videoFileName(a.titulo, ++videoSeq));
+      const out = join18(ensureCaptureDir(), videoFileName(a.titulo, ++videoSeq));
       let video;
       try {
         video = await record2({ url: a.url, out, titulo: a.titulo, celular: a.celular, passos: a.passos, allowUrl, login: loginFor });
@@ -46618,7 +46797,7 @@ function defaultIO() {
 }
 function isDir2(p) {
   try {
-    return statSync14(p).isDirectory();
+    return statSync15(p).isDirectory();
   } catch {
     return false;
   }
@@ -46773,12 +46952,12 @@ async function cmdStatus(args, deps, io) {
   io.out(autoUpdateLine(autoUpdateState({ env, ...deps.claudeFs })));
   const stable = refreshStableDir(deps);
   if (stable) io.out(`Caminho fixo do plugin, para servi\xE7o do sistema: ${stable}`);
-  if (!existsSync13(file2)) {
+  if (!existsSync14(file2)) {
     io.out(`Arquivo de configura\xE7\xE3o: ${file2} (n\xE3o existe)`);
     io.out("Rode: configurar --url <endere\xE7o> --token <token>");
     return 1;
   }
-  const mode = (statSync14(file2).mode & 511).toString(8);
+  const mode = (statSync15(file2).mode & 511).toString(8);
   io.out(`Arquivo de configura\xE7\xE3o: ${file2} (permiss\xE3o ${mode})`);
   if (file2 !== configPath(env)) io.out(`  Config antigo: rode "configurar" de novo para gravar em ${configPath(env)}.`);
   const cfg = loadConfig(file2, io.err);
@@ -46845,10 +47024,10 @@ function executorTarget(self, fs) {
   const mine = connectorVersion();
   if (!isClaudeManaged(self, fs)) return { script: self, version: mine, managed: false };
   const installed = installedBenflow(fs);
-  if (installed && (isOlderVersion(mine, installed.version) || !existsSync13(self))) return { script: installed.script, version: installed.version, managed: true };
+  if (installed && (isOlderVersion(mine, installed.version) || !existsSync14(self))) return { script: installed.script, version: installed.version, managed: true };
   let real2 = self;
   try {
-    real2 = realpathSync8(self);
+    real2 = realpathSync9(self);
   } catch {
   }
   return { script: real2, version: mine, managed: true };
@@ -46859,7 +47038,7 @@ function refreshStableDir(deps) {
   if (!self || !isClaudeManaged(self, fs)) return null;
   const target = executorTarget(self, fs);
   if (!refreshStablePluginDir(dirname10(dirname10(target.script)), { dir: deps.benflowDir, platform: deps.platform })) return null;
-  return join18(stablePluginDir(deps.benflowDir), "server", "benflow.mjs");
+  return join19(stablePluginDir(deps.benflowDir), "server", "benflow.mjs");
 }
 async function superviseExecutar(args, deps, io) {
   const env = deps.env ?? process.env;
@@ -47115,7 +47294,7 @@ function isMain() {
   const arg = process.argv[1];
   if (!arg) return false;
   try {
-    return realpathSync8(arg) === realpathSync8(fileURLToPath3(import.meta.url));
+    return realpathSync9(arg) === realpathSync9(fileURLToPath3(import.meta.url));
   } catch {
     return false;
   }
