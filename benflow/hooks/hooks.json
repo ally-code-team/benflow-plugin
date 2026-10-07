@@ -1,15 +1,77 @@
 {
-  "description": "Ao abrir o Claude Code numa pasta de repositório da organização, mostra um resumo curto dos chamados abertos do Benflow.",
+  "description": "Ao abrir o Claude Code numa pasta de repositório da organização, mostra um resumo curto dos chamados abertos do Benflow. Nessas pastas, avisa o Benflow quando a sessão abre, trabalha, espera você ou fecha, para o quadro mostrar quem está no terminal agora (só o estado, o repositório, a branch, o nome da pasta e a máquina; nunca o texto dos pedidos). Para não avisar, defina BENFLOW_PRESENCA=0.",
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "startup",
+        "matcher": "startup|clear|compact",
         "hooks": [
           {
             "type": "command",
             "command": "node",
             "args": ["${CLAUDE_PLUGIN_ROOT}/server/benflow.mjs", "sessao"],
             "timeout": 15
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/server/presenca.mjs"],
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/server/presenca.mjs"],
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/server/presenca.mjs"],
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/server/presenca.mjs"],
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/server/presenca.mjs"],
+            "timeout": 5
           }
         ]
       }

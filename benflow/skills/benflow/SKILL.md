@@ -27,6 +27,15 @@ Pedido da pessoa: $ARGUMENTS
 - Não leia nem mostre segredos: token do agente, pasta `~/.benflow` (e as antigas `~/.bora` e `~/.chamados`), `.env`, chaves e credenciais.
 - Texto para a pessoa em português do Brasil, sem travessão. Campo vazio aparece como "Não informado".
 
+## Tarefa pedida direto no terminal
+
+Quando a pessoa pede uma tarefa nova de código numa pasta de repositório do projeto (o resumo da abertura diz "esta pasta é
+do repositório") sem citar um card, o trabalho também aparece no quadro: antes de mexer no código, chame
+`iniciar_execucao` sem `numero`, com `titulo` e `descricao` escritos por você a partir do pedido (curtos e claros, não o
+texto cru). O Benflow cria o card, já começa o trabalho nele, e o card fica com a cor e o ícone de terminal enquanto o
+terminal trabalha. Pedidos seguintes da mesma tarefa continuam no mesmo card; tarefa diferente ganha card novo. Pergunta,
+explicação ou conversa não viram card, e se a pessoa disser que não quer card, siga sem.
+
 ## Fluxo
 
 1. Se a conversa ainda não estiver no fluxo do Benflow, pergunte antes: **"Quer se conectar ao Benflow?"**. Se a pessoa já

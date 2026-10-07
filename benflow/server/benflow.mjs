@@ -36,9 +36,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// node_modules/ajv/dist/compile/codegen/code.js
+// ../benflow/node_modules/ajv/dist/compile/codegen/code.js
 var require_code = __commonJS({
-  "node_modules/ajv/dist/compile/codegen/code.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/codegen/code.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.regexpCode = exports.getEsmExportName = exports.getProperty = exports.safeStringify = exports.stringify = exports.strConcat = exports.addCodeArg = exports.str = exports._ = exports.nil = exports._Code = exports.Name = exports.IDENTIFIER = exports._CodeOrName = void 0;
@@ -190,9 +190,9 @@ var require_code = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/codegen/scope.js
+// ../benflow/node_modules/ajv/dist/compile/codegen/scope.js
 var require_scope = __commonJS({
-  "node_modules/ajv/dist/compile/codegen/scope.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/codegen/scope.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ValueScope = exports.ValueScopeName = exports.Scope = exports.varKinds = exports.UsedValueState = void 0;
@@ -335,9 +335,9 @@ var require_scope = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/codegen/index.js
+// ../benflow/node_modules/ajv/dist/compile/codegen/index.js
 var require_codegen = __commonJS({
-  "node_modules/ajv/dist/compile/codegen/index.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/codegen/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.or = exports.and = exports.not = exports.CodeGen = exports.operators = exports.varKinds = exports.ValueScopeName = exports.ValueScope = exports.Scope = exports.Name = exports.regexpCode = exports.stringify = exports.getProperty = exports.nil = exports.strConcat = exports.str = exports._ = void 0;
@@ -1055,9 +1055,9 @@ var require_codegen = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/util.js
+// ../benflow/node_modules/ajv/dist/compile/util.js
 var require_util = __commonJS({
-  "node_modules/ajv/dist/compile/util.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/util.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.checkStrictMode = exports.getErrorPath = exports.Type = exports.useFunc = exports.setEvaluated = exports.evaluatedPropsToName = exports.mergeEvaluated = exports.eachItem = exports.unescapeJsonPointer = exports.escapeJsonPointer = exports.escapeFragment = exports.unescapeFragment = exports.schemaRefOrVal = exports.schemaHasRulesButRef = exports.schemaHasRules = exports.checkUnknownRules = exports.alwaysValidSchema = exports.toHash = void 0;
@@ -1222,9 +1222,9 @@ var require_util = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/names.js
+// ../benflow/node_modules/ajv/dist/compile/names.js
 var require_names = __commonJS({
-  "node_modules/ajv/dist/compile/names.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/names.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -1261,9 +1261,9 @@ var require_names = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/errors.js
+// ../benflow/node_modules/ajv/dist/compile/errors.js
 var require_errors = __commonJS({
-  "node_modules/ajv/dist/compile/errors.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/errors.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.extendErrors = exports.resetErrorsCount = exports.reportExtraError = exports.reportError = exports.keyword$DataError = exports.keywordError = void 0;
@@ -1383,9 +1383,9 @@ var require_errors = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/validate/boolSchema.js
+// ../benflow/node_modules/ajv/dist/compile/validate/boolSchema.js
 var require_boolSchema = __commonJS({
-  "node_modules/ajv/dist/compile/validate/boolSchema.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/validate/boolSchema.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.boolOrEmptySchema = exports.topBoolOrEmptySchema = void 0;
@@ -1434,9 +1434,9 @@ var require_boolSchema = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/rules.js
+// ../benflow/node_modules/ajv/dist/compile/rules.js
 var require_rules = __commonJS({
-  "node_modules/ajv/dist/compile/rules.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/rules.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getRules = exports.isJSONType = void 0;
@@ -1465,9 +1465,9 @@ var require_rules = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/validate/applicability.js
+// ../benflow/node_modules/ajv/dist/compile/validate/applicability.js
 var require_applicability = __commonJS({
-  "node_modules/ajv/dist/compile/validate/applicability.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/validate/applicability.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.shouldUseRule = exports.shouldUseGroup = exports.schemaHasRulesForType = void 0;
@@ -1488,9 +1488,9 @@ var require_applicability = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/validate/dataType.js
+// ../benflow/node_modules/ajv/dist/compile/validate/dataType.js
 var require_dataType = __commonJS({
-  "node_modules/ajv/dist/compile/validate/dataType.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/validate/dataType.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.reportTypeError = exports.checkDataTypes = exports.checkDataType = exports.coerceAndCheckDataType = exports.getJSONTypes = exports.getSchemaTypes = exports.DataType = void 0;
@@ -1672,9 +1672,9 @@ var require_dataType = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/validate/defaults.js
+// ../benflow/node_modules/ajv/dist/compile/validate/defaults.js
 var require_defaults = __commonJS({
-  "node_modules/ajv/dist/compile/validate/defaults.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/validate/defaults.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.assignDefaults = void 0;
@@ -1709,9 +1709,9 @@ var require_defaults = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/code.js
+// ../benflow/node_modules/ajv/dist/vocabularies/code.js
 var require_code2 = __commonJS({
-  "node_modules/ajv/dist/vocabularies/code.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/code.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateUnion = exports.validateArray = exports.usePattern = exports.callValidateCode = exports.schemaProperties = exports.allSchemaProperties = exports.noPropertyInData = exports.propertyInData = exports.isOwnProperty = exports.hasPropFunc = exports.reportMissingProp = exports.checkMissingProp = exports.checkReportMissingProp = void 0;
@@ -1842,9 +1842,9 @@ var require_code2 = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/validate/keyword.js
+// ../benflow/node_modules/ajv/dist/compile/validate/keyword.js
 var require_keyword = __commonJS({
-  "node_modules/ajv/dist/compile/validate/keyword.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/validate/keyword.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateKeywordUsage = exports.validSchemaType = exports.funcKeywordCode = exports.macroKeywordCode = void 0;
@@ -1960,9 +1960,9 @@ var require_keyword = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/validate/subschema.js
+// ../benflow/node_modules/ajv/dist/compile/validate/subschema.js
 var require_subschema = __commonJS({
-  "node_modules/ajv/dist/compile/validate/subschema.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/validate/subschema.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.extendSubschemaMode = exports.extendSubschemaData = exports.getSubschema = void 0;
@@ -2043,9 +2043,9 @@ var require_subschema = __commonJS({
   }
 });
 
-// node_modules/fast-deep-equal/index.js
+// ../benflow/node_modules/fast-deep-equal/index.js
 var require_fast_deep_equal = __commonJS({
-  "node_modules/fast-deep-equal/index.js"(exports, module) {
+  "../benflow/node_modules/fast-deep-equal/index.js"(exports, module) {
     "use strict";
     module.exports = function equal(a, b) {
       if (a === b) return true;
@@ -2078,9 +2078,9 @@ var require_fast_deep_equal = __commonJS({
   }
 });
 
-// node_modules/json-schema-traverse/index.js
+// ../benflow/node_modules/json-schema-traverse/index.js
 var require_json_schema_traverse = __commonJS({
-  "node_modules/json-schema-traverse/index.js"(exports, module) {
+  "../benflow/node_modules/json-schema-traverse/index.js"(exports, module) {
     "use strict";
     var traverse = module.exports = function(schema, opts, cb) {
       if (typeof opts == "function") {
@@ -2166,9 +2166,9 @@ var require_json_schema_traverse = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/resolve.js
+// ../benflow/node_modules/ajv/dist/compile/resolve.js
 var require_resolve = __commonJS({
-  "node_modules/ajv/dist/compile/resolve.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/resolve.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getSchemaRefs = exports.resolveUrl = exports.normalizeId = exports._getFullPath = exports.getFullPath = exports.inlineRef = void 0;
@@ -2322,9 +2322,9 @@ var require_resolve = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/validate/index.js
+// ../benflow/node_modules/ajv/dist/compile/validate/index.js
 var require_validate = __commonJS({
-  "node_modules/ajv/dist/compile/validate/index.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/validate/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getData = exports.KeywordCxt = exports.validateFunctionCode = void 0;
@@ -2830,9 +2830,9 @@ var require_validate = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/runtime/validation_error.js
+// ../benflow/node_modules/ajv/dist/runtime/validation_error.js
 var require_validation_error = __commonJS({
-  "node_modules/ajv/dist/runtime/validation_error.js"(exports) {
+  "../benflow/node_modules/ajv/dist/runtime/validation_error.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var ValidationError = class extends Error {
@@ -2846,9 +2846,9 @@ var require_validation_error = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/ref_error.js
+// ../benflow/node_modules/ajv/dist/compile/ref_error.js
 var require_ref_error = __commonJS({
-  "node_modules/ajv/dist/compile/ref_error.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/ref_error.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var resolve_1 = require_resolve();
@@ -2863,9 +2863,9 @@ var require_ref_error = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/compile/index.js
+// ../benflow/node_modules/ajv/dist/compile/index.js
 var require_compile = __commonJS({
-  "node_modules/ajv/dist/compile/index.js"(exports) {
+  "../benflow/node_modules/ajv/dist/compile/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveSchema = exports.getCompilingSchema = exports.resolveRef = exports.compileSchema = exports.SchemaEnv = void 0;
@@ -2987,7 +2987,7 @@ var require_compile = __commonJS({
       const schOrFunc = root.refs[ref];
       if (schOrFunc)
         return schOrFunc;
-      let _sch = resolve9.call(this, root, ref);
+      let _sch = resolve10.call(this, root, ref);
       if (_sch === void 0) {
         const schema = (_a3 = root.localRefs) === null || _a3 === void 0 ? void 0 : _a3[ref];
         const { schemaId } = this.opts;
@@ -3014,7 +3014,7 @@ var require_compile = __commonJS({
     function sameSchemaEnv(s1, s2) {
       return s1.schema === s2.schema && s1.root === s2.root && s1.baseId === s2.baseId;
     }
-    function resolve9(root, ref) {
+    function resolve10(root, ref) {
       let sch;
       while (typeof (sch = this.refs[ref]) == "string")
         ref = sch;
@@ -3087,9 +3087,9 @@ var require_compile = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/refs/data.json
+// ../benflow/node_modules/ajv/dist/refs/data.json
 var require_data = __commonJS({
-  "node_modules/ajv/dist/refs/data.json"(exports, module) {
+  "../benflow/node_modules/ajv/dist/refs/data.json"(exports, module) {
     module.exports = {
       $id: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
       description: "Meta-schema for $data reference (JSON AnySchema extension proposal)",
@@ -3106,9 +3106,9 @@ var require_data = __commonJS({
   }
 });
 
-// node_modules/ajv/node_modules/fast-uri/lib/utils.js
+// ../benflow/node_modules/ajv/node_modules/fast-uri/lib/utils.js
 var require_utils = __commonJS({
-  "node_modules/ajv/node_modules/fast-uri/lib/utils.js"(exports, module) {
+  "../benflow/node_modules/ajv/node_modules/fast-uri/lib/utils.js"(exports, module) {
     "use strict";
     var isUUID = RegExp.prototype.test.bind(/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iu);
     var isIPv4 = RegExp.prototype.test.bind(/^(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)$/u);
@@ -3194,8 +3194,8 @@ var require_utils = __commonJS({
       }
       if (bestLength < 2) return hextets.join(":");
       const head = hextets.slice(0, bestStart).join(":");
-      const tail2 = hextets.slice(bestStart + bestLength).join(":");
-      return head + "::" + tail2;
+      const tail3 = hextets.slice(bestStart + bestLength).join(":");
+      return head + "::" + tail3;
     }
     function normalizeIPv6Address(input2) {
       const compression = input2.indexOf("::");
@@ -3608,9 +3608,9 @@ var require_utils = __commonJS({
   }
 });
 
-// node_modules/ajv/node_modules/fast-uri/lib/schemes.js
+// ../benflow/node_modules/ajv/node_modules/fast-uri/lib/schemes.js
 var require_schemes = __commonJS({
-  "node_modules/ajv/node_modules/fast-uri/lib/schemes.js"(exports, module) {
+  "../benflow/node_modules/ajv/node_modules/fast-uri/lib/schemes.js"(exports, module) {
     "use strict";
     var { isUUID } = require_utils();
     var URN_REG = /^([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-./:;=@]|%[\da-f]{2})+)$/iu;
@@ -3819,9 +3819,9 @@ var require_schemes = __commonJS({
   }
 });
 
-// node_modules/ajv/node_modules/fast-uri/index.js
+// ../benflow/node_modules/ajv/node_modules/fast-uri/index.js
 var require_fast_uri = __commonJS({
-  "node_modules/ajv/node_modules/fast-uri/index.js"(exports, module) {
+  "../benflow/node_modules/ajv/node_modules/fast-uri/index.js"(exports, module) {
     "use strict";
     var { normalizeIPv6, removeDotSegments, recomposeAuthority, normalizePercentEncoding, normalizePathEncoding, serializePathEncoding, normalizeQueryFragmentEncoding, encodeQuery, encodeFragment, reescapeHostDelimiters, isIPv4, nonSimpleDomain } = require_utils();
     var { SCHEMES, getSchemeHandler } = require_schemes();
@@ -3844,7 +3844,7 @@ var require_fast_uri = __commonJS({
       }
       return uri;
     }
-    function resolve9(baseURI, relativeURI, options) {
+    function resolve10(baseURI, relativeURI, options) {
       const schemelessOptions = options ? Object.assign({ scheme: "null" }, options) : { scheme: "null" };
       const {
         parsed: baseParsed,
@@ -4213,7 +4213,7 @@ var require_fast_uri = __commonJS({
     var fastUri = {
       SCHEMES,
       normalize,
-      resolve: resolve9,
+      resolve: resolve10,
       resolveComponent,
       equal,
       serialize,
@@ -4225,9 +4225,9 @@ var require_fast_uri = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/runtime/uri.js
+// ../benflow/node_modules/ajv/dist/runtime/uri.js
 var require_uri = __commonJS({
-  "node_modules/ajv/dist/runtime/uri.js"(exports) {
+  "../benflow/node_modules/ajv/dist/runtime/uri.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var uri = require_fast_uri();
@@ -4236,9 +4236,9 @@ var require_uri = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/core.js
+// ../benflow/node_modules/ajv/dist/core.js
 var require_core = __commonJS({
-  "node_modules/ajv/dist/core.js"(exports) {
+  "../benflow/node_modules/ajv/dist/core.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = void 0;
@@ -4847,9 +4847,9 @@ var require_core = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/core/id.js
+// ../benflow/node_modules/ajv/dist/vocabularies/core/id.js
 var require_id = __commonJS({
-  "node_modules/ajv/dist/vocabularies/core/id.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/core/id.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var def = {
@@ -4862,9 +4862,9 @@ var require_id = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/core/ref.js
+// ../benflow/node_modules/ajv/dist/vocabularies/core/ref.js
 var require_ref = __commonJS({
-  "node_modules/ajv/dist/vocabularies/core/ref.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/core/ref.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.callRef = exports.getValidate = void 0;
@@ -4984,9 +4984,9 @@ var require_ref = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/core/index.js
+// ../benflow/node_modules/ajv/dist/vocabularies/core/index.js
 var require_core2 = __commonJS({
-  "node_modules/ajv/dist/vocabularies/core/index.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/core/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var id_1 = require_id();
@@ -5005,9 +5005,9 @@ var require_core2 = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/validation/limitNumber.js
+// ../benflow/node_modules/ajv/dist/vocabularies/validation/limitNumber.js
 var require_limitNumber = __commonJS({
-  "node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5037,9 +5037,9 @@ var require_limitNumber = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/validation/multipleOf.js
+// ../benflow/node_modules/ajv/dist/vocabularies/validation/multipleOf.js
 var require_multipleOf = __commonJS({
-  "node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5065,9 +5065,9 @@ var require_multipleOf = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/runtime/ucs2length.js
+// ../benflow/node_modules/ajv/dist/runtime/ucs2length.js
 var require_ucs2length = __commonJS({
-  "node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
+  "../benflow/node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function ucs2length(str5) {
@@ -5091,9 +5091,9 @@ var require_ucs2length = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/validation/limitLength.js
+// ../benflow/node_modules/ajv/dist/vocabularies/validation/limitLength.js
 var require_limitLength = __commonJS({
-  "node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5123,9 +5123,9 @@ var require_limitLength = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/validation/pattern.js
+// ../benflow/node_modules/ajv/dist/vocabularies/validation/pattern.js
 var require_pattern = __commonJS({
-  "node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -5160,9 +5160,9 @@ var require_pattern = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/validation/limitProperties.js
+// ../benflow/node_modules/ajv/dist/vocabularies/validation/limitProperties.js
 var require_limitProperties = __commonJS({
-  "node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5189,9 +5189,9 @@ var require_limitProperties = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/validation/required.js
+// ../benflow/node_modules/ajv/dist/vocabularies/validation/required.js
 var require_required = __commonJS({
-  "node_modules/ajv/dist/vocabularies/validation/required.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/validation/required.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -5271,9 +5271,9 @@ var require_required = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/validation/limitItems.js
+// ../benflow/node_modules/ajv/dist/vocabularies/validation/limitItems.js
 var require_limitItems = __commonJS({
-  "node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5300,9 +5300,9 @@ var require_limitItems = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/runtime/equal.js
+// ../benflow/node_modules/ajv/dist/runtime/equal.js
 var require_equal = __commonJS({
-  "node_modules/ajv/dist/runtime/equal.js"(exports) {
+  "../benflow/node_modules/ajv/dist/runtime/equal.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var equal = require_fast_deep_equal();
@@ -5311,9 +5311,9 @@ var require_equal = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
+// ../benflow/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
 var require_uniqueItems = __commonJS({
-  "node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var dataType_1 = require_dataType();
@@ -5378,9 +5378,9 @@ var require_uniqueItems = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/validation/const.js
+// ../benflow/node_modules/ajv/dist/vocabularies/validation/const.js
 var require_const = __commonJS({
-  "node_modules/ajv/dist/vocabularies/validation/const.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/validation/const.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5407,9 +5407,9 @@ var require_const = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/validation/enum.js
+// ../benflow/node_modules/ajv/dist/vocabularies/validation/enum.js
 var require_enum = __commonJS({
-  "node_modules/ajv/dist/vocabularies/validation/enum.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/validation/enum.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5456,9 +5456,9 @@ var require_enum = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/validation/index.js
+// ../benflow/node_modules/ajv/dist/vocabularies/validation/index.js
 var require_validation = __commonJS({
-  "node_modules/ajv/dist/vocabularies/validation/index.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/validation/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var limitNumber_1 = require_limitNumber();
@@ -5494,9 +5494,9 @@ var require_validation = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
 var require_additionalItems = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateAdditionalItems = void 0;
@@ -5547,9 +5547,9 @@ var require_additionalItems = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/items.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/items.js
 var require_items = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/items.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/items.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateTuple = void 0;
@@ -5604,9 +5604,9 @@ var require_items = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
 var require_prefixItems = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var items_1 = require_items();
@@ -5621,9 +5621,9 @@ var require_prefixItems = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/items2020.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/items2020.js
 var require_items2020 = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5656,9 +5656,9 @@ var require_items2020 = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/contains.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/contains.js
 var require_contains = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5750,9 +5750,9 @@ var require_contains = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/dependencies.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/dependencies.js
 var require_dependencies = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateSchemaDeps = exports.validatePropertyDeps = exports.error = void 0;
@@ -5844,9 +5844,9 @@ var require_dependencies = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
 var require_propertyNames = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5887,9 +5887,9 @@ var require_propertyNames = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
 var require_additionalProperties = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -5993,9 +5993,9 @@ var require_additionalProperties = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/properties.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/properties.js
 var require_properties = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var validate_1 = require_validate();
@@ -6051,9 +6051,9 @@ var require_properties = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
 var require_patternProperties = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -6125,9 +6125,9 @@ var require_patternProperties = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/not.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/not.js
 var require_not = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/not.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/not.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util();
@@ -6156,9 +6156,9 @@ var require_not = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/anyOf.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/anyOf.js
 var require_anyOf = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -6173,9 +6173,9 @@ var require_anyOf = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/oneOf.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/oneOf.js
 var require_oneOf = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6231,9 +6231,9 @@ var require_oneOf = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/allOf.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/allOf.js
 var require_allOf = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util();
@@ -6258,9 +6258,9 @@ var require_allOf = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/if.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/if.js
 var require_if = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/if.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/if.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6327,9 +6327,9 @@ var require_if = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/thenElse.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/thenElse.js
 var require_thenElse = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var util_1 = require_util();
@@ -6345,9 +6345,9 @@ var require_thenElse = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/applicator/index.js
+// ../benflow/node_modules/ajv/dist/vocabularies/applicator/index.js
 var require_applicator = __commonJS({
-  "node_modules/ajv/dist/vocabularies/applicator/index.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/applicator/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var additionalItems_1 = require_additionalItems();
@@ -6393,9 +6393,9 @@ var require_applicator = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/format/format.js
+// ../benflow/node_modules/ajv/dist/vocabularies/format/format.js
 var require_format = __commonJS({
-  "node_modules/ajv/dist/vocabularies/format/format.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/format/format.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6483,9 +6483,9 @@ var require_format = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/format/index.js
+// ../benflow/node_modules/ajv/dist/vocabularies/format/index.js
 var require_format2 = __commonJS({
-  "node_modules/ajv/dist/vocabularies/format/index.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/format/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var format_1 = require_format();
@@ -6494,9 +6494,9 @@ var require_format2 = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/metadata.js
+// ../benflow/node_modules/ajv/dist/vocabularies/metadata.js
 var require_metadata = __commonJS({
-  "node_modules/ajv/dist/vocabularies/metadata.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/metadata.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.contentVocabulary = exports.metadataVocabulary = void 0;
@@ -6517,9 +6517,9 @@ var require_metadata = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/draft7.js
+// ../benflow/node_modules/ajv/dist/vocabularies/draft7.js
 var require_draft7 = __commonJS({
-  "node_modules/ajv/dist/vocabularies/draft7.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/draft7.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var core_1 = require_core2();
@@ -6539,9 +6539,9 @@ var require_draft7 = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/discriminator/types.js
+// ../benflow/node_modules/ajv/dist/vocabularies/discriminator/types.js
 var require_types = __commonJS({
-  "node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DiscrError = void 0;
@@ -6553,9 +6553,9 @@ var require_types = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/vocabularies/discriminator/index.js
+// ../benflow/node_modules/ajv/dist/vocabularies/discriminator/index.js
 var require_discriminator = __commonJS({
-  "node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports) {
+  "../benflow/node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6658,9 +6658,9 @@ var require_discriminator = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/refs/json-schema-draft-07.json
+// ../benflow/node_modules/ajv/dist/refs/json-schema-draft-07.json
 var require_json_schema_draft_07 = __commonJS({
-  "node_modules/ajv/dist/refs/json-schema-draft-07.json"(exports, module) {
+  "../benflow/node_modules/ajv/dist/refs/json-schema-draft-07.json"(exports, module) {
     module.exports = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "http://json-schema.org/draft-07/schema#",
@@ -6815,9 +6815,9 @@ var require_json_schema_draft_07 = __commonJS({
   }
 });
 
-// node_modules/ajv/dist/ajv.js
+// ../benflow/node_modules/ajv/dist/ajv.js
 var require_ajv = __commonJS({
-  "node_modules/ajv/dist/ajv.js"(exports, module) {
+  "../benflow/node_modules/ajv/dist/ajv.js"(exports, module) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.MissingRefError = exports.ValidationError = exports.CodeGen = exports.Name = exports.nil = exports.stringify = exports.str = exports._ = exports.KeywordCxt = exports.Ajv = void 0;
@@ -6885,9 +6885,9 @@ var require_ajv = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/dist/formats.js
+// ../benflow/node_modules/ajv-formats/dist/formats.js
 var require_formats = __commonJS({
-  "node_modules/ajv-formats/dist/formats.js"(exports) {
+  "../benflow/node_modules/ajv-formats/dist/formats.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.formatNames = exports.fastFormats = exports.fullFormats = void 0;
@@ -7088,9 +7088,9 @@ var require_formats = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/dist/limit.js
+// ../benflow/node_modules/ajv-formats/dist/limit.js
 var require_limit = __commonJS({
-  "node_modules/ajv-formats/dist/limit.js"(exports) {
+  "../benflow/node_modules/ajv-formats/dist/limit.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.formatLimitDefinition = void 0;
@@ -7160,9 +7160,9 @@ var require_limit = __commonJS({
   }
 });
 
-// node_modules/ajv-formats/dist/index.js
+// ../benflow/node_modules/ajv-formats/dist/index.js
 var require_dist = __commonJS({
-  "node_modules/ajv-formats/dist/index.js"(exports, module) {
+  "../benflow/node_modules/ajv-formats/dist/index.js"(exports, module) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var formats_1 = require_formats();
@@ -7203,9 +7203,9 @@ var require_dist = __commonJS({
 });
 
 // connector/cli.ts
-import { spawn as spawn6 } from "node:child_process";
-import { existsSync as existsSync14, realpathSync as realpathSync9, statSync as statSync15 } from "node:fs";
-import { dirname as dirname10, join as join19, resolve as resolve8 } from "node:path";
+import { spawn as spawn7 } from "node:child_process";
+import { existsSync as existsSync15, realpathSync as realpathSync10, statSync as statSync16 } from "node:fs";
+import { dirname as dirname11, join as join20, resolve as resolve9 } from "node:path";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
 import { parseArgs } from "node:util";
 
@@ -7763,7 +7763,10 @@ var CONNECTOR_CAPABILITIES = [
   "chaves-valores",
   // Fila de subida única (branchShare.ts): o pedido chega na resposta do batimento e o conector manda a branch do card
   // para o GitHub (git push origin <branch>, nunca --force), para outro Claude do projeto integrar o lote.
-  "enviar-branch"
+  "enviar-branch",
+  // Ambiente local em verde ou vermelho (local.ts) e o Atualizar e o Subir o ambiente de Conexões (localUp.ts): o pedido
+  // chega na resposta do batimento; o conector confere os endereços na hora e, no Subir, religa as receitas que caíram.
+  "ambiente-local"
 ];
 var PROJECT_VAULT_CAPABILITY = "cofre-projeto";
 var JOB_REQUEST_CAPS = ["conversa-painel", "paralelo", "orquestrador", "sugestoes-arquivos"];
@@ -8130,6 +8133,11 @@ var AgentClient = class _AgentClient {
   terminalAlive(executionId) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/terminal`, { retries: 0, timeoutMs: 15e3 });
   }
+  // Presença do terminal (ganchos do plugin no Claude Code do dono): a sessão abriu, trabalha, espera a pessoa ou fechou.
+  // tracked false: a pasta não é de um repositório do projeto. Sem novas tentativas: o próximo gancho já tenta de novo.
+  terminalPresence(body, timeoutMs = 4e3) {
+    return this.requestJson("POST", "/api/agent/terminal/presence", { json: body, retries: 0, timeoutMs });
+  }
   // Situação da gravação do vídeo de evidência (o card mostra ao vivo): gravando, enviando ou o erro da tentativa.
   videoProgress(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/video`, { json: body, retries: 0 });
@@ -8297,11 +8305,11 @@ var AgentClient = class _AgentClient {
 };
 
 // connector/executor.ts
-import { execFile as execFile2, execFileSync, spawn as spawn5 } from "node:child_process";
-import { existsSync as existsSync13, mkdirSync as mkdirSync8, mkdtempSync as mkdtempSync6, readFileSync as readFileSync12, realpathSync as realpathSync7, rmSync as rmSync9, statSync as statSync13, writeFileSync as writeFileSync11 } from "node:fs";
+import { execFile as execFile2, execFileSync, spawn as spawn6 } from "node:child_process";
+import { existsSync as existsSync14, mkdirSync as mkdirSync9, mkdtempSync as mkdtempSync6, readFileSync as readFileSync13, realpathSync as realpathSync8, rmSync as rmSync9, statSync as statSync14, writeFileSync as writeFileSync11 } from "node:fs";
 import { createRequire } from "node:module";
 import os10 from "node:os";
-import { isAbsolute as isAbsolute4, join as join17, relative as relative3, resolve as resolve6 } from "node:path";
+import { isAbsolute as isAbsolute5, join as join18, relative as relative3, resolve as resolve7 } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath as fileURLToPath2, pathToFileURL } from "node:url";
 
@@ -8541,6 +8549,10 @@ function realOr(p) {
     return p;
   }
 }
+function repoFromRemote(url2) {
+  const m = /[/:]([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/.exec(url2.trim());
+  return m ? `${m[1]}/${m[2]}` : null;
+}
 function repoForPath(dir, repos, platform = process.platform) {
   const target = norm(realOr(dir), platform);
   let best = null;
@@ -8634,7 +8646,7 @@ async function detectLocalServers(repos, deps) {
       for (const target of probeTargets(socket.address, socket.port)) {
         const status = await probeHttp(target, deps.probeTimeoutMs ?? 1500, deps.fetch);
         if (status !== null && status < 500) {
-          return { repo, url: `http://localhost:${socket.port}`, label: guessLabel(repo, socket.port), port: socket.port, pid: socket.pid };
+          return { repo, url: `http://localhost:${socket.port}`, label: guessLabel(repo, socket.port), port: socket.port, pid: socket.pid, http: status };
         }
       }
       return null;
@@ -8665,7 +8677,7 @@ function readReportedLocal(path2) {
     return data.entries.filter((e) => {
       const o = e;
       return !!o && typeof o.repo === "string" && typeof o.url === "string" && typeof o.label === "string" && typeof o.since === "string" && isLocalUrl(o.url);
-    });
+    }).map((e) => e.downSince !== void 0 && typeof e.downSince !== "string" ? { ...e, downSince: void 0 } : e);
   } catch {
     return [];
   }
@@ -8681,10 +8693,28 @@ function reportLocal(path2, input2, now = /* @__PURE__ */ new Date()) {
   const url2 = displayLocalUrl(input2.url);
   const list = readReportedLocal(path2);
   const previous = list.find((e) => e.url === url2);
-  const entry = { repo: input2.repo, url: url2, label: input2.label, since: previous?.since ?? now.toISOString(), reportedAt: now.toISOString() };
+  const entry = {
+    repo: input2.repo,
+    url: url2,
+    label: input2.label,
+    since: previous?.since ?? now.toISOString(),
+    reportedAt: now.toISOString(),
+    ...previous?.recipe ? { recipe: previous.recipe } : {}
+  };
   writeReportedLocal(path2, [...list.filter((e) => e.url !== url2), entry]);
   return entry;
 }
+function localLabelRank(label) {
+  const l = label.trim().toLowerCase();
+  if (l === "front" || l === "frontend" || l === "web" || l === "site") return 0;
+  if (l === "api" || l === "backend" || l === "back") return 1;
+  return 2;
+}
+function compareLocal(a, b) {
+  return localLabelRank(a.label) - localLabelRank(b.label) || a.repo.localeCompare(b.repo) || a.url.localeCompare(b.url);
+}
+var LOCAL_KEEP_DOWN_MS = 30 * 6e4;
+var LOCAL_KEEP_DOWN_RECIPE_MS = 7 * 24 * 60 * 6e4;
 function portOf(url2) {
   try {
     const u = new URL(url2);
@@ -8699,6 +8729,9 @@ var LocalTracker = class {
   }
   opts;
   since = /* @__PURE__ */ new Map();
+  // Endereços que já responderam neste executor: a folga de quem acabou de ser informado (subindo) não vale para eles,
+  // e quem cai fica vermelho na hora.
+  seenUp = /* @__PURE__ */ new Set();
   async collect() {
     const now = this.opts.now?.() ?? /* @__PURE__ */ new Date();
     const probe = this.opts.probe ?? ((u) => probeHttp(u));
@@ -8707,21 +8740,32 @@ var LocalTracker = class {
     const ports = /* @__PURE__ */ new Set();
     if (this.opts.statePath) {
       const reported = readReportedLocal(this.opts.statePath);
-      const alive = [];
-      for (const e of reported) {
-        const status = await probe(e.url);
-        const fresh2 = now.getTime() - Date.parse(e.reportedAt) < grace;
-        if (status !== null && status < 500 || fresh2) alive.push(e);
-      }
-      if (alive.length !== reported.length) {
+      const kept = [];
+      let dirty = false;
+      const statuses = await Promise.all(reported.map((e) => probe(e.url)));
+      reported.forEach((e, i) => {
+        const status = statuses[i];
+        const up = status !== null && status < 500;
+        if (up) this.seenUp.add(e.url);
+        const fresh2 = !this.seenUp.has(e.url) && now.getTime() - Date.parse(e.reportedAt) < grace;
+        let entry = e;
+        if (up && e.downSince) entry = { ...e, downSince: void 0 };
+        else if (!up && !fresh2 && !e.downSince) entry = { ...e, downSince: now.toISOString() };
+        const keepFor = e.recipe ? LOCAL_KEEP_DOWN_RECIPE_MS : LOCAL_KEEP_DOWN_MS;
+        if (entry.downSince && now.getTime() - Date.parse(entry.downSince) > keepFor) {
+          dirty = true;
+          return;
+        }
+        if (entry !== e) dirty = true;
+        kept.push(entry);
+        out.push({ repo: e.repo, url: e.url, label: e.label, origin: "mcp", since: e.since, http: status, down: entry.downSince ?? null, restart: !!e.recipe });
+        ports.add(portOf(e.url));
+      });
+      if (dirty) {
         try {
-          writeReportedLocal(this.opts.statePath, alive);
+          writeReportedLocal(this.opts.statePath, kept);
         } catch {
         }
-      }
-      for (const e of alive) {
-        out.push({ repo: e.repo, url: e.url, label: e.label, origin: "mcp", since: e.since });
-        ports.add(portOf(e.url));
       }
     }
     let detected = [];
@@ -8736,10 +8780,10 @@ var LocalTracker = class {
       const key = `${d.repo}|${d.url}`;
       seen.add(key);
       if (!this.since.has(key)) this.since.set(key, now.toISOString());
-      out.push({ repo: d.repo, url: d.url, label: d.label, origin: "detectado", since: this.since.get(key) });
+      out.push({ repo: d.repo, url: d.url, label: d.label, origin: "detectado", since: this.since.get(key), http: d.http ?? null, down: null });
     }
     for (const key of [...this.since.keys()]) if (!seen.has(key)) this.since.delete(key);
-    return out.sort((a, b) => a.repo.localeCompare(b.repo) || a.url.localeCompare(b.url));
+    return out.sort(compareLocal);
   }
   // Data da última mudança no arquivo do que o Claude informou (para o executor mandar o batimento na hora).
   stateStamp() {
@@ -8795,6 +8839,210 @@ function isExecutorRunning(path2) {
 var LOCAL_LABEL_MAX = 40;
 function cleanLabel(raw) {
   return raw.replace(/[\u0000-\u001f\u007f<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, LOCAL_LABEL_MAX);
+}
+
+// connector/localUp.ts
+import { spawn } from "node:child_process";
+import { closeSync, existsSync as existsSync4, mkdirSync as mkdirSync4, openSync, readFileSync as readFileSync5, realpathSync as realpathSync3, statSync as statSync6, writeSync } from "node:fs";
+import { dirname as dirname4, isAbsolute, join as join5, resolve as resolve3 } from "node:path";
+var RECIPE_TOOLS = ["npm", "pnpm", "yarn", "bun"];
+var SAFE_TOKEN = /^[\w@+=:,./-]+$/;
+var SCRIPT_NAME = /^[\w:.@/-]{1,80}$/;
+var ENV_NAME = /^[A-Z_][A-Z0-9_]{0,63}$/;
+var BLOCKED_ENV = /^(PATH|HOME|SHELL|USER|LOGNAME|TMPDIR|NODE_OPTIONS|NODE_PATH|LD_.*|DYLD_.*|BENFLOW_.*|CHAMADOS_.*|CLAUDE_.*|ANTHROPIC_.*|GIT_.*|NPM_CONFIG_.*|GH_.*|GITHUB_.*)$/;
+var RECIPE_ENV_MAX = 20;
+var RECIPE_ARGS_MAX = 12;
+var LOCAL_UP_WAIT_MS = 9e4;
+function realOr2(p) {
+  try {
+    return realpathSync3.native(p);
+  } catch {
+    return p;
+  }
+}
+function inside(child, base) {
+  const norm3 = (p) => {
+    const s2 = p.replace(/\\/g, "/").replace(/\/+$/, "");
+    return process.platform === "darwin" || process.platform === "win32" ? s2.toLowerCase() : s2;
+  };
+  const within2 = (c, b) => c === b || c.startsWith(`${b}/`);
+  const realChild = norm3(realOr2(child));
+  const realBase = norm3(realOr2(base));
+  if (existsSync4(child)) return within2(realChild, realBase);
+  return within2(norm3(child), norm3(base)) || within2(realChild, realBase);
+}
+function packageScripts(dir) {
+  try {
+    const pkg = JSON.parse(readFileSync5(join5(dir, "package.json"), "utf8"));
+    return pkg.scripts && typeof pkg.scripts === "object" ? pkg.scripts : {};
+  } catch {
+    return null;
+  }
+}
+function parseRecipe(input2, repoPath) {
+  const rel = (input2.pasta ?? "").trim() || ".";
+  const dir = isAbsolute(rel) ? resolve3(rel) : resolve3(repoPath, rel);
+  if (!inside(dir, repoPath)) return { error: `A pasta tem de ficar dentro do reposit\xF3rio (${repoPath}).` };
+  if (!existsSync4(dir) || !statSync6(dir).isDirectory()) return { error: `A pasta ${dir} n\xE3o existe.` };
+  const scripts = packageScripts(dir);
+  if (!scripts) return { error: `N\xE3o achei o package.json em ${dir}. Informe a pasta do app (a que tem o package.json).` };
+  const tokens = input2.comando.trim().split(/\s+/).filter(Boolean);
+  const [tool, run, script, ...rest] = tokens;
+  if (!RECIPE_TOOLS.includes(tool) || run !== "run" || !script) {
+    return { error: 'Use o comando no formato "npm run <script>" (ou pnpm, yarn ou bun), com um script do package.json; argumentos para o script v\xE3o depois de "--", como "npm run dev -- --port 5174".' };
+  }
+  if (!SCRIPT_NAME.test(script) || typeof scripts[script] !== "string") {
+    const names = Object.keys(scripts).slice(0, 20).join(", ");
+    return { error: `O script "${script}" n\xE3o existe no package.json de ${dir}.${names ? ` Scripts que existem: ${names}.` : ""}` };
+  }
+  let args = [];
+  if (rest.length) {
+    if (rest[0] !== "--") return { error: 'Argumentos para o script v\xE3o depois de "--", como "npm run dev -- --port 5174".' };
+    args = rest.slice(1);
+    if (args.length > RECIPE_ARGS_MAX) return { error: `Use no m\xE1ximo ${RECIPE_ARGS_MAX} argumentos.` };
+    const bad = args.find((a) => !SAFE_TOKEN.test(a));
+    if (bad) return { error: `Argumento n\xE3o aceito: ${bad.slice(0, 40)}. Use s\xF3 letras, n\xFAmeros e os sinais - _ . : / = @ + ,` };
+  }
+  const env = {};
+  for (const [name, raw] of Object.entries(input2.variaveis ?? {})) {
+    if (Object.keys(env).length >= RECIPE_ENV_MAX) return { error: `Use no m\xE1ximo ${RECIPE_ENV_MAX} vari\xE1veis.` };
+    if (!ENV_NAME.test(name) || BLOCKED_ENV.test(name)) return { error: `Vari\xE1vel n\xE3o aceita: ${name.slice(0, 64)}.` };
+    const value = String(raw ?? "");
+    if (value.length > 500 || /[\u0000-\u001f]/.test(value)) return { error: `O valor de ${name} tem de ser uma linha s\xF3, com at\xE9 500 caracteres.` };
+    env[name] = value;
+  }
+  return { recipe: { dir, tool, script, args, env } };
+}
+function recipeOf(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw;
+  if (typeof r.dir !== "string" || typeof r.tool !== "string" || typeof r.script !== "string") return null;
+  const args = Array.isArray(r.args) ? r.args.filter((a) => typeof a === "string") : [];
+  const env = r.env && typeof r.env === "object" ? r.env : {};
+  const parsed = parseRecipe({ pasta: r.dir, comando: [r.tool, "run", r.script, ...args.length ? ["--", ...args] : []].join(" "), variaveis: env }, r.dir);
+  return "recipe" in parsed ? parsed.recipe : null;
+}
+function recipeCommand(recipe) {
+  return [recipe.tool, "run", recipe.script, ...recipe.args.length ? ["--", ...recipe.args] : []].join(" ");
+}
+function localLogDir(statePath) {
+  return join5(dirname4(statePath), "local-logs");
+}
+function portOf2(url2) {
+  try {
+    const u = new URL(url2);
+    return u.port || (u.protocol === "https:" ? "443" : "80");
+  } catch {
+    return "x";
+  }
+}
+function localLogPath(statePath, url2) {
+  const base = statePath.replace(/^.*[\\/]/, "").replace(/\.json$/, "");
+  return join5(localLogDir(statePath), `${base}-${portOf2(url2)}.log`);
+}
+function tail(path2, lines2 = 25) {
+  try {
+    const text = readFileSync5(path2, "utf8");
+    return text.split(/\r?\n/).slice(-lines2).join("\n").trim();
+  } catch {
+    return "";
+  }
+}
+var isUp = (status) => status !== null && status < 500;
+async function launchRecipe(recipe, url2, logPath, deps = {}) {
+  const probe = deps.probe ?? ((u) => probeHttp(u, 1500));
+  const before = await probe(url2);
+  if (isUp(before)) return { ok: true, http: before, pid: null, log: "", already: true };
+  mkdirSync4(dirname4(logPath), { recursive: true, mode: 448 });
+  const fd = openSync(logPath, "a", 384);
+  let pid = null;
+  try {
+    writeSync(fd, `
+--- ${(deps.now?.() ?? /* @__PURE__ */ new Date()).toISOString()} ${recipeCommand(recipe)} em ${recipe.dir}
+`);
+    const base = {};
+    for (const [k, v] of Object.entries(deps.env ?? process.env)) if (v !== void 0 && !BLOCKED_CHILD_ENV.test(k)) base[k] = v;
+    const env = { ...base, ...recipe.env, BROWSER: "none", FORCE_COLOR: "0" };
+    const win = process.platform === "win32";
+    const command = win ? "cmd.exe" : recipe.tool;
+    const args = win ? ["/d", "/s", "/c", recipe.tool, "run", recipe.script, ...recipe.args.length ? ["--", ...recipe.args] : []] : ["run", recipe.script, ...recipe.args.length ? ["--", ...recipe.args] : []];
+    const child = (deps.spawn ?? spawn)(command, args, { cwd: recipe.dir, env, detached: true, stdio: ["ignore", fd, fd], windowsHide: true });
+    child.on("error", (err) => {
+      try {
+        writeSync(fd, `N\xE3o foi poss\xEDvel iniciar: ${err.message}
+`);
+      } catch {
+      }
+    });
+    child.unref();
+    pid = child.pid ?? null;
+  } finally {
+    closeSync(fd);
+  }
+  const deadline = Date.now() + (deps.waitMs ?? LOCAL_UP_WAIT_MS);
+  const step = deps.stepMs ?? 1500;
+  let status = null;
+  while (Date.now() < deadline) {
+    status = await probe(url2);
+    if (isUp(status)) return { ok: true, http: status, pid, log: "", already: false };
+    if (pid !== null && !processAlive(pid)) break;
+    await new Promise((r) => setTimeout(r, step));
+  }
+  return { ok: false, http: status, pid, log: tail(logPath), already: false };
+}
+var BLOCKED_CHILD_ENV = /^(BENFLOW_.*|CHAMADOS_.*|CLAUDE_PLUGIN_OPTION_.*|GH_TOKEN|GITHUB_TOKEN|GH_ENTERPRISE_TOKEN|GITHUB_ENTERPRISE_TOKEN|NPM_TOKEN|NODE_AUTH_TOKEN|GITLAB_TOKEN|CI_JOB_TOKEN|ANTHROPIC_API_KEY)$/i;
+function processAlive(pid) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (err) {
+    return err?.code === "EPERM";
+  }
+}
+function saveRecipeEntry(statePath, input2, now = /* @__PURE__ */ new Date()) {
+  const url2 = displayLocalUrl(input2.url);
+  const list = readReportedLocal(statePath);
+  const previous = list.find((e) => e.url === url2);
+  const at = now.toISOString();
+  const entry = {
+    repo: input2.repo,
+    url: url2,
+    label: input2.label,
+    since: previous?.since ?? at,
+    reportedAt: at,
+    recipe: input2.recipe,
+    ...input2.up ? {} : { downSince: at }
+  };
+  const keep = list.filter((e) => e.url !== url2 && !(e.repo === input2.repo && e.label.toLowerCase() === input2.label.toLowerCase() && e.downSince));
+  writeReportedLocal(statePath, [...keep, entry]);
+  return entry;
+}
+async function relaunchDown(statePath, deps = {}) {
+  const probe = deps.probe ?? ((u) => probeHttp(u, 1500));
+  const entries = readReportedLocal(statePath);
+  const results = await Promise.all(
+    entries.map(async (e) => {
+      const recipe = recipeOf(e.recipe);
+      if (!recipe || !isLocalUrl(e.url)) return null;
+      if (isUp(await probe(e.url))) return null;
+      try {
+        const res = await launchRecipe(recipe, e.url, localLogPath(statePath, e.url), { ...deps, probe });
+        const error62 = res.ok ? null : res.log ? `N\xE3o respondeu em ${Math.round((deps.waitMs ?? LOCAL_UP_WAIT_MS) / 1e3)} s. Fim do log:
+${res.log}` : "N\xE3o respondeu.";
+        return { url: e.url, label: e.label, repo: e.repo, ok: res.ok, already: res.already, error: error62, pid: res.pid };
+      } catch (err) {
+        return { url: e.url, label: e.label, repo: e.repo, ok: false, already: false, error: err instanceof Error ? err.message : String(err) };
+      }
+    })
+  );
+  const done = results.filter((r) => r !== null);
+  if (done.some((r) => r.ok)) {
+    const at = (deps.now?.() ?? /* @__PURE__ */ new Date()).toISOString();
+    const back = new Set(done.filter((r) => r.ok).map((r) => r.url));
+    const list = readReportedLocal(statePath).map((e) => back.has(e.url) ? { ...e, reportedAt: at, downSince: void 0 } : e);
+    writeReportedLocal(statePath, list);
+  }
+  return done;
 }
 
 // connector/prompts.ts
@@ -9458,12 +9706,12 @@ function pushBlockEnv(remotes, base = {}) {
 }
 
 // connector/workspace.ts
-import { copyFileSync, existsSync as existsSync5, mkdirSync as mkdirSync4, readdirSync, readFileSync as readFileSync5, readlinkSync as readlinkSync3, realpathSync as realpathSync3, rmSync as rmSync3, statSync as statSync6, writeFileSync as writeFileSync4 } from "node:fs";
-import { basename as basename2, dirname as dirname4, isAbsolute as isAbsolute2, join as join6, resolve as resolve3, sep as sep2 } from "node:path";
+import { copyFileSync, existsSync as existsSync6, mkdirSync as mkdirSync5, readdirSync, readFileSync as readFileSync6, readlinkSync as readlinkSync3, realpathSync as realpathSync4, rmSync as rmSync3, statSync as statSync7, writeFileSync as writeFileSync4 } from "node:fs";
+import { basename as basename2, dirname as dirname5, isAbsolute as isAbsolute3, join as join7, resolve as resolve4, sep as sep2 } from "node:path";
 
 // connector/sync.ts
-import { existsSync as existsSync4 } from "node:fs";
-import { isAbsolute, join as join5 } from "node:path";
+import { existsSync as existsSync5 } from "node:fs";
+import { isAbsolute as isAbsolute2, join as join6 } from "node:path";
 var HOMOLOG_QUESTION_TOOL = "Benflow";
 function homologQuestionCommand(fullName, branch, ref = "origin/develop") {
   return `Trazer a homologa\xE7\xE3o (${ref}) para a branch ${branch} em ${fullName}`;
@@ -9513,7 +9761,7 @@ async function midOperation(exec, path2) {
   for (const mark of ["MERGE_HEAD", "rebase-merge", "rebase-apply", "CHERRY_PICK_HEAD", "REVERT_HEAD"]) {
     const res = await git(exec, path2, ["rev-parse", "--git-path", mark]);
     const at = res.code === 0 ? res.stdout.trim() : "";
-    if (at && existsSync4(isAbsolute(at) ? at : join5(path2, at))) return true;
+    if (at && existsSync5(isAbsolute2(at) ? at : join6(path2, at))) return true;
   }
   return false;
 }
@@ -9636,23 +9884,23 @@ function syncTimelineText(syncs) {
 // connector/workspace.ts
 var MAX_SLOTS = 5;
 function workspaceRoot(configFile) {
-  const dir = dirname4(resolve3(configFile));
-  return join6(dirname4(dir), `${basename2(dir)}-trabalhos`);
+  const dir = dirname5(resolve4(configFile));
+  return join7(dirname5(dir), `${basename2(dir)}-trabalhos`);
 }
 function repoKey(fullName) {
   return fullName.replace(/[^A-Za-z0-9._-]+/g, "__").replace(/^\.+/, "_");
 }
 function slotPath(root, fullName, n2) {
-  return join6(root, repoKey(fullName), `vaga-${n2}`);
+  return join7(root, repoKey(fullName), `vaga-${n2}`);
 }
 function real(path2) {
   try {
-    return realpathSync3(path2);
+    return realpathSync4(path2);
   } catch {
-    return resolve3(path2);
+    return resolve4(path2);
   }
 }
-function inside(root, path2) {
+function inside2(root, path2) {
   return real(path2).startsWith(real(root) + sep2);
 }
 async function git2(exec, cwd, args, timeoutMs = 6e4) {
@@ -9685,7 +9933,7 @@ function within(dir, path2) {
 async function processesIn(exec, path2, platform = process.platform) {
   const dir = real(path2);
   const found = [];
-  if (platform === "linux" && existsSync5("/proc/self/cwd")) {
+  if (platform === "linux" && existsSync6("/proc/self/cwd")) {
     let pids;
     try {
       pids = readdirSync("/proc").filter((n2) => /^\d+$/.test(n2));
@@ -9698,7 +9946,7 @@ async function processesIn(exec, path2, platform = process.platform) {
         if (!within(dir, readlinkSync3(`/proc/${pid2}/cwd`))) continue;
         let name2 = "";
         try {
-          name2 = readFileSync5(`/proc/${pid2}/comm`, "utf8").trim();
+          name2 = readFileSync6(`/proc/${pid2}/comm`, "utf8").trim();
         } catch {
         }
         found.push({ pid: Number(pid2), name: name2 });
@@ -9734,7 +9982,7 @@ async function operationInProgress(exec, path2) {
     const res = await git2(exec, path2, ["rev-parse", "--git-path", mark]);
     if (res.code !== 0) continue;
     const at = res.stdout.trim();
-    if (at && existsSync5(isAbsolute2(at) ? at : join6(path2, at))) return what;
+    if (at && existsSync6(isAbsolute3(at) ? at : join7(path2, at))) return what;
   }
   return null;
 }
@@ -9755,7 +10003,7 @@ async function freeBranch(exec, main, branch, opts) {
   const entry = (await worktreeEntries(exec, main)).find((w) => w.branch === branch);
   if (!entry) return { ok: true, where: null, note: null };
   const where2 = entry.path;
-  if (real(where2) === real(main) || inside(opts.root, where2)) return { ok: true, where: where2, note: null };
+  if (real(where2) === real(main) || inside2(opts.root, where2)) return { ok: true, where: where2, note: null };
   const stuck = (why, todo) => ({
     ok: false,
     error: `A branch ${branch} est\xE1 aberta em outra pasta (${where2}) e ${why}, ent\xE3o o Benflow n\xE3o mexeu nela. ${todo} e mande de novo.`
@@ -9786,14 +10034,14 @@ async function freeBranch(exec, main, branch, opts) {
   };
 }
 async function isWorktree(exec, path2) {
-  if (!existsSync5(path2)) return false;
+  if (!existsSync6(path2)) return false;
   const res = await git2(exec, path2, ["rev-parse", "--is-inside-work-tree"]);
   return res.code === 0 && res.stdout.trim() === "true";
 }
 async function dropCopy(exec, main, path2, root) {
   await git2(exec, main, ["worktree", "remove", "--force", path2]);
   let problem = null;
-  if (existsSync5(path2) && inside(root, path2)) {
+  if (existsSync6(path2) && inside2(root, path2)) {
     try {
       rmSync3(path2, { recursive: true, force: true });
     } catch (err) {
@@ -9826,12 +10074,12 @@ async function ignoredExtras(exec, main) {
   return { envFiles: [...new Set(envFiles)], modules };
 }
 async function cloneDir(exec, from, to, platform) {
-  if (existsSync5(to)) return true;
-  mkdirSync4(dirname4(to), { recursive: true });
+  if (existsSync6(to)) return true;
+  mkdirSync5(dirname5(to), { recursive: true });
   if (platform === "darwin") return (await exec("cp", ["-cR", from, to], { timeoutMs: 18e4 })).code === 0;
   if (platform === "linux") {
     const res = await exec("cp", ["-R", "--reflink=always", from, to], { timeoutMs: 18e4 });
-    if (res.code !== 0 && existsSync5(to)) rmSync3(to, { recursive: true, force: true });
+    if (res.code !== 0 && existsSync6(to)) rmSync3(to, { recursive: true, force: true });
     return res.code === 0;
   }
   return false;
@@ -9840,11 +10088,11 @@ async function copyExtras(exec, main, path2, platform) {
   const { envFiles, modules } = await ignoredExtras(exec, main);
   let env = 0;
   for (const rel of envFiles) {
-    const from = join6(main, rel);
-    const to = join6(path2, rel);
+    const from = join7(main, rel);
+    const to = join7(path2, rel);
     try {
-      if (existsSync5(to) || !statSync6(from).isFile()) continue;
-      mkdirSync4(dirname4(to), { recursive: true });
+      if (existsSync6(to) || !statSync7(from).isFile()) continue;
+      mkdirSync5(dirname5(to), { recursive: true });
       copyFileSync(from, to);
       env++;
     } catch {
@@ -9853,7 +10101,7 @@ async function copyExtras(exec, main, path2, platform) {
   let cloned = 0;
   let missing2 = 0;
   for (const rel of modules) {
-    if (await cloneDir(exec, join6(main, rel), join6(path2, rel), platform)) cloned++;
+    if (await cloneDir(exec, join7(main, rel), join7(path2, rel), platform)) cloned++;
     else missing2++;
   }
   return { env, modules: cloned, missingModules: missing2 };
@@ -9874,11 +10122,11 @@ async function currentRef(exec, path2) {
   return sha.code === 0 && sha.stdout.trim() ? sha.stdout.trim() : null;
 }
 function stateFile(root, fullName) {
-  return join6(root, repoKey(fullName), "vagas.json");
+  return join7(root, repoKey(fullName), "vagas.json");
 }
 function readState(root, fullName) {
   try {
-    const data = JSON.parse(readFileSync5(stateFile(root, fullName), "utf8"));
+    const data = JSON.parse(readFileSync6(stateFile(root, fullName), "utf8"));
     return data && typeof data === "object" && !Array.isArray(data) ? data : {};
   } catch {
     return {};
@@ -9893,7 +10141,7 @@ function writeState(root, fullName, branch, path2) {
   }
 }
 async function existingSlots(exec, root, fullName) {
-  const dir = join6(root, repoKey(fullName));
+  const dir = join7(root, repoKey(fullName));
   let names = [];
   try {
     names = readdirSync(dir);
@@ -9904,15 +10152,15 @@ async function existingSlots(exec, root, fullName) {
   for (const name of names) {
     const m = /^vaga-(\d+)$/.exec(name);
     if (!m) continue;
-    const path2 = join6(dir, name);
+    const path2 = join7(dir, name);
     if (await isWorktree(exec, path2)) out.push({ n: Number(m[1]), path: path2 });
   }
   return out.sort((a, b) => a.n - b.n);
 }
 function slotKindOf(root, fullName, main, path2) {
   if (real(path2) === real(main)) return "principal";
-  const dir = join6(root, repoKey(fullName));
-  return real(dirname4(path2)) === real(dir) && /^vaga-\d+$/.test(basename2(path2)) ? "vaga" : "antiga";
+  const dir = join7(root, repoKey(fullName));
+  return real(dirname5(path2)) === real(dir) && /^vaga-\d+$/.test(basename2(path2)) ? "vaga" : "antiga";
 }
 function translateClaudeSettings(text, main, slot, home = process.env.HOME ?? "") {
   let data;
@@ -9952,21 +10200,21 @@ async function tracked(exec, path2, rel) {
 }
 async function syncClaudeLocal(exec, main, path2) {
   const settings = ".claude/settings.local.json";
-  const from = join6(main, settings);
-  if (existsSync5(from) && !await tracked(exec, path2, settings)) {
+  const from = join7(main, settings);
+  if (existsSync6(from) && !await tracked(exec, path2, settings)) {
     try {
-      const text = translateClaudeSettings(readFileSync5(from, "utf8"), main, path2);
+      const text = translateClaudeSettings(readFileSync6(from, "utf8"), main, path2);
       if (text) {
-        mkdirSync4(join6(path2, ".claude"), { recursive: true });
-        writeFileSync4(join6(path2, settings), text);
+        mkdirSync5(join7(path2, ".claude"), { recursive: true });
+        writeFileSync4(join7(path2, settings), text);
       }
     } catch {
     }
   }
   const notes = "CLAUDE.local.md";
-  if (existsSync5(join6(main, notes)) && !existsSync5(join6(path2, notes)) && !await tracked(exec, path2, notes)) {
+  if (existsSync6(join7(main, notes)) && !existsSync6(join7(path2, notes)) && !await tracked(exec, path2, notes)) {
     try {
-      copyFileSync(join6(main, notes), join6(path2, notes));
+      copyFileSync(join7(main, notes), join7(path2, notes));
     } catch {
     }
   }
@@ -10000,8 +10248,8 @@ async function prepareOne(repo, opts) {
   const unclaim = opts.unclaim ?? (() => {
   });
   const main = repo.path;
-  const dir = join6(root, repoKey(repo.fullName));
-  mkdirSync4(dir, { recursive: true });
+  const dir = join7(root, repoKey(repo.fullName));
+  mkdirSync5(dir, { recursive: true });
   const fetched = await git2(exec, main, ["fetch", "origin", "--quiet"], 18e4);
   if (fetched.code !== 0) opts.log?.(`git fetch em ${repo.fullName} falhou (${firstLine2(fetched.stderr) || `c\xF3digo ${fetched.code}`}); o trabalho sai do que j\xE1 est\xE1 nesta m\xE1quina.`);
   const notes = [];
@@ -10021,7 +10269,7 @@ async function prepareOne(repo, opts) {
       const pending = slot === "antiga" ? await pendingChanges(exec, where2) : null;
       if (slot === "antiga" && pending && !pending.length && !await operationInProgress(exec, where2)) {
         const problem = await dropCopy(exec, main, where2, root);
-        if (problem || existsSync5(where2)) {
+        if (problem || existsSync6(where2)) {
           await git2(exec, where2, ["checkout", "--quiet", "--detach"]);
           notes.push(`N\xE3o consegui apagar a pasta antiga ${where2} (${problem ?? "arquivo sem permiss\xE3o"}); a branch foi solta dela. Apague a pasta \xE0 m\xE3o quando puder (no Linux, com sudo se os arquivos forem de outro usu\xE1rio).`);
         }
@@ -10060,7 +10308,7 @@ async function prepareOne(repo, opts) {
     }
     const fresh2 = c.slot === "vaga" && !await isWorktree(exec, c.path);
     if (fresh2) {
-      if (existsSync5(c.path)) {
+      if (existsSync6(c.path)) {
         unclaim(c.path);
         skipped.push(`${c.path} (pasta que n\xE3o \xE9 do git)`);
         continue;
@@ -10140,9 +10388,9 @@ async function releaseWorkspace(copies, opts) {
 // connector/preparo.ts
 import { execFile } from "node:child_process";
 import { createHash as createHash2 } from "node:crypto";
-import { accessSync, constants, existsSync as existsSync7, mkdirSync as mkdirSync5, mkdtempSync as mkdtempSync2, readdirSync as readdirSync2, readFileSync as readFileSync6, realpathSync as realpathSync4, rmSync as rmSync5, statSync as statSync7, writeFileSync as writeFileSync6 } from "node:fs";
+import { accessSync, constants, existsSync as existsSync8, mkdirSync as mkdirSync6, mkdtempSync as mkdtempSync2, readdirSync as readdirSync2, readFileSync as readFileSync7, realpathSync as realpathSync5, rmSync as rmSync5, statSync as statSync8, writeFileSync as writeFileSync6 } from "node:fs";
 import os5 from "node:os";
-import { delimiter, dirname as dirname5, join as join8, resolve as resolve4 } from "node:path";
+import { delimiter, dirname as dirname6, join as join9, resolve as resolve5 } from "node:path";
 
 // server/services/machinePrepCatalog.ts
 var CHROME_DEB_URL = "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb";
@@ -10386,10 +10634,10 @@ function prepCommandProblem(cmd, kind) {
 }
 
 // connector/captura.ts
-import { spawn } from "node:child_process";
-import { existsSync as existsSync6, mkdtempSync, rmSync as rmSync4, writeFileSync as writeFileSync5 } from "node:fs";
+import { spawn as spawn2 } from "node:child_process";
+import { existsSync as existsSync7, mkdtempSync, rmSync as rmSync4, writeFileSync as writeFileSync5 } from "node:fs";
 import os4 from "node:os";
-import { join as join7 } from "node:path";
+import { join as join8 } from "node:path";
 var SCREENS = {
   computador: { width: 1440, height: 900, scale: 1, mobile: false },
   celular: { width: 390, height: 844, scale: 2, mobile: true }
@@ -10419,7 +10667,7 @@ var CHROME_PATHS = {
     "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
   ]
 };
-function findChrome(env = process.env, platform = process.platform, exists = existsSync6) {
+function findChrome(env = process.env, platform = process.platform, exists = existsSync7) {
   const custom2 = env.CHROME_BIN?.trim();
   const perUser = platform === "win32" && env.LOCALAPPDATA ? [`${env.LOCALAPPDATA}\\Google\\Chrome\\Application\\chrome.exe`] : [];
   return [...custom2 ? [custom2] : [], ...perUser, ...CHROME_PATHS[platform] ?? []].find((p) => exists(p)) ?? null;
@@ -10545,7 +10793,7 @@ function captureFileName(titulo, seq) {
   const slug = titulo.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60).replace(/-+$/, "");
   return `captura-${String(seq).padStart(2, "0")}${slug ? `-${slug}` : ""}.png`;
 }
-var sleep = (ms) => new Promise((resolve9) => setTimeout(resolve9, ms));
+var sleep = (ms) => new Promise((resolve10) => setTimeout(resolve10, ms));
 var clampWait = (ms, fallback) => Math.min(Math.max(0, ms ?? fallback), CAPTURE_WAIT_MAX);
 function connect(child) {
   const out = child.stdio[3];
@@ -10584,10 +10832,10 @@ function connect(child) {
     pending.clear();
   });
   return {
-    send: (method, params = {}, sessionId) => new Promise((resolve9, reject) => {
+    send: (method, params = {}, sessionId) => new Promise((resolve10, reject) => {
       if (input2.destroyed) return reject(new Error("O Chrome sem tela j\xE1 fechou."));
       const id = ++seq;
-      pending.set(id, { resolve: resolve9, reject, method });
+      pending.set(id, { resolve: resolve10, reject, method });
       out.write(`${JSON.stringify({ id, method, params, ...sessionId ? { sessionId } : {} })}\0`);
     }),
     on: (fn) => {
@@ -10602,7 +10850,7 @@ async function openTab(conn) {
   if (!targetId || !sessionId) throw new Error("O Chrome sem tela n\xE3o abriu a aba.");
   return {
     send: (method, params) => conn.send(method, params, sessionId),
-    once: (event, timeoutMs) => new Promise((resolve9) => {
+    once: (event, timeoutMs) => new Promise((resolve10) => {
       const off = conn.on((m) => {
         if (m.sessionId === sessionId && m.method === event) done(true);
       });
@@ -10610,7 +10858,7 @@ async function openTab(conn) {
       function done(ok) {
         clearTimeout(timer);
         off();
-        resolve9(ok);
+        resolve10(ok);
       }
     }),
     on: (event, fn) => conn.on((m) => {
@@ -10691,8 +10939,8 @@ function createScreenCapture(opts = {}) {
   function launch() {
     const bin = findChrome(opts.env ?? process.env, opts.platform ?? process.platform);
     if (!bin) return Promise.reject(new Error(MSG_NO_CHROME));
-    const profile = mkdtempSync(join7(os4.tmpdir(), "benflow-chrome-"));
-    const child = spawn(bin, chromeArgs(profile), { stdio: ["ignore", "ignore", "ignore", "pipe", "pipe"] });
+    const profile = mkdtempSync(join8(os4.tmpdir(), "benflow-chrome-"));
+    const child = spawn2(bin, chromeArgs(profile), { stdio: ["ignore", "ignore", "ignore", "pipe", "pipe"] });
     child.unref();
     for (const s2 of [child.stdio[3], child.stdio[4]]) s2?.unref?.();
     if (!exitHook) {
@@ -10750,14 +10998,14 @@ var RETRY_FAILED_MS = 6 * 60 * 6e4;
 var INSTALL_TIMEOUT_MS = 15 * 6e4;
 var DEPS_TIMEOUT_MS = 20 * 6e4;
 function prepCachePath(configFile) {
-  return join8(dirname5(resolve4(configFile)), "preparo.json");
+  return join9(dirname6(resolve5(configFile)), "preparo.json");
 }
 function emptyCache() {
   return { v: 1, itens: {}, falhas: {}, pastas: {} };
 }
 function readPrepCache(file2) {
   try {
-    const raw = JSON.parse(readFileSync6(file2, "utf8"));
+    const raw = JSON.parse(readFileSync7(file2, "utf8"));
     if (!raw || typeof raw !== "object") return emptyCache();
     const obj3 = (v) => v && typeof v === "object" && !Array.isArray(v) ? v : {};
     return { v: 1, itens: obj3(raw.itens), falhas: obj3(raw.falhas), pastas: obj3(raw.pastas) };
@@ -10771,7 +11019,7 @@ function updateCache(file2, change) {
     try {
       const c = readPrepCache(file2);
       change(c);
-      mkdirSync5(dirname5(file2), { recursive: true });
+      mkdirSync6(dirname6(file2), { recursive: true });
       writeFileSync6(file2, JSON.stringify(c, null, 1) + "\n", { mode: 384 });
     } catch {
     }
@@ -10827,7 +11075,7 @@ function prepExec(platform = process.platform) {
 }
 function executable(path2, platform) {
   try {
-    if (!statSync7(path2).isFile()) return false;
+    if (!statSync8(path2).isFile()) return false;
     if (platform !== "win32") accessSync(path2, constants.X_OK);
     return true;
   } catch {
@@ -10836,25 +11084,25 @@ function executable(path2, platform) {
 }
 function searchDirs(env, platform) {
   const fromPath = (env.PATH ?? env.Path ?? "").split(platform === "win32" ? ";" : delimiter).filter(Boolean);
-  const extra = platform === "win32" ? [] : ["/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin", "/usr/sbin", "/snap/bin", ...env.HOME ? [join8(env.HOME, ".local", "bin")] : []];
+  const extra = platform === "win32" ? [] : ["/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin", "/usr/sbin", "/snap/bin", ...env.HOME ? [join9(env.HOME, ".local", "bin")] : []];
   return [.../* @__PURE__ */ new Set([...fromPath, ...extra])];
 }
 function whichProgram(name, env, platform, isExec = (p) => executable(p, platform)) {
   const exts = platform === "win32" ? ["", ...(env.PATHEXT ?? ".EXE;.CMD;.BAT;.COM").split(";").filter(Boolean)] : [""];
   for (const dir of searchDirs(env, platform)) {
     for (const ext of exts) {
-      const full = join8(dir, name + ext);
+      const full = join9(dir, name + ext);
       if (isExec(full)) return full;
     }
   }
   return null;
 }
 function catalogPresent(cat, p) {
-  if (cat.chrome && findChrome(p.env, p.platform, p.exists ?? existsSync7)) return true;
+  if (cat.chrome && findChrome(p.env, p.platform, p.exists ?? existsSync8)) return true;
   const found = cat.programs.map((name) => whichProgram(name, p.env, p.platform, p.isExec) !== null);
   return cat.allOf ? found.every(Boolean) : found.some(Boolean);
 }
-function tail(text, max = 600) {
+function tail2(text, max = 600) {
   const flat = text.replace(/\r/g, "").trim();
   return flat.length > max ? `...${flat.slice(-max)}` : flat;
 }
@@ -10895,9 +11143,9 @@ async function runStep(cat, step, ctx) {
     if (ctx.arch !== step.arch) return { ok: false, detail: `O pacote oficial \xE9 s\xF3 para x64 (esta m\xE1quina \xE9 ${ctx.arch}): ${cat.manual?.linux ?? manual}` };
     const downloader = whichProgram("curl", ctx.env, ctx.platform, ctx.probe.isExec) ? "curl" : whichProgram("wget", ctx.env, ctx.platform, ctx.probe.isExec) ? "wget" : null;
     if (!downloader) return { ok: false, detail: `Sem curl nem wget para baixar o pacote: ${manual}` };
-    const dir = mkdtempSync2(join8(os5.tmpdir(), "benflow-preparo-"));
+    const dir = mkdtempSync2(join9(os5.tmpdir(), "benflow-preparo-"));
     try {
-      const file2 = join8(dir, "pacote.deb");
+      const file2 = join9(dir, "pacote.deb");
       const got = downloader === "curl" ? await ctx.exec("curl", ["-fsSL", "--retry", "2", "-o", file2, step.url], { timeoutMs: 10 * 6e4 }) : await ctx.exec("wget", ["-q", "-O", file2, step.url], { timeoutMs: 10 * 6e4 });
       if (got.code !== 0) return { ok: false, detail: `N\xE3o deu para baixar ${step.url}: ${lastLine(got)}` };
       return await aptInstall(ctx, [file2], manual);
@@ -10948,14 +11196,14 @@ function lockDirs(root, maxDirs = 12) {
     }
     const has = new Set(names);
     const js2 = has.has("package.json") ? JS_LOCKS.find((l) => has.has(l.file)) : void 0;
-    if (js2) out.push({ rel, abs, lock: js2.file, kind: js2.kind, depsDir: join8(abs, "node_modules") });
-    if (has.has("composer.json") && has.has("composer.lock")) out.push({ rel, abs, lock: "composer.lock", kind: "composer", depsDir: join8(abs, "vendor") });
+    if (js2) out.push({ rel, abs, lock: js2.file, kind: js2.kind, depsDir: join9(abs, "node_modules") });
+    if (has.has("composer.json") && has.has("composer.lock")) out.push({ rel, abs, lock: "composer.lock", kind: "composer", depsDir: join9(abs, "vendor") });
     if (depth >= 2) return;
     for (const name of names.sort()) {
       if (name.startsWith(".") || SKIP_DIRS.has(name)) continue;
-      const child = join8(abs, name);
+      const child = join9(abs, name);
       try {
-        if (!statSync7(child).isDirectory()) continue;
+        if (!statSync8(child).isDirectory()) continue;
       } catch {
         continue;
       }
@@ -10969,8 +11217,8 @@ function npmDepsStale(dir) {
   let lock;
   let hidden;
   try {
-    lock = JSON.parse(readFileSync6(join8(dir, "package-lock.json"), "utf8"));
-    hidden = JSON.parse(readFileSync6(join8(dir, "node_modules", ".package-lock.json"), "utf8"));
+    lock = JSON.parse(readFileSync7(join9(dir, "package-lock.json"), "utf8"));
+    hidden = JSON.parse(readFileSync7(join9(dir, "node_modules", ".package-lock.json"), "utf8"));
   } catch {
     return false;
   }
@@ -10983,14 +11231,14 @@ function npmDepsStale(dir) {
 }
 function realDir(path2) {
   try {
-    return realpathSync4(path2);
+    return realpathSync5(path2);
   } catch {
-    return resolve4(path2);
+    return resolve5(path2);
   }
 }
 function fileHash(path2) {
   try {
-    return createHash2("sha256").update(readFileSync6(path2)).digest("hex").slice(0, 32);
+    return createHash2("sha256").update(readFileSync7(path2)).digest("hex").slice(0, 32);
   } catch {
     return null;
   }
@@ -11004,7 +11252,7 @@ function depsCommand(d, env, platform, isExec) {
     return has("pnpm") ? { cmd: "pnpm", args, label: "pnpm install --frozen-lockfile" } : viaCorepack("pnpm", args) ?? { missing: "pnpm" };
   }
   if (d.kind === "yarn") {
-    const berry = existsSync7(join8(d.abs, ".yarnrc.yml"));
+    const berry = existsSync8(join9(d.abs, ".yarnrc.yml"));
     const args = berry ? ["install", "--immutable"] : ["install", "--frozen-lockfile"];
     return has("yarn") ? { cmd: "yarn", args, label: `yarn ${args.join(" ")}` } : viaCorepack("yarn", args) ?? { missing: "yarn" };
   }
@@ -11100,11 +11348,11 @@ async function prepareMachine(o) {
       for (const d of lockDirs(repo.path)) {
         const folder = realDir(d.abs);
         await withFolderLock(folder, async () => {
-          const hash2 = fileHash(join8(d.abs, d.lock));
+          const hash2 = fileHash(join9(d.abs, d.lock));
           if (!hash2) return;
           const cache = readPrepCache(o.cacheFile);
           const known = cache.pastas[folder]?.[d.lock];
-          const has = existsSync7(d.depsDir);
+          const has = existsSync8(d.depsDir);
           const remember = () => updateCache(o.cacheFile, (c) => {
             c.pastas[folder] = { ...c.pastas[folder] ?? {}, [d.lock]: { hash: hash2, at: now() } };
           });
@@ -11140,7 +11388,7 @@ async function prepareMachine(o) {
             await remember();
             return;
           }
-          const out = tail(`${res.stderr}
+          const out = tail2(`${res.stderr}
 ${res.stdout}`);
           depsTrouble.push(`${cmd.label} em ${label} falhou: ${out}`);
           depsForClaude.push(`- ${cmd.label} em ${label} falhou: ${inlineData("saida", out, 700)}`);
@@ -11180,7 +11428,7 @@ ${res.stdout}`);
   return { timeline, prompt, report: hasReport ? report : null };
 }
 
-// node_modules/zod/v4/classic/external.js
+// ../benflow/node_modules/zod/v4/classic/external.js
 var external_exports = {};
 __export(external_exports, {
   $brand: () => $brand,
@@ -11443,7 +11691,7 @@ __export(external_exports, {
   xor: () => xor
 });
 
-// node_modules/zod/v4/core/index.js
+// ../benflow/node_modules/zod/v4/core/index.js
 var core_exports2 = {};
 __export(core_exports2, {
   $ZodAny: () => $ZodAny,
@@ -11760,7 +12008,7 @@ __export(core_exports2, {
   withParser: () => withParser
 });
 
-// node_modules/zod/v4/core/util.js
+// ../benflow/node_modules/zod/v4/core/util.js
 var util_exports = {};
 __export(util_exports, {
   BIGINT_FORMAT_RANGES: () => BIGINT_FORMAT_RANGES,
@@ -12603,7 +12851,7 @@ function constantCatch(value) {
   return fn;
 }
 
-// node_modules/zod/v4/core/core.js
+// ../benflow/node_modules/zod/v4/core/core.js
 var _a;
 var NEVER = /* @__PURE__ */ Object.freeze({
   status: "aborted"
@@ -12725,7 +12973,7 @@ function config(newConfig) {
   return globalConfig;
 }
 
-// node_modules/zod/v4/core/errors.js
+// ../benflow/node_modules/zod/v4/core/errors.js
 function _getMessage() {
   const internals = this._zod;
   internals.message ?? (internals.message = JSON.stringify(internals.def, jsonStringifyReplacer, 2));
@@ -12917,7 +13165,7 @@ function prettifyError(error62) {
   return lines2.join("\n");
 }
 
-// node_modules/zod/v4/core/parse.js
+// ../benflow/node_modules/zod/v4/core/parse.js
 function finalizeParams(callee, params) {
   return { callee: params?.callee ?? callee, Err: params?.Err };
 }
@@ -13077,7 +13325,7 @@ var _safeDecodeAsync = (_Err) => async (schema, value, _ctx) => {
 };
 var safeDecodeAsync = /* @__PURE__ */ _safeDecodeAsync($ZodRealError);
 
-// node_modules/zod/v4/core/regexes.js
+// ../benflow/node_modules/zod/v4/core/regexes.js
 var regexes_exports = {};
 __export(regexes_exports, {
   anyString: () => anyString,
@@ -13249,7 +13497,7 @@ var sha512_hex = /^[0-9a-fA-F]{128}$/;
 var sha512_base64 = /* @__PURE__ */ fixedBase64(86, "==");
 var sha512_base64url = /* @__PURE__ */ fixedBase64url(86);
 
-// node_modules/zod/v4/core/checks.js
+// ../benflow/node_modules/zod/v4/core/checks.js
 var $ZodCheck = /* @__PURE__ */ $constructor("$ZodCheck", (inst, def) => {
   var _a3;
   inst._zod ?? (inst._zod = {});
@@ -13725,7 +13973,7 @@ var $ZodCheckOverwrite = /* @__PURE__ */ $constructor("$ZodCheckOverwrite", (ins
   };
 });
 
-// node_modules/zod/v4/core/doc.js
+// ../benflow/node_modules/zod/v4/core/doc.js
 var Doc = class {
   constructor(args = [], closed = {}) {
     this.content = [];
@@ -13766,14 +14014,14 @@ ${content.join("\n")}
   }
 };
 
-// node_modules/zod/v4/core/versions.js
+// ../benflow/node_modules/zod/v4/core/versions.js
 var version = {
   major: 4,
   minor: 6,
   patch: 5
 };
 
-// node_modules/zod/v4/core/schemas.js
+// ../benflow/node_modules/zod/v4/core/schemas.js
 var $ZodType = /* @__PURE__ */ $constructor("$ZodType", (inst, def) => {
   var _a3;
   inst ?? (inst = {});
@@ -16187,7 +16435,7 @@ function handleRefineResult(result, payload, input2, inst) {
   }
 }
 
-// node_modules/zod/v4/core/memoizer.js
+// ../benflow/node_modules/zod/v4/core/memoizer.js
 var $ZodCyclicError = class extends Error {
   constructor() {
     super(`Cannot parse a reference cycle that closes through a transform`);
@@ -16206,7 +16454,7 @@ var recursive = /* @__PURE__ */ new WeakMap();
 var NONE = 0;
 var ASSUMED = 1;
 var PROVEN = 2;
-function isRecursive(inst, stack, resolve9) {
+function isRecursive(inst, stack, resolve10) {
   const cached3 = recursive.get(inst);
   if (cached3 !== void 0)
     return cached3 ? PROVEN : NONE;
@@ -16216,7 +16464,7 @@ function isRecursive(inst, stack, resolve9) {
   let result = NONE;
   const check2 = (child) => {
     if (result !== PROVEN && child?._zod) {
-      const answer = isRecursive(child, stack, resolve9);
+      const answer = isRecursive(child, stack, resolve10);
       if (answer > result)
         result = answer;
     }
@@ -16227,7 +16475,7 @@ function isRecursive(inst, stack, resolve9) {
       const desc = Object.getOwnPropertyDescriptor(sh, key);
       if (spread && !desc.enumerable)
         continue;
-      const child = desc.get ? ASSUMED : desc.value?._zod ? isRecursive(desc.value, stack, resolve9) : NONE;
+      const child = desc.get ? ASSUMED : desc.value?._zod ? isRecursive(desc.value, stack, resolve10) : NONE;
       if (child > answer)
         answer = child;
     }
@@ -16291,7 +16539,7 @@ function isRecursive(inst, stack, resolve9) {
       break;
     // `$ZodLazy` caches its inner on the def, so a resolved edge is followed exactly
     case "lazy": {
-      const inner = def._cachedInner ?? (resolve9 ? inst._zod.innerType : void 0);
+      const inner = def._cachedInner ?? (resolve10 ? inst._zod.innerType : void 0);
       merge2(inner ? isRecursive(inner, stack, false) : ASSUMED);
       break;
     }
@@ -16464,7 +16712,7 @@ function isBackEdge(ctx, value) {
   return backEdges !== void 0 && isRef(value) && backEdges.has(value);
 }
 
-// node_modules/zod/v4/locales/index.js
+// ../benflow/node_modules/zod/v4/locales/index.js
 var locales_exports = {};
 __export(locales_exports, {
   ar: () => ar_default,
@@ -16532,7 +16780,7 @@ __export(locales_exports, {
   zhTW: () => zh_TW_default
 });
 
-// node_modules/zod/v4/locales/ar.js
+// ../benflow/node_modules/zod/v4/locales/ar.js
 var error = () => {
   const Sizable = {
     string: { unit: "\u062D\u0631\u0641", verb: "\u0623\u0646 \u064A\u062D\u0648\u064A" },
@@ -16644,7 +16892,7 @@ function ar_default() {
   };
 }
 
-// node_modules/zod/v4/locales/az.js
+// ../benflow/node_modules/zod/v4/locales/az.js
 var error2 = () => {
   const Sizable = {
     string: { unit: "simvol", verb: "olmal\u0131d\u0131r" },
@@ -16755,7 +17003,7 @@ function az_default() {
   };
 }
 
-// node_modules/zod/v4/locales/be.js
+// ../benflow/node_modules/zod/v4/locales/be.js
 function getBelarusianPlural(count, one, few, many) {
   const absCount = Math.abs(count);
   const lastDigit = absCount % 10;
@@ -16924,7 +17172,7 @@ function be_default() {
   };
 }
 
-// node_modules/zod/v4/locales/bg.js
+// ../benflow/node_modules/zod/v4/locales/bg.js
 var error4 = () => {
   const Sizable = {
     string: { unit: "\u0441\u0438\u043C\u0432\u043E\u043B\u0430", verb: "\u0434\u0430 \u0441\u044A\u0434\u044A\u0440\u0436\u0430" },
@@ -17050,7 +17298,7 @@ function bg_default() {
   };
 }
 
-// node_modules/zod/v4/locales/bn.js
+// ../benflow/node_modules/zod/v4/locales/bn.js
 var error5 = () => {
   const Sizable = {
     string: { unit: "\u0985\u0995\u09CD\u09B7\u09B0", verb: "\u09A5\u09BE\u0995\u09A4\u09C7 \u09B9\u09AC\u09C7" },
@@ -17164,7 +17412,7 @@ function bn_default() {
   };
 }
 
-// node_modules/zod/v4/locales/ca.js
+// ../benflow/node_modules/zod/v4/locales/ca.js
 var error6 = () => {
   const Sizable = {
     string: { unit: "car\xE0cters", verb: "contenir" },
@@ -17278,7 +17526,7 @@ function ca_default() {
   };
 }
 
-// node_modules/zod/v4/locales/ckb.js
+// ../benflow/node_modules/zod/v4/locales/ckb.js
 var error7 = () => {
   const Sizable = {
     string: { unit: "\u067E\u06CC\u062A", verb: "\u0628\u06CE\u062A" },
@@ -17411,7 +17659,7 @@ function ckb_default() {
   };
 }
 
-// node_modules/zod/v4/locales/cs.js
+// ../benflow/node_modules/zod/v4/locales/cs.js
 var error8 = () => {
   const Sizable = {
     string: { unit: "znak\u016F", verb: "m\xEDt" },
@@ -17528,7 +17776,7 @@ function cs_default() {
   };
 }
 
-// node_modules/zod/v4/locales/da.js
+// ../benflow/node_modules/zod/v4/locales/da.js
 var error9 = () => {
   const Sizable = {
     string: { unit: "tegn", verb: "havde" },
@@ -17649,7 +17897,7 @@ function da_default() {
   };
 }
 
-// node_modules/zod/v4/locales/de.js
+// ../benflow/node_modules/zod/v4/locales/de.js
 var error10 = () => {
   const Sizable = {
     string: { unit: "Zeichen", verb: "zu haben" },
@@ -17763,7 +18011,7 @@ function de_default() {
   };
 }
 
-// node_modules/zod/v4/locales/el.js
+// ../benflow/node_modules/zod/v4/locales/el.js
 var error11 = () => {
   const Sizable = {
     string: { unit: "\u03C7\u03B1\u03C1\u03B1\u03BA\u03C4\u03AE\u03C1\u03B5\u03C2", verb: "\u03BD\u03B1 \u03AD\u03C7\u03B5\u03B9" },
@@ -17876,7 +18124,7 @@ function el_default() {
   };
 }
 
-// node_modules/zod/v4/locales/en.js
+// ../benflow/node_modules/zod/v4/locales/en.js
 var error12 = () => {
   const Sizable = {
     string: { unit: "characters", verb: "to have" },
@@ -18001,7 +18249,7 @@ function en_default() {
   };
 }
 
-// node_modules/zod/v4/locales/eo.js
+// ../benflow/node_modules/zod/v4/locales/eo.js
 var error13 = () => {
   const Sizable = {
     string: { unit: "karaktrojn", verb: "havi" },
@@ -18116,7 +18364,7 @@ function eo_default() {
   };
 }
 
-// node_modules/zod/v4/locales/es.js
+// ../benflow/node_modules/zod/v4/locales/es.js
 var error14 = () => {
   const Sizable = {
     string: { unit: "caracteres", verb: "tener" },
@@ -18253,7 +18501,7 @@ function es_default() {
   };
 }
 
-// node_modules/zod/v4/locales/fa.js
+// ../benflow/node_modules/zod/v4/locales/fa.js
 var error15 = () => {
   const Sizable = {
     string: { unit: "\u06A9\u0627\u0631\u0627\u06A9\u062A\u0631", verb: "\u062F\u0627\u0634\u062A\u0647 \u0628\u0627\u0634\u062F" },
@@ -18373,7 +18621,7 @@ function fa_default() {
   };
 }
 
-// node_modules/zod/v4/locales/fi.js
+// ../benflow/node_modules/zod/v4/locales/fi.js
 var error16 = () => {
   const Sizable = {
     string: { unit: "merkki\xE4", subject: "merkkijonon" },
@@ -18491,7 +18739,7 @@ function fi_default() {
   };
 }
 
-// node_modules/zod/v4/locales/fr.js
+// ../benflow/node_modules/zod/v4/locales/fr.js
 var error17 = () => {
   const Sizable = {
     string: { unit: "caract\xE8res", verb: "avoir" },
@@ -18621,7 +18869,7 @@ function fr_default() {
   };
 }
 
-// node_modules/zod/v4/locales/fr-CA.js
+// ../benflow/node_modules/zod/v4/locales/fr-CA.js
 var error18 = () => {
   const Sizable = {
     string: { unit: "caract\xE8res", verb: "avoir" },
@@ -18734,7 +18982,7 @@ function fr_CA_default() {
   };
 }
 
-// node_modules/zod/v4/locales/gu.js
+// ../benflow/node_modules/zod/v4/locales/gu.js
 var error19 = () => {
   const Sizable = {
     string: { unit: "\u0A85\u0A95\u0ACD\u0AB7\u0AB0", verb: "\u0AB9\u0ACB\u0AB5\u0ABE \u0A9C\u0ACB\u0A88\u0A8F" },
@@ -18848,7 +19096,7 @@ function gu_default() {
   };
 }
 
-// node_modules/zod/v4/locales/he.js
+// ../benflow/node_modules/zod/v4/locales/he.js
 var error20 = () => {
   const TypeNames = {
     string: { label: "\u05DE\u05D7\u05E8\u05D5\u05D6\u05EA", gender: "f" },
@@ -19050,7 +19298,7 @@ function he_default() {
   };
 }
 
-// node_modules/zod/v4/locales/hi.js
+// ../benflow/node_modules/zod/v4/locales/hi.js
 var error21 = () => {
   const Sizable = {
     string: { unit: "\u0905\u0915\u094D\u0937\u0930", verb: "\u0930\u0916\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F" },
@@ -19162,7 +19410,7 @@ function hi_default() {
   };
 }
 
-// node_modules/zod/v4/locales/hr.js
+// ../benflow/node_modules/zod/v4/locales/hr.js
 var error22 = () => {
   const Sizable = {
     string: { unit: "znakova", verb: "imati" },
@@ -19289,7 +19537,7 @@ function hr_default() {
   };
 }
 
-// node_modules/zod/v4/locales/hu.js
+// ../benflow/node_modules/zod/v4/locales/hu.js
 var error23 = () => {
   const Sizable = {
     string: { unit: "karakter", verb: "legyen" },
@@ -19403,7 +19651,7 @@ function hu_default() {
   };
 }
 
-// node_modules/zod/v4/locales/hy.js
+// ../benflow/node_modules/zod/v4/locales/hy.js
 function getArmenianPlural(count, one, many) {
   return Math.abs(count) === 1 ? one : many;
 }
@@ -19562,7 +19810,7 @@ function hy_default() {
   };
 }
 
-// node_modules/zod/v4/locales/id.js
+// ../benflow/node_modules/zod/v4/locales/id.js
 var error25 = () => {
   const Sizable = {
     string: { unit: "karakter", verb: "memiliki" },
@@ -19674,7 +19922,7 @@ function id_default() {
   };
 }
 
-// node_modules/zod/v4/locales/is.js
+// ../benflow/node_modules/zod/v4/locales/is.js
 var error26 = () => {
   const Sizable = {
     string: { unit: "stafi", verb: "a\xF0 hafa" },
@@ -19789,7 +20037,7 @@ function is_default() {
   };
 }
 
-// node_modules/zod/v4/locales/it.js
+// ../benflow/node_modules/zod/v4/locales/it.js
 var error27 = () => {
   const Sizable = {
     string: { unit: "caratteri", verb: "avere" },
@@ -19903,7 +20151,7 @@ function it_default() {
   };
 }
 
-// node_modules/zod/v4/locales/ja.js
+// ../benflow/node_modules/zod/v4/locales/ja.js
 var error28 = () => {
   const Sizable = {
     string: { unit: "\u6587\u5B57", verb: "\u3067\u3042\u308B" },
@@ -20016,7 +20264,7 @@ function ja_default() {
   };
 }
 
-// node_modules/zod/v4/locales/ka.js
+// ../benflow/node_modules/zod/v4/locales/ka.js
 var error29 = () => {
   const Sizable = {
     string: { unit: "\u10E1\u10D8\u10DB\u10D1\u10DD\u10DA\u10DD", verb: "\u10E3\u10DC\u10D3\u10D0 \u10E8\u10D4\u10D8\u10EA\u10D0\u10D5\u10D3\u10D4\u10E1" },
@@ -20134,7 +20382,7 @@ function ka_default() {
   };
 }
 
-// node_modules/zod/v4/locales/km.js
+// ../benflow/node_modules/zod/v4/locales/km.js
 var error30 = () => {
   const Sizable = {
     string: { unit: "\u178F\u17BD\u17A2\u1780\u17D2\u179F\u179A", verb: "\u1782\u17BD\u179A\u1798\u17B6\u1793" },
@@ -20250,12 +20498,12 @@ function km_default() {
   };
 }
 
-// node_modules/zod/v4/locales/kh.js
+// ../benflow/node_modules/zod/v4/locales/kh.js
 function kh_default() {
   return km_default();
 }
 
-// node_modules/zod/v4/locales/kn.js
+// ../benflow/node_modules/zod/v4/locales/kn.js
 var error31 = () => {
   const Sizable = {
     string: { unit: "\u0C85\u0C95\u0CCD\u0CB7\u0CB0\u0C97\u0CB3\u0CC1", verb: "\u0CB9\u0CCA\u0C82\u0CA6\u0CB2\u0CC1" },
@@ -20371,7 +20619,7 @@ function kn_default() {
   };
 }
 
-// node_modules/zod/v4/locales/ko.js
+// ../benflow/node_modules/zod/v4/locales/ko.js
 var error32 = () => {
   const Sizable = {
     string: { unit: "\uBB38\uC790", verb: "to have" },
@@ -20488,7 +20736,7 @@ function ko_default() {
   };
 }
 
-// node_modules/zod/v4/locales/lt.js
+// ../benflow/node_modules/zod/v4/locales/lt.js
 var capitalizeFirstCharacter = (text) => {
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
@@ -20696,7 +20944,7 @@ function lt_default() {
   };
 }
 
-// node_modules/zod/v4/locales/mk.js
+// ../benflow/node_modules/zod/v4/locales/mk.js
 var error34 = () => {
   const Sizable = {
     string: { unit: "\u0437\u043D\u0430\u0446\u0438", verb: "\u0434\u0430 \u0438\u043C\u0430\u0430\u0442" },
@@ -20811,7 +21059,7 @@ function mk_default() {
   };
 }
 
-// node_modules/zod/v4/locales/ms.js
+// ../benflow/node_modules/zod/v4/locales/ms.js
 var error35 = () => {
   const Sizable = {
     string: { unit: "aksara", verb: "mempunyai" },
@@ -20924,7 +21172,7 @@ function ms_default() {
   };
 }
 
-// node_modules/zod/v4/locales/ne.js
+// ../benflow/node_modules/zod/v4/locales/ne.js
 var error36 = () => {
   const Sizable = {
     string: { unit: "\u0905\u0915\u094D\u0937\u0930", verb: "\u0939\u0941\u0928\u0941\u092A\u0930\u094D\u091B" },
@@ -21036,7 +21284,7 @@ function ne_default() {
   };
 }
 
-// node_modules/zod/v4/locales/nl.js
+// ../benflow/node_modules/zod/v4/locales/nl.js
 var error37 = () => {
   const Sizable = {
     string: { unit: "tekens", verb: "heeft" },
@@ -21152,7 +21400,7 @@ function nl_default() {
   };
 }
 
-// node_modules/zod/v4/locales/nn.js
+// ../benflow/node_modules/zod/v4/locales/nn.js
 var error38 = () => {
   const Sizable = {
     string: { unit: "teikn", verb: "\xE5 ha" },
@@ -21266,7 +21514,7 @@ function nn_default() {
   };
 }
 
-// node_modules/zod/v4/locales/no.js
+// ../benflow/node_modules/zod/v4/locales/no.js
 var error39 = () => {
   const Sizable = {
     string: { unit: "tegn", verb: "\xE5 ha" },
@@ -21380,7 +21628,7 @@ function no_default() {
   };
 }
 
-// node_modules/zod/v4/locales/ota.js
+// ../benflow/node_modules/zod/v4/locales/ota.js
 var error40 = () => {
   const Sizable = {
     string: { unit: "harf", verb: "olmal\u0131d\u0131r" },
@@ -21495,7 +21743,7 @@ function ota_default() {
   };
 }
 
-// node_modules/zod/v4/locales/ps.js
+// ../benflow/node_modules/zod/v4/locales/ps.js
 var error41 = () => {
   const Sizable = {
     string: { unit: "\u062A\u0648\u06A9\u064A", verb: "\u0648\u0644\u0631\u064A" },
@@ -21615,7 +21863,7 @@ function ps_default() {
   };
 }
 
-// node_modules/zod/v4/locales/pl.js
+// ../benflow/node_modules/zod/v4/locales/pl.js
 var error42 = () => {
   const Sizable = {
     string: { unit: "znak\xF3w", verb: "mie\u0107" },
@@ -21730,7 +21978,7 @@ function pl_default() {
   };
 }
 
-// node_modules/zod/v4/locales/pt.js
+// ../benflow/node_modules/zod/v4/locales/pt.js
 var error43 = () => {
   const Sizable = {
     string: { unit: "caracteres" },
@@ -21874,7 +22122,7 @@ function pt_default() {
   };
 }
 
-// node_modules/zod/v4/locales/pt-BR.js
+// ../benflow/node_modules/zod/v4/locales/pt-BR.js
 var error44 = () => {
   const Sizable = {
     string: { unit: "caracteres" },
@@ -22019,7 +22267,7 @@ function pt_BR_default() {
   };
 }
 
-// node_modules/zod/v4/locales/ro.js
+// ../benflow/node_modules/zod/v4/locales/ro.js
 var error45 = () => {
   const Sizable = {
     string: { unit: "caractere", verb: "s\u0103 aib\u0103" },
@@ -22142,7 +22390,7 @@ function ro_default() {
   };
 }
 
-// node_modules/zod/v4/locales/ru.js
+// ../benflow/node_modules/zod/v4/locales/ru.js
 function getRussianPlural(count, one, few, many) {
   const absCount = Math.abs(count);
   const lastDigit = absCount % 10;
@@ -22311,7 +22559,7 @@ function ru_default() {
   };
 }
 
-// node_modules/zod/v4/locales/sk.js
+// ../benflow/node_modules/zod/v4/locales/sk.js
 var error47 = () => {
   const Sizable = {
     string: { unit: "znakov", verb: "ma\u0165" },
@@ -22428,7 +22676,7 @@ function sk_default() {
   };
 }
 
-// node_modules/zod/v4/locales/sl.js
+// ../benflow/node_modules/zod/v4/locales/sl.js
 var error48 = () => {
   const Sizable = {
     string: { unit: "znakov", verb: "imeti" },
@@ -22543,7 +22791,7 @@ function sl_default() {
   };
 }
 
-// node_modules/zod/v4/locales/sv.js
+// ../benflow/node_modules/zod/v4/locales/sv.js
 var error49 = () => {
   const Sizable = {
     string: { unit: "tecken", verb: "att ha" },
@@ -22659,7 +22907,7 @@ function sv_default() {
   };
 }
 
-// node_modules/zod/v4/locales/ta.js
+// ../benflow/node_modules/zod/v4/locales/ta.js
 var error50 = () => {
   const Sizable = {
     string: { unit: "\u0B8E\u0BB4\u0BC1\u0BA4\u0BCD\u0BA4\u0BC1\u0B95\u0BCD\u0B95\u0BB3\u0BCD", verb: "\u0B95\u0BCA\u0BA3\u0BCD\u0B9F\u0BBF\u0BB0\u0BC1\u0B95\u0BCD\u0B95 \u0BB5\u0BC7\u0BA3\u0BCD\u0B9F\u0BC1\u0BAE\u0BCD" },
@@ -22775,7 +23023,7 @@ function ta_default() {
   };
 }
 
-// node_modules/zod/v4/locales/tg.js
+// ../benflow/node_modules/zod/v4/locales/tg.js
 var error51 = () => {
   const Sizable = {
     string: { unit: "\u0430\u043B\u043E\u043C\u0430\u0442", verb: "\u0434\u043E\u0448\u0442\u0430 \u0431\u043E\u0448\u0430\u0434" },
@@ -22892,7 +23140,7 @@ function tg_default() {
   };
 }
 
-// node_modules/zod/v4/locales/th.js
+// ../benflow/node_modules/zod/v4/locales/th.js
 var error52 = () => {
   const Sizable = {
     string: { unit: "\u0E15\u0E31\u0E27\u0E2D\u0E31\u0E01\u0E29\u0E23", verb: "\u0E04\u0E27\u0E23\u0E21\u0E35" },
@@ -23008,7 +23256,7 @@ function th_default() {
   };
 }
 
-// node_modules/zod/v4/locales/tk.js
+// ../benflow/node_modules/zod/v4/locales/tk.js
 var error53 = () => {
   const Sizable = {
     string: { unit: "simwol", verb: "bolmaly" },
@@ -23116,7 +23364,7 @@ function tk_default() {
   };
 }
 
-// node_modules/zod/v4/locales/tr.js
+// ../benflow/node_modules/zod/v4/locales/tr.js
 var error54 = () => {
   const Sizable = {
     string: { unit: "karakter", verb: "olmal\u0131" },
@@ -23227,7 +23475,7 @@ function tr_default() {
   };
 }
 
-// node_modules/zod/v4/locales/uk.js
+// ../benflow/node_modules/zod/v4/locales/uk.js
 var error55 = () => {
   const Sizable = {
     string: { unit: "\u0441\u0438\u043C\u0432\u043E\u043B\u0456\u0432", verb: "\u043C\u0430\u0442\u0438\u043C\u0435" },
@@ -23341,12 +23589,12 @@ function uk_default() {
   };
 }
 
-// node_modules/zod/v4/locales/ua.js
+// ../benflow/node_modules/zod/v4/locales/ua.js
 function ua_default() {
   return uk_default();
 }
 
-// node_modules/zod/v4/locales/ur.js
+// ../benflow/node_modules/zod/v4/locales/ur.js
 var error56 = () => {
   const Sizable = {
     string: { unit: "\u062D\u0631\u0648\u0641", verb: "\u06C1\u0648\u0646\u0627" },
@@ -23462,7 +23710,7 @@ function ur_default() {
   };
 }
 
-// node_modules/zod/v4/locales/uz.js
+// ../benflow/node_modules/zod/v4/locales/uz.js
 var error57 = () => {
   const Sizable = {
     string: { unit: "belgi", verb: "bo\u2018lishi kerak" },
@@ -23576,7 +23824,7 @@ function uz_default() {
   };
 }
 
-// node_modules/zod/v4/locales/vi.js
+// ../benflow/node_modules/zod/v4/locales/vi.js
 var error58 = () => {
   const Sizable = {
     string: { unit: "k\xFD t\u1EF1", verb: "c\xF3" },
@@ -23690,7 +23938,7 @@ function vi_default() {
   };
 }
 
-// node_modules/zod/v4/locales/zh-CN.js
+// ../benflow/node_modules/zod/v4/locales/zh-CN.js
 var error59 = () => {
   const Sizable = {
     string: { unit: "\u5B57\u7B26", verb: "\u5305\u542B" },
@@ -23805,7 +24053,7 @@ function zh_CN_default() {
   };
 }
 
-// node_modules/zod/v4/locales/zh-TW.js
+// ../benflow/node_modules/zod/v4/locales/zh-TW.js
 var error60 = () => {
   const Sizable = {
     string: { unit: "\u5B57\u5143", verb: "\u64C1\u6709" },
@@ -23918,7 +24166,7 @@ function zh_TW_default() {
   };
 }
 
-// node_modules/zod/v4/locales/yo.js
+// ../benflow/node_modules/zod/v4/locales/yo.js
 var error61 = () => {
   const Sizable = {
     string: { unit: "\xE0mi", verb: "n\xED" },
@@ -24031,7 +24279,7 @@ function yo_default() {
   };
 }
 
-// node_modules/zod/v4/core/registries.js
+// ../benflow/node_modules/zod/v4/core/registries.js
 var _a2;
 var $output = /* @__PURE__ */ Symbol("ZodOutput");
 var $input = /* @__PURE__ */ Symbol("ZodInput");
@@ -24081,7 +24329,7 @@ function registry() {
 (_a2 = globalThis).__zod_globalRegistry ?? (_a2.__zod_globalRegistry = registry());
 var globalRegistry = globalThis.__zod_globalRegistry;
 
-// node_modules/zod/v4/core/compile.js
+// ../benflow/node_modules/zod/v4/core/compile.js
 var INVALID = /* @__PURE__ */ Symbol.for("zod.compile.invalid");
 var FALLBACK_FLAG = /* @__PURE__ */ Symbol.for("zod.compile.fallback");
 var ZodCompileAsyncError = class extends Error {
@@ -25683,7 +25931,7 @@ function generateTransformCheck(doc, ctx, schema, accessor) {
   return accessor;
 }
 
-// node_modules/zod/v4/core/api.js
+// ../benflow/node_modules/zod/v4/core/api.js
 function snapshotChecks(def) {
   if (def.checks)
     def.checks = [...def.checks];
@@ -26742,7 +26990,7 @@ function _stringFormat(Class2, format, fnOrRegex, _params = {}) {
   return inst;
 }
 
-// node_modules/zod/v4/core/to-json-schema.js
+// ../benflow/node_modules/zod/v4/core/to-json-schema.js
 function assignProps(target, ...sources) {
   for (const source of sources) {
     for (const key of Reflect.ownKeys(source)) {
@@ -27272,7 +27520,7 @@ var createStandardJSONSchemaMethod = (schema, io, processors = {}) => (params) =
   return finalize(ctx, schema);
 };
 
-// node_modules/zod/v4/core/json-schema-processors.js
+// ../benflow/node_modules/zod/v4/core/json-schema-processors.js
 var narrowMin = (agg, key, value) => {
   if (agg[key] === void 0 || value > agg[key])
     agg[key] = value;
@@ -28020,7 +28268,7 @@ function toJSONSchema(input2, params) {
   return finalize(ctx, input2);
 }
 
-// node_modules/zod/v4/core/json-schema-generator.js
+// ../benflow/node_modules/zod/v4/core/json-schema-generator.js
 var JSONSchemaGenerator = class {
   /** @deprecated Access via ctx instead */
   get metadataRegistry() {
@@ -28098,10 +28346,10 @@ var JSONSchemaGenerator = class {
   }
 };
 
-// node_modules/zod/v4/core/json-schema.js
+// ../benflow/node_modules/zod/v4/core/json-schema.js
 var json_schema_exports = {};
 
-// node_modules/zod/v4/classic/schemas.js
+// ../benflow/node_modules/zod/v4/classic/schemas.js
 var schemas_exports2 = {};
 __export(schemas_exports2, {
   ZodAny: () => ZodAny,
@@ -28282,7 +28530,7 @@ __export(schemas_exports2, {
   xor: () => xor
 });
 
-// node_modules/zod/v4/classic/checks.js
+// ../benflow/node_modules/zod/v4/classic/checks.js
 var checks_exports2 = {};
 __export(checks_exports2, {
   endsWith: () => _endsWith,
@@ -28317,7 +28565,7 @@ __export(checks_exports2, {
   uppercase: () => _uppercase
 });
 
-// node_modules/zod/v4/classic/errors.js
+// ../benflow/node_modules/zod/v4/classic/errors.js
 var _installedErrorProtos = /* @__PURE__ */ new WeakSet([Object.prototype, Error.prototype]);
 function _lazyMethod(proto, key, make) {
   Object.defineProperty(proto, key, {
@@ -28363,7 +28611,7 @@ var ZodRealError = /* @__PURE__ */ $constructor("ZodError", initializer2, void 0
   Parent: Error
 });
 
-// node_modules/zod/v4/classic/parse.js
+// ../benflow/node_modules/zod/v4/classic/parse.js
 var parse2 = /* @__PURE__ */ _parse(ZodRealError);
 var parseAsync2 = /* @__PURE__ */ _parseAsync(ZodRealError);
 var safeParse2 = /* @__PURE__ */ _safeParse(ZodRealError);
@@ -28377,7 +28625,7 @@ var safeDecode2 = /* @__PURE__ */ _safeDecode(ZodRealError);
 var safeEncodeAsync2 = /* @__PURE__ */ _safeEncodeAsync(ZodRealError);
 var safeDecodeAsync2 = /* @__PURE__ */ _safeDecodeAsync(ZodRealError);
 
-// node_modules/zod/v4/classic/schemas.js
+// ../benflow/node_modules/zod/v4/classic/schemas.js
 function _ensureDefaultLocale() {
   if (!globalConfig.localeError)
     config(en_default());
@@ -29842,7 +30090,7 @@ function preprocess(fn, schema) {
   });
 }
 
-// node_modules/zod/v4/classic/compat.js
+// ../benflow/node_modules/zod/v4/classic/compat.js
 var ZodIssueCode = {
   invalid_type: "invalid_type",
   too_big: "too_big",
@@ -29868,7 +30116,7 @@ var ZodFirstPartyTypeKind;
 /* @__PURE__ */ (function(ZodFirstPartyTypeKind3) {
 })(ZodFirstPartyTypeKind || (ZodFirstPartyTypeKind = {}));
 
-// node_modules/zod/v4/classic/iso.js
+// ../benflow/node_modules/zod/v4/classic/iso.js
 var iso_exports = {};
 __export(iso_exports, {
   ZodISODate: () => ZodISODate,
@@ -29893,7 +30141,7 @@ function duration2(params) {
   return _isoDuration(ZodISODuration, params);
 }
 
-// node_modules/zod/v4/classic/from-json-schema.js
+// ../benflow/node_modules/zod/v4/classic/from-json-schema.js
 var z = {
   ...schemas_exports2,
   ...checks_exports2,
@@ -30626,7 +30874,7 @@ function fromJSONSchema(schema, params) {
   return convertSchema(normalized, ctx);
 }
 
-// node_modules/zod/v4/core/visit.js
+// ../benflow/node_modules/zod/v4/core/visit.js
 var RESOLVING = /* @__PURE__ */ Symbol("z.visit/resolving");
 function visit(schema, fnOrHandlers) {
   const fn = typeof fnOrHandlers === "function" ? fnOrHandlers : (node2, rewritten) => {
@@ -30781,7 +31029,7 @@ function visit(schema, fnOrHandlers) {
   return run(schema);
 }
 
-// node_modules/zod/v4/classic/deep-partial.js
+// ../benflow/node_modules/zod/v4/classic/deep-partial.js
 function deepPartial(schema) {
   return visit(schema, {
     object: (s2) => s2.partial(),
@@ -30793,7 +31041,7 @@ function deepPartial(schema) {
   });
 }
 
-// node_modules/zod/v4/classic/in-out.js
+// ../benflow/node_modules/zod/v4/classic/in-out.js
 function withChecks(side, checks) {
   if (!checks?.length)
     return side;
@@ -30823,7 +31071,7 @@ function output(schema) {
   });
 }
 
-// node_modules/zod/v4/classic/coerce.js
+// ../benflow/node_modules/zod/v4/classic/coerce.js
 var coerce_exports = {};
 __export(coerce_exports, {
   bigint: () => bigint3,
@@ -31148,7 +31396,7 @@ function buildPainelPrompt(input2) {
     "1. Pergunta ou pedido de informa\xE7\xE3o: responda direto e curto. Para ver chamados, use listar_chamados e ver_chamado; para regras e decis\xF5es da organiza\xE7\xE3o, buscar_conhecimento e ler_nota; para entender o projeto, leia o c\xF3digo da pasta de trabalho.",
     "2. Pedido de abrir UM card: abra direto com criar_chamado (t\xEDtulo curto; descri\xE7\xE3o com o contexto, o que fazer e como conferir; em arquivos, os ids dos arquivos desta conversa que servem de refer\xEAncia) e diga o n\xFAmero.",
     "3. Pedido que vira MAIS de um card: monte a lista, chame propor_cards com ela, mostre a lista na resposta (t\xEDtulo e resumo de cada um) e termine perguntando se pode abrir. N\xE3o abra nenhum card neste turno. Quando a pessoa disser que pode, numa pr\xF3xima mensagem, abra cada card com criar_chamado, com o t\xEDtulo exatamente como na lista que ela viu, e mostre os n\xFAmeros. Se a lista mudar (card novo ou t\xEDtulo diferente), chame propor_cards de novo e espere o ok de novo.",
-    level === "consultar" ? `4. Pedido de mudan\xE7a no c\xF3digo ou de executar um card: nesta conversa voc\xEA n\xE3o edita arquivos, n\xE3o roda comandos e n\xE3o come\xE7a trabalho. Abra o card (item 2), se ele ainda n\xE3o existe, e diga que quem come\xE7a o trabalho neste Claude \xE9 ${owner} ou um administrador do projeto (ou a pessoa usa o Claude dela).` : '4. Pedido de mudan\xE7a no c\xF3digo ou de executar um card: o trabalho precisa de um card. Se ele ainda n\xE3o existe, abra (item 2) e pergunte se pode come\xE7ar, citando s\xF3 esse card, com # e o n\xFAmero (como "Posso come\xE7ar o #12?"). Com o ok dito na conversa, chame iniciar_execucao com o numero do card e siga como num chamado: ver_chamado do card, branch chamado/<etiqueta do card> a partir da develop atualizada, commits com a etiqueta, atualizar_progresso a cada etapa, testes com registrar_evidencia, um print de cada tela que mudou com capturar_tela (com o servidor de desenvolvimento no ar, a url local da tela e um t\xEDtulo que diga o que o print mostra), um v\xEDdeo curto at\xE9 cada mudan\xE7a com gravar_tela (destacando cada uma, com legenda) e, no fim, concluir_local com o resumo e o como_testar (o passo a passo de quem vai validar em homologa\xE7\xE3o).',
+    level === "consultar" ? `4. Pedido de mudan\xE7a no c\xF3digo ou de executar um card: nesta conversa voc\xEA n\xE3o edita arquivos, n\xE3o roda comandos e n\xE3o come\xE7a trabalho. Abra o card (item 2), se ele ainda n\xE3o existe, e diga que quem come\xE7a o trabalho neste Claude \xE9 ${owner} ou um administrador do projeto (ou a pessoa usa o Claude dela).` : '4. Pedido de mudan\xE7a no c\xF3digo ou de executar um card: o trabalho precisa de um card. Se ele ainda n\xE3o existe, abra (item 2) e pergunte se pode come\xE7ar, citando s\xF3 esse card, com # e o n\xFAmero (como "Posso come\xE7ar o #12?"). Com o ok dito na conversa, chame iniciar_execucao com o numero do card e siga como num chamado: ver_chamado do card, branch chamado/<etiqueta do card> a partir da develop atualizada, commits com a etiqueta, atualizar_progresso a cada etapa, testes com registrar_evidencia, um print de cada tela que mudou com capturar_tela (com o servidor de desenvolvimento no ar, a url local da tela e um t\xEDtulo que diga o que o print mostra), um v\xEDdeo curto at\xE9 cada mudan\xE7a com gravar_tela (destacando cada uma, com legenda) e, no fim, concluir_local com o resumo e o como_testar (o passo a passo de quem vai validar em homologa\xE7\xE3o). Pedido de subir ou deixar acess\xEDvel o ambiente local (para testar nesta m\xE1quina) n\xE3o muda o c\xF3digo e n\xE3o precisa de card: prepare s\xF3 o que \xE9 local (depend\xEAncias, arquivo de vari\xE1veis de desenvolvimento a partir do exemplo do reposit\xF3rio, banco de desenvolvimento), sem commit e sem dados ou chaves de produ\xE7\xE3o, e suba cada parte com subir_ambiente_local (primeiro a API, depois o front ligado nela), n\xE3o com o Bash em segundo plano.',
     "5. N\xC3O fa\xE7a git push nem publique: a publica\xE7\xE3o \xE9 pelos bot\xF5es do card no painel, com quem tem permiss\xE3o.",
     level === "consultar" ? "6. Termine com a resposta para a pessoa, em portugu\xEAs do Brasil, sem travess\xE3o e em markdown simples: o que voc\xEA descobriu ou abriu, em poucas linhas. Se abriu cards, diga os n\xFAmeros." : "6. Termine com a resposta para a pessoa, em portugu\xEAs do Brasil, sem travess\xE3o e em markdown simples: o que voc\xEA fez ou descobriu, em poucas linhas. Se abriu cards, diga os n\xFAmeros; se mexeu no c\xF3digo, diga o card, a branch e como testar."
   ].join("\n");
@@ -31852,10 +32100,10 @@ function usageLimitMessage(limit, opts = {}) {
 }
 
 // connector/suggestions.ts
-import { spawn as spawn2 } from "node:child_process";
+import { spawn as spawn3 } from "node:child_process";
 import { mkdtempSync as mkdtempSync3, rmSync as rmSync6, writeFileSync as writeFileSync7 } from "node:fs";
 import os6 from "node:os";
-import { extname as extname2, join as join9 } from "node:path";
+import { extname as extname2, join as join10 } from "node:path";
 var CODE_READ_TOOLS = ["Read", "Grep", "Glob"];
 var CODE_MAX_TURNS = 80;
 var FILES_READ_TOOLS = ["Read"];
@@ -31970,21 +32218,21 @@ async function runSuggestions(req, opts) {
 async function runSuggestionsOnce(req, opts) {
   if (!req.system.trim() || !req.prompt.trim()) throw new Error("O pedido de sugest\xF5es veio vazio.");
   if (opts.signal?.aborted) throw new SuggestionsCancelled();
-  const tmp = mkdtempSync3(join9(os6.tmpdir(), "benflow-sugestoes-"));
+  const tmp = mkdtempSync3(join10(os6.tmpdir(), "benflow-sugestoes-"));
   try {
     let systemFile = null;
     if (opts.launch.shell) {
-      systemFile = join9(tmp, "regras.txt");
+      systemFile = join10(tmp, "regras.txt");
       writeFileSync7(systemFile, `${req.system}
 
 Formato da resposta (JSON Schema):
 ${JSON.stringify(req.schema)}`, { mode: 384 });
     }
     const run = opts.launchCommand(opts.launch, suggestionsArgs(req, systemFile));
-    const spawnFn = opts.spawnFn ?? ((c, a, o) => spawn2(c, a, o));
+    const spawnFn = opts.spawnFn ?? ((c, a, o) => spawn3(c, a, o));
     const timeoutMs = Math.min(Math.max(req.timeoutMs || 3e5, 3e4), MAX_TIMEOUT_MS);
     const cwd = req.code?.dirs[0] ?? (req.files?.dir || tmp);
-    const stdout = await new Promise((resolve9, reject) => {
+    const stdout = await new Promise((resolve10, reject) => {
       const child = spawnFn(run.command, run.args, { cwd, env: opts.env, stdio: ["pipe", "pipe", "pipe"], windowsHide: true, windowsVerbatimArguments: run.verbatim });
       let out = "";
       let err = "";
@@ -32019,7 +32267,7 @@ ${JSON.stringify(req.schema)}`, { mode: 384 });
       });
       child.on("error", (e) => done(() => reject(e)));
       child.on("close", (code) => {
-        if (code === 0 || out.trim()) done(() => resolve9(out));
+        if (code === 0 || out.trim()) done(() => resolve10(out));
         else done(() => reject(new Error(`o claude saiu com c\xF3digo ${code}: ${err.trim().slice(0, 300)}`)));
       });
       child.stdin?.end(req.prompt);
@@ -32039,7 +32287,7 @@ async function openCodeCopy(exec, repoPath, baseDir, name) {
     }
   }
   if (ref) {
-    const dir = join9(baseDir, name.replace(/[^\w.-]+/g, "-"));
+    const dir = join10(baseDir, name.replace(/[^\w.-]+/g, "-"));
     const added = await exec("git", ["worktree", "add", "--detach", "--quiet", dir, ref], { cwd: repoPath, timeoutMs: 18e4 });
     if (added.code === 0) {
       const sha2 = (await exec("git", ["rev-parse", "--short", "HEAD"], { cwd: dir })).stdout.trim();
@@ -32060,10 +32308,10 @@ async function openCodeCopy(exec, repoPath, baseDir, name) {
 }
 
 // connector/vaultUpdate.ts
-import { spawn as spawn3 } from "node:child_process";
-import { mkdtempSync as mkdtempSync4, readdirSync as readdirSync3, rmSync as rmSync7, statSync as statSync8, writeFileSync as writeFileSync8 } from "node:fs";
+import { spawn as spawn4 } from "node:child_process";
+import { mkdtempSync as mkdtempSync4, readdirSync as readdirSync3, rmSync as rmSync7, statSync as statSync9, writeFileSync as writeFileSync8 } from "node:fs";
 import os7 from "node:os";
-import { join as join10 } from "node:path";
+import { join as join11 } from "node:path";
 var VAULT_TOOLS = ["Read", "Edit", "Write", "Glob", "Grep"];
 var VAULT_MAX_TURNS = 80;
 var MAX_TIMEOUT_MS2 = 20 * 6e4;
@@ -32084,7 +32332,7 @@ var VAULT_OUTPUT_SCHEMA = {
 };
 function isDirectory(p) {
   try {
-    return statSync8(p).isDirectory();
+    return statSync9(p).isDirectory();
   } catch {
     return false;
   }
@@ -32226,12 +32474,12 @@ function snapshotNotes(dir) {
     for (const e of entries) {
       if (out.size >= SNAPSHOT_MAX_FILES) return;
       if (e.name.startsWith(".")) continue;
-      const childAbs = join10(abs, e.name);
+      const childAbs = join11(abs, e.name);
       const childRel = rel ? `${rel}/${e.name}` : e.name;
       if (e.isDirectory()) walk(childAbs, childRel, depth + 1);
       else if (e.isFile() && /\.md$/i.test(e.name)) {
         try {
-          const st = statSync8(childAbs);
+          const st = statSync9(childAbs);
           out.set(childRel, `${st.size}:${Math.trunc(st.mtimeMs)}`);
         } catch {
         }
@@ -32262,23 +32510,23 @@ async function runVaultUpdate(job, vaultDir, opts) {
 async function runClaudeInVault(vaultDir, input2, opts) {
   const permissions = vaultPermissions(input2.protectedDirs);
   const { rules, prompt } = input2;
-  const tmp = mkdtempSync4(join10(os7.tmpdir(), "benflow-cofre-"));
+  const tmp = mkdtempSync4(join11(os7.tmpdir(), "benflow-cofre-"));
   try {
-    const settingsFile = join10(tmp, "permissoes.json");
+    const settingsFile = join11(tmp, "permissoes.json");
     writeFileSync8(settingsFile, JSON.stringify({ permissions: { ...permissions, defaultMode: "dontAsk" } }, null, 2), { mode: 384 });
     let rulesFile = null;
     if (opts.launch.shell) {
-      rulesFile = join10(tmp, "regras.txt");
+      rulesFile = join11(tmp, "regras.txt");
       writeFileSync8(rulesFile, `${rules}
 
 Formato da resposta (JSON Schema):
 ${JSON.stringify(VAULT_OUTPUT_SCHEMA)}`, { mode: 384 });
     }
     const run = opts.launchCommand(opts.launch, vaultUpdateArgs({ rules, rulesFile, settingsFile, permissions, model: opts.model }));
-    const spawnFn = opts.spawnFn ?? ((c, a, o2) => spawn3(c, a, o2));
+    const spawnFn = opts.spawnFn ?? ((c, a, o2) => spawn4(c, a, o2));
     const timeoutMs = Math.min(Math.max(input2.timeoutMs || DEFAULT_TIMEOUT_MS, 6e4), MAX_TIMEOUT_MS2);
     const before = snapshotNotes(vaultDir);
-    const stdout = await new Promise((resolve9, reject) => {
+    const stdout = await new Promise((resolve10, reject) => {
       const child = spawnFn(run.command, run.args, { cwd: vaultDir, env: opts.env, stdio: ["pipe", "pipe", "pipe"], windowsHide: true, windowsVerbatimArguments: run.verbatim });
       let out = "";
       let err = "";
@@ -32320,7 +32568,7 @@ ${JSON.stringify(VAULT_OUTPUT_SCHEMA)}`, { mode: 384 });
       child.on("error", (e) => done(() => reject(e)));
       child.on("close", (code) => {
         if (code !== 0 && /unknown option.*restricted|restricted.*(unknown|not recognized)/i.test(err)) return done(() => reject(new Error(MSG_CLAUDE_TOO_OLD)));
-        if (code === 0 || out.trim()) done(() => resolve9(out));
+        if (code === 0 || out.trim()) done(() => resolve10(out));
         else done(() => reject(new Error(`o claude saiu com c\xF3digo ${code}: ${err.trim().slice(0, 300)}`)));
       });
       child.stdin?.end(prompt);
@@ -32337,15 +32585,15 @@ ${JSON.stringify(VAULT_OUTPUT_SCHEMA)}`, { mode: 384 });
 }
 
 // connector/vaultSend.ts
-import { existsSync as existsSync8, mkdirSync as mkdirSync6, mkdtempSync as mkdtempSync5, readFileSync as readFileSync8, rmSync as rmSync8, statSync as statSync10, writeFileSync as writeFileSync9 } from "node:fs";
+import { existsSync as existsSync9, mkdirSync as mkdirSync7, mkdtempSync as mkdtempSync5, readFileSync as readFileSync9, rmSync as rmSync8, statSync as statSync11, writeFileSync as writeFileSync9 } from "node:fs";
 import os8 from "node:os";
-import { dirname as dirname6, join as join12 } from "node:path";
+import { dirname as dirname7, join as join13 } from "node:path";
 import { gunzipSync, gzipSync } from "node:zlib";
 
 // connector/vault.ts
-import { readFileSync as readFileSync7, realpathSync as realpathSync5, statSync as statSync9 } from "node:fs";
+import { readFileSync as readFileSync8, realpathSync as realpathSync6, statSync as statSync10 } from "node:fs";
 import { readdir, readFile, realpath, stat } from "node:fs/promises";
-import { basename as basename3, isAbsolute as isAbsolute3, join as join11, relative, resolve as resolve5, sep as sep3 } from "node:path";
+import { basename as basename3, isAbsolute as isAbsolute4, join as join12, relative, resolve as resolve6, sep as sep3 } from "node:path";
 var VaultPathError = class extends Error {
 };
 var MAX_FILES = 2e4;
@@ -32389,7 +32637,7 @@ async function listNotes(root) {
     for (const e of entries) {
       if (e.name.startsWith(".")) continue;
       if (e.isSymbolicLink()) continue;
-      const full = join11(dir, e.name);
+      const full = join12(dir, e.name);
       if (e.isDirectory()) {
         if (depth < MAX_DEPTH) stack.push({ dir: full, depth: depth + 1 });
       } else if (e.isFile() && e.name.toLowerCase().endsWith(".md")) {
@@ -32496,7 +32744,7 @@ async function searchVault(root, query, limit = 8) {
   const rels = await listNotes(base);
   for (let i = 0; i < rels.length; i += READ_BATCH) {
     const batch = rels.slice(i, i + READ_BATCH);
-    const notes = await Promise.all(batch.map((rel) => loadNote(join11(base, rel), rel)));
+    const notes = await Promise.all(batch.map((rel) => loadNote(join12(base, rel), rel)));
     notes.forEach((note, k) => {
       if (!note) return;
       const rel = batch[k];
@@ -32509,7 +32757,7 @@ async function searchVault(root, query, limit = 8) {
         if (inPath || count > 0) matched++;
         score += Math.min(count, 10) + (inPath ? 5 : 0);
       }
-      if (matched) scored.push({ rel, full: join11(base, rel), title: note.title, score: matched * 100 + score });
+      if (matched) scored.push({ rel, full: join12(base, rel), title: note.title, score: matched * 100 + score });
     });
   }
   scored.sort((a, b) => b.score - a.score || a.rel.localeCompare(b.rel));
@@ -32530,26 +32778,26 @@ async function searchVault(root, query, limit = 8) {
 function readVaultNote(root, relPath) {
   const rel = relPath.trim();
   if (!rel || rel.includes("\0")) throw new VaultPathError("Informe o caminho da nota.");
-  if (isAbsolute3(rel)) throw new VaultPathError("Use o caminho relativo \xE0 pasta do cofre pessoal.");
+  if (isAbsolute4(rel)) throw new VaultPathError("Use o caminho relativo \xE0 pasta do cofre pessoal.");
   if (rel.split(/[\\/]+/).includes("..")) throw new VaultPathError("Caminho fora do cofre pessoal n\xE3o \xE9 permitido.");
   let base;
   try {
-    base = realpathSync5(root);
+    base = realpathSync6(root);
   } catch {
     throw new VaultPathError("A pasta do cofre pessoal n\xE3o foi encontrada.");
   }
   let real2;
   try {
-    real2 = realpathSync5(resolve5(base, rel));
+    real2 = realpathSync6(resolve6(base, rel));
   } catch {
     throw new VaultPathError(`Nota n\xE3o encontrada no cofre pessoal: ${rel}`);
   }
   if (real2 !== base && !real2.startsWith(base + sep3)) throw new VaultPathError("Caminho fora do cofre pessoal n\xE3o \xE9 permitido.");
   if (!real2.toLowerCase().endsWith(".md")) throw new VaultPathError("S\xF3 notas .md podem ser lidas.");
-  const st = statSync9(real2);
+  const st = statSync10(real2);
   if (!st.isFile()) throw new VaultPathError(`Nota n\xE3o encontrada no cofre pessoal: ${rel}`);
   if (st.size > MAX_NOTE_BYTES) throw new VaultPathError("A nota \xE9 grande demais para ler de uma vez.");
-  const content = readFileSync7(real2, "utf8");
+  const content = readFileSync8(real2, "utf8");
   const path2 = relative(base, real2);
   return { path: path2, title: noteTitle(path2, content), content };
 }
@@ -32575,12 +32823,12 @@ async function collectVault(dir) {
       continue;
     }
     try {
-      const abs = join12(dir, rel);
-      if (statSync10(abs).size > NOTE_MAX_BYTES) {
+      const abs = join13(dir, rel);
+      if (statSync11(abs).size > NOTE_MAX_BYTES) {
         skipped++;
         continue;
       }
-      const buf = readFileSync8(abs);
+      const buf = readFileSync9(abs);
       files.push({ path: path2, content: decoder.decode(buf) });
       bytes += buf.length;
     } catch {
@@ -32600,8 +32848,8 @@ function unpackVault(pkg, dir) {
     if (typeof f.path !== "string" || typeof f.content !== "string") continue;
     const parts = f.path.split("/");
     if (!/\.md$/i.test(f.path) || parts.some((p) => !p || p === "." || p === ".." || p.startsWith(".") || p.includes("\\") || p.includes("\0"))) continue;
-    const abs = join12(dir, ...parts);
-    mkdirSync6(dirname6(abs), { recursive: true });
+    const abs = join13(dir, ...parts);
+    mkdirSync7(dirname7(abs), { recursive: true });
     writeFileSync9(abs, f.content, { mode: 384 });
     n2++;
   }
@@ -32650,7 +32898,7 @@ function sameVault(homolog, localDir) {
   let same = 0;
   for (const [path2, content] of homolog) {
     try {
-      if (readFileSync8(join12(localDir, ...path2.split("/")), "utf8") === content) same++;
+      if (readFileSync9(join13(localDir, ...path2.split("/")), "utf8") === content) same++;
     } catch {
     }
   }
@@ -32658,9 +32906,9 @@ function sameVault(homolog, localDir) {
 }
 async function runVaultRead(job, opts) {
   const progress = (stage, pct) => opts.client.vaultReadProgress(opts.jobId, stage, pct).catch(() => void 0);
-  const base = mkdtempSync5(join12(os8.tmpdir(), "benflow-leitura-"));
-  const dir = join12(base, "cofre");
-  mkdirSync6(dir);
+  const base = mkdtempSync5(join13(os8.tmpdir(), "benflow-leitura-"));
+  const dir = join13(base, "cofre");
+  mkdirSync7(dir);
   let timer = null;
   try {
     await progress("baixando", 3);
@@ -32688,18 +32936,18 @@ async function runVaultRead(job, opts) {
       const parts = rel.split("/");
       if (!/\.md$/i.test(rel) || parts.some((p) => !p || p === ".." || p.startsWith("."))) continue;
       try {
-        files.push({ path: rel, content: readFileSync8(join12(dir, ...parts), "utf8") });
+        files.push({ path: rel, content: readFileSync9(join13(dir, ...parts), "utf8") });
       } catch {
       }
     }
     await opts.client.vaultReadResult(opts.jobId, result.summary, files.length ? packVault(files) : null);
     let copied = 0;
-    if (opts.localVault && existsSync8(opts.localVault) && sameVault(homolog, opts.localVault)) {
+    if (opts.localVault && existsSync9(opts.localVault) && sameVault(homolog, opts.localVault)) {
       for (const f of files) {
-        const target = join12(opts.localVault, ...f.path.split("/"));
-        if (existsSync8(target)) continue;
+        const target = join13(opts.localVault, ...f.path.split("/"));
+        if (existsSync9(target)) continue;
         try {
-          mkdirSync6(dirname6(target), { recursive: true });
+          mkdirSync7(dirname7(target), { recursive: true });
           writeFileSync9(target, f.content, { flag: "wx" });
           copied++;
         } catch {
@@ -32714,20 +32962,20 @@ async function runVaultRead(job, opts) {
 }
 
 // connector/links.ts
-import { spawn as spawn4 } from "node:child_process";
-import { closeSync, existsSync as existsSync9, openSync, readFileSync as readFileSync9, statSync as statSync11, writeFileSync as writeFileSync10 } from "node:fs";
-import { dirname as dirname7, join as join13 } from "node:path";
+import { spawn as spawn5 } from "node:child_process";
+import { closeSync as closeSync2, existsSync as existsSync10, openSync as openSync2, readFileSync as readFileSync10, statSync as statSync12, writeFileSync as writeFileSync10 } from "node:fs";
+import { dirname as dirname8, join as join14 } from "node:path";
 var isDir = (p) => {
   try {
-    return existsSync9(p) && statSync11(p).isDirectory();
+    return existsSync10(p) && statSync12(p).isDirectory();
   } catch {
     return false;
   }
 };
 function executorFiles(configFile, url2, orgSlug) {
   const host = url2.replace(/^https?:\/\//i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-  const dir = dirname7(configFile);
-  return { pid: join13(dir, `executor-${host}-${orgSlug}.pid`), log: join13(dir, `executor-${host}-${orgSlug}.log`) };
+  const dir = dirname8(configFile);
+  return { pid: join14(dir, `executor-${host}-${orgSlug}.pid`), log: join14(dir, `executor-${host}-${orgSlug}.log`) };
 }
 function findLocalRepos(servers, current, wanted) {
   const ordered = [current, ...servers.filter((s2) => s2 !== current)];
@@ -32758,15 +33006,15 @@ function defaultIsAlive(pid) {
 function defaultStartExecutor(url2, orgSlug, files) {
   const script = process.argv[1];
   if (!script) return null;
-  const out = openSync(files.log, "a");
+  const out = openSync2(files.log, "a");
   try {
-    const child = spawn4(process.execPath, [script, "executar", "--url", url2, "--org", orgSlug], { detached: true, stdio: ["ignore", out, out], env: process.env });
+    const child = spawn5(process.execPath, [script, "executar", "--url", url2, "--org", orgSlug], { detached: true, stdio: ["ignore", out, out], env: process.env });
     child.unref();
     if (child.pid) writeFileSync10(files.pid, `${child.pid}
 `);
     return child.pid ?? null;
   } finally {
-    closeSync(out);
+    closeSync2(out);
   }
 }
 function applyLinkOffer(offer, deps) {
@@ -32783,8 +33031,8 @@ function applyLinkOffer(offer, deps) {
     log(`Projeto ${offer.orgName} (${offer.orgSlug}) ligado neste Claude${Object.keys(found).length ? `, com ${Object.keys(found).join(", ")}` : ""}.`);
     const files = executorFiles(deps.configFile, url2, offer.orgSlug);
     const isAlive = deps.isAlive ?? defaultIsAlive;
-    if (existsSync9(files.pid)) {
-      const old = Number(readFileSync9(files.pid, "utf8").trim());
+    if (existsSync10(files.pid)) {
+      const old = Number(readFileSync10(files.pid, "utf8").trim());
       if (old && old !== process.pid && isAlive(old)) {
         try {
           ;
@@ -32802,9 +33050,9 @@ function applyLinkOffer(offer, deps) {
 }
 
 // connector/keyFetch.ts
-import { existsSync as existsSync10, readFileSync as readFileSync10, realpathSync as realpathSync6, statSync as statSync12 } from "node:fs";
+import { existsSync as existsSync11, readFileSync as readFileSync11, realpathSync as realpathSync7, statSync as statSync13 } from "node:fs";
 import { homedir } from "node:os";
-import { join as join14, relative as relative2, sep as sep4 } from "node:path";
+import { join as join15, relative as relative2, sep as sep4 } from "node:path";
 
 // server/services/keySources.ts
 var KEY_SOURCE_PATH_MAX = 200;
@@ -32902,20 +33150,20 @@ function pick2(text, names) {
   return out;
 }
 function readRepoFile(repos, path2) {
-  const dirs = Object.values(repos).filter((d) => d && existsSync10(d));
+  const dirs = Object.values(repos).filter((d) => d && existsSync11(d));
   if (!dirs.length) return { error: "Esta m\xE1quina n\xE3o tem a pasta do reposit\xF3rio do projeto." };
   for (const dir of dirs) {
-    const file2 = join14(dir, path2);
-    if (!existsSync10(file2)) continue;
+    const file2 = join15(dir, path2);
+    if (!existsSync11(file2)) continue;
     try {
-      const realDir2 = realpathSync6(dir);
-      const real2 = realpathSync6(file2);
+      const realDir2 = realpathSync7(dir);
+      const real2 = realpathSync7(file2);
       const rel = relative2(realDir2, real2);
       if (!rel || rel.startsWith("..") || rel.startsWith(sep4)) return { error: `${path2} aponta para fora da pasta do reposit\xF3rio.` };
-      const st = statSync12(real2);
+      const st = statSync13(real2);
       if (!st.isFile()) return { error: `${path2} n\xE3o \xE9 um arquivo.` };
       if (st.size > KEY_SOURCE_FILE_MAX) return { error: `${path2} \xE9 grande demais para ser um arquivo de ambiente.` };
-      return { text: readFileSync10(real2, "utf8") };
+      return { text: readFileSync11(real2, "utf8") };
     } catch (err) {
       return { error: `N\xE3o deu para ler ${path2}: ${err instanceof Error ? err.message : String(err)}` };
     }
@@ -33089,22 +33337,22 @@ async function runBranchShare(exec, repos, req) {
 }
 
 // connector/version.ts
-import { existsSync as existsSync11, readFileSync as readFileSync11 } from "node:fs";
-import { dirname as dirname8, join as join15 } from "node:path";
+import { existsSync as existsSync12, readFileSync as readFileSync12 } from "node:fs";
+import { dirname as dirname9, join as join16 } from "node:path";
 import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.40") {
-    cached2 = "0.1.40";
+  if ("0.1.42") {
+    cached2 = "0.1.42";
     return cached2;
   }
-  let dir = dirname8(fileURLToPath(import.meta.url));
+  let dir = dirname9(fileURLToPath(import.meta.url));
   for (let i = 0; i < 5; i++) {
-    const file2 = join15(dir, "package.json");
-    if (existsSync11(file2)) {
+    const file2 = join16(dir, "package.json");
+    if (existsSync12(file2)) {
       try {
-        const pkg = JSON.parse(readFileSync11(file2, "utf8"));
+        const pkg = JSON.parse(readFileSync12(file2, "utf8"));
         if (pkg.version) {
           cached2 = pkg.version;
           return cached2;
@@ -33112,7 +33360,7 @@ function connectorVersion() {
       } catch {
       }
     }
-    const parent = dirname8(dir);
+    const parent = dirname9(dir);
     if (parent === dir) break;
     dir = parent;
   }
@@ -33248,9 +33496,9 @@ function toolChange(name, input2, path2) {
 }
 
 // connector/repoProvision.ts
-import { existsSync as existsSync12, mkdirSync as mkdirSync7 } from "node:fs";
+import { existsSync as existsSync13, mkdirSync as mkdirSync8 } from "node:fs";
 import os9 from "node:os";
-import { basename as basename4, dirname as dirname9, join as join16 } from "node:path";
+import { basename as basename4, dirname as dirname10, join as join17 } from "node:path";
 var REPO_RE = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 var CLONE_TIMEOUT_MS = 15 * 6e4;
 var MSG_NO_ACCESS_PREFIX = "Sem acesso ao reposit\xF3rio";
@@ -33261,15 +33509,15 @@ function msgNoAccess(name, detail) {
 function cloneBase(servers) {
   for (const s2 of servers) {
     for (const path2 of Object.values(s2.repos ?? {})) {
-      if (path2 && existsSync12(path2)) return dirname9(path2);
+      if (path2 && existsSync13(path2)) return dirname10(path2);
     }
   }
-  return join16(os9.homedir(), "Developer", "benflow-ia");
+  return join17(os9.homedir(), "Developer", "benflow-ia");
 }
 function freeTarget(base, name) {
   const repo = basename4(name);
-  let target = join16(base, repo);
-  for (let i = 2; existsSync12(target); i++) target = join16(base, `${repo}-${i}`);
+  let target = join17(base, repo);
+  for (let i = 2; existsSync13(target); i++) target = join17(base, `${repo}-${i}`);
   return target;
 }
 function originMatches(url2, name) {
@@ -33296,8 +33544,8 @@ async function provisionRepo(name, deps) {
   let how = "outra_entrada";
   if (!path2) {
     const base = cloneBase([deps.entry, ...servers]);
-    const manual = join16(base, basename4(name));
-    if (existsSync12(join16(manual, ".git"))) {
+    const manual = join17(base, basename4(name));
+    if (existsSync13(join17(manual, ".git"))) {
       const origin = await deps.exec("git", ["-C", manual, "remote", "get-url", "origin"]);
       if (origin.code === 0 && originMatches(origin.stdout, name)) path2 = manual;
     }
@@ -33306,7 +33554,7 @@ async function provisionRepo(name, deps) {
     const base = cloneBase([deps.entry, ...servers]);
     const target = freeTarget(base, name);
     try {
-      mkdirSync7(base, { recursive: true });
+      mkdirSync8(base, { recursive: true });
     } catch (err) {
       return { ok: false, error: `N\xE3o consegui criar a pasta ${base} para clonar ${name}: ${err instanceof Error ? err.message : String(err)}` };
     }
@@ -33344,8 +33592,8 @@ var defaultExec = (cmd, args, opts = {}) => new Promise((done) => {
 var LOADER_FLAGS = /* @__PURE__ */ new Set(["--import", "--loader", "--experimental-loader", "--require", "-r"]);
 function resolveLoaderValue(flag, value) {
   const isRequire = flag === "--require" || flag === "-r";
-  if (value.startsWith("./") || value.startsWith("../")) return isRequire ? resolve6(value) : pathToFileURL(resolve6(value)).href;
-  if (isAbsolute4(value) || /^(file|node|data):/.test(value)) return value;
+  if (value.startsWith("./") || value.startsWith("../")) return isRequire ? resolve7(value) : pathToFileURL(resolve7(value)).href;
+  if (isAbsolute5(value) || /^(file|node|data):/.test(value)) return value;
   try {
     return isRequire ? createRequire(import.meta.url).resolve(value) : import.meta.resolve(value);
   } catch {
@@ -33376,7 +33624,7 @@ function nodeScriptLaunch(script, scriptArgs, execArgv = process.execArgv) {
   return { command: process.execPath, args: [...args, script, ...scriptArgs] };
 }
 function selfMcpLaunch(argv = process.argv, execArgv = process.execArgv) {
-  const script = argv[1] ? resolve6(argv[1]) : fileURLToPath2(new URL("./cli.js", import.meta.url));
+  const script = argv[1] ? resolve7(argv[1]) : fileURLToPath2(new URL("./cli.js", import.meta.url));
   return nodeScriptLaunch(script, ["mcp"], execArgv);
 }
 async function gitRepoState(exec, path2) {
@@ -33395,7 +33643,7 @@ async function gitRepoState(exec, path2) {
 async function repoState(exec, fullName, path2, deps) {
   const cached3 = deps.repoCache?.get(path2);
   if (cached3 && deps.busyPaths?.has(path2)) return { ...cached3, fullName, path: path2 };
-  if (!existsSync13(path2)) return { fullName, path: path2, branch: null, dirty: false };
+  if (!existsSync14(path2)) return { fullName, path: path2, branch: null, dirty: false };
   const st = await gitRepoState(exec, path2);
   const state = { fullName, path: path2, branch: st.branch, dirty: st.dirty };
   deps.repoCache?.set(path2, state);
@@ -33414,8 +33662,8 @@ async function claudeVersionOf(exec, bin, launch = resolveClaudeLaunch(bin)) {
 function claudeConfigOf(env = process.env, home = os10.homedir()) {
   let settings = {};
   try {
-    const dir = env.CLAUDE_CONFIG_DIR?.trim() || join17(home, ".claude");
-    const parsed = JSON.parse(readFileSync12(join17(dir, "settings.json"), "utf8"));
+    const dir = env.CLAUDE_CONFIG_DIR?.trim() || join18(home, ".claude");
+    const parsed = JSON.parse(readFileSync13(join18(dir, "settings.json"), "utf8"));
     if (parsed && typeof parsed === "object") settings = parsed;
   } catch {
     settings = {};
@@ -33500,16 +33748,16 @@ function oneLine(text, max) {
 }
 function shortPath(p, cwd) {
   if (typeof p !== "string" || !p) return "";
-  if (!isAbsolute4(p)) return p;
+  if (!isAbsolute5(p)) return p;
   for (const base of Array.isArray(cwd) ? cwd : [cwd]) {
     const rel = relative3(base, p);
-    if (rel && !rel.startsWith("..") && !isAbsolute4(rel)) return rel;
+    if (rel && !rel.startsWith("..") && !isAbsolute5(rel)) return rel;
   }
   return p;
 }
 function cwdVariants(cwd) {
   try {
-    const real2 = realpathSync7(cwd);
+    const real2 = realpathSync8(cwd);
     return real2 === cwd ? [cwd] : [cwd, real2];
   } catch {
     return [cwd];
@@ -33681,7 +33929,7 @@ setInterval(() => { if (!finishing && !alive()) process.exit(0) }, 5000);
 function startGuard(pgid) {
   if (process.platform === "win32") return null;
   try {
-    const guard = spawn5(process.execPath, ["-e", GUARD_SOURCE, String(pgid)], { stdio: ["pipe", "ignore", "ignore"], detached: true, env: {} });
+    const guard = spawn6(process.execPath, ["-e", GUARD_SOURCE, String(pgid)], { stdio: ["pipe", "ignore", "ignore"], detached: true, env: {} });
     guard.on("error", () => {
     });
     guard.stdin?.on("error", () => {
@@ -33707,7 +33955,7 @@ function taskkillTree(pid, sync = false) {
   const args = ["/pid", String(pid), "/T", "/F"];
   try {
     if (sync) execFileSync("taskkill", args, { stdio: "ignore", windowsHide: true, timeout: 5e3 });
-    else spawn5("taskkill", args, { stdio: "ignore", windowsHide: true }).on("error", () => {
+    else spawn6("taskkill", args, { stdio: "ignore", windowsHide: true }).on("error", () => {
     });
   } catch {
   }
@@ -33876,7 +34124,7 @@ async function runJob(opts, job) {
       path2 = got.path;
       await notify(got.how === "clonado" ? `Reposit\xF3rio ${name} clonado em ${path2} e ligado a este Claude.` : `Usando a c\xF3pia de ${name} que j\xE1 estava nesta m\xE1quina (${path2}).`);
     }
-    if (!existsSync13(path2) || !statSync13(path2).isDirectory()) return fail(`A pasta do reposit\xF3rio ${name} n\xE3o existe: ${path2}`);
+    if (!existsSync14(path2) || !statSync14(path2).isDirectory()) return fail(`A pasta do reposit\xF3rio ${name} n\xE3o existe: ${path2}`);
     repos.push({ fullName: name, path: path2 });
   }
   let tag = `${entry.orgSlug ?? "chamado"}-${job.taskNumber}`;
@@ -34017,8 +34265,8 @@ async function runInRepos(opts, job, w, h) {
   const { tag, instructions, sessionId, repos } = w;
   const { finish: finish2, redact, sink } = h;
   const input2 = { job, tag, repos, instructions, copy: w.copy, sync: w.sync ?? [], preparo: w.preparo ?? [] };
-  const tmp = mkdtempSync6(join17(os10.tmpdir(), "benflow-job-"));
-  const mcpConfigPath = join17(tmp, "mcp.json");
+  const tmp = mkdtempSync6(join18(os10.tmpdir(), "benflow-job-"));
+  const mcpConfigPath = join18(tmp, "mcp.json");
   const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
   const mcpConfig = {
     mcpServers: {
@@ -34054,7 +34302,7 @@ async function runInRepos(opts, job, w, h) {
   const systemRules = buildSystemRules(input2);
   let systemRulesFile = null;
   if (launch.shell) {
-    systemRulesFile = join17(tmp, "regras.txt");
+    systemRulesFile = join18(tmp, "regras.txt");
     writeFileSync11(systemRulesFile, systemRules, { mode: 384 });
   }
   const args = buildClaudeArgs({
@@ -34171,11 +34419,11 @@ async function runTesteJob(opts, job, h) {
   } catch (err) {
     log(`N\xE3o foi poss\xEDvel ler o chamado #${job.taskNumber} antes do teste: ${msgOf(err)}`);
   }
-  const tmp = mkdtempSync6(join17(os10.tmpdir(), "benflow-teste-"));
+  const tmp = mkdtempSync6(join18(os10.tmpdir(), "benflow-teste-"));
   try {
-    const work = join17(tmp, "teste");
-    mkdirSync8(work, { mode: 448 });
-    const mcpConfigPath = join17(tmp, "mcp.json");
+    const work = join18(tmp, "teste");
+    mkdirSync9(work, { mode: 448 });
+    const mcpConfigPath = join18(tmp, "mcp.json");
     const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
     const mcpEnv = {
       CHAMADOS_CONFIG: opts.configFile,
@@ -34195,7 +34443,7 @@ async function runTesteJob(opts, job, h) {
     const systemRules = buildTesteRules({ instructions });
     let systemRulesFile = null;
     if (launch.shell) {
-      systemRulesFile = join17(tmp, "regras.txt");
+      systemRulesFile = join18(tmp, "regras.txt");
       writeFileSync11(systemRulesFile, systemRules, { mode: 384 });
     }
     const args = buildClaudeArgs({
@@ -34228,11 +34476,11 @@ async function runVideoEnvJob(opts, job, h) {
   } catch (err) {
     log(`N\xE3o foi poss\xEDvel ler o chamado #${job.taskNumber} antes da grava\xE7\xE3o: ${msgOf(err)}`);
   }
-  const tmp = mkdtempSync6(join17(os10.tmpdir(), "benflow-video-"));
+  const tmp = mkdtempSync6(join18(os10.tmpdir(), "benflow-video-"));
   try {
-    const work = join17(tmp, "video");
-    mkdirSync8(work, { mode: 448 });
-    const mcpConfigPath = join17(tmp, "mcp.json");
+    const work = join18(tmp, "video");
+    mkdirSync9(work, { mode: 448 });
+    const mcpConfigPath = join18(tmp, "mcp.json");
     const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
     const mcpEnv = {
       CHAMADOS_CONFIG: opts.configFile,
@@ -34252,7 +34500,7 @@ async function runVideoEnvJob(opts, job, h) {
     const systemRules = buildVideoEnvRules({ instructions });
     let systemRulesFile = null;
     if (launch.shell) {
-      systemRulesFile = join17(tmp, "regras.txt");
+      systemRulesFile = join18(tmp, "regras.txt");
       writeFileSync11(systemRulesFile, systemRules, { mode: 384 });
     }
     const args = buildClaudeArgs({
@@ -34315,11 +34563,11 @@ async function runSugestoesJob(opts, job, finish2, redact) {
   let prompt = req.prompt;
   try {
     if (req.analyzeCode && req.codeRepos?.length) {
-      base = mkdtempSync6(join17(os10.tmpdir(), "benflow-codigo-"));
+      base = mkdtempSync6(join18(os10.tmpdir(), "benflow-codigo-"));
       for (const fullName of req.codeRepos) {
         if (ctrl.signal.aborted) break;
         const path2 = opts.entry.repos[fullName];
-        if (!path2 || !existsSync13(path2) || !statSync13(path2).isDirectory()) continue;
+        if (!path2 || !existsSync14(path2) || !statSync14(path2).isDirectory()) continue;
         try {
           const copy = await openCodeCopy(opts.exec ?? defaultExec, path2, base, fullName);
           closers.push(copy.close);
@@ -34337,7 +34585,7 @@ Pastas do c\xF3digo nesta m\xE1quina: ${checked.map((r, i) => `${r} = ${i === 0 
     }
     const wanted = (Array.isArray(req.files) ? req.files : []).filter((f) => f && Number.isSafeInteger(f.id) && f.id > 0).slice(0, MAX_SUGGESTION_FILES);
     if (wanted.length && !ctrl.signal.aborted) {
-      filesDir = mkdtempSync6(join17(os10.tmpdir(), "benflow-referencias-"));
+      filesDir = mkdtempSync6(join18(os10.tmpdir(), "benflow-referencias-"));
       const files = [];
       for (const f of wanted) {
         const name = typeof f.name === "string" ? f.name : "";
@@ -34495,14 +34743,14 @@ async function runConversa(opts, job, h) {
   if (!list.length) return noRepo("Este conector n\xE3o tem nenhum reposit\xF3rio configurado. Rode: configurar --repo owner/nome=/caminho/local");
   const repos = [];
   for (const [fullName, path2] of list) {
-    if (existsSync13(path2) && statSync13(path2).isDirectory()) repos.push({ fullName, path: path2 });
+    if (existsSync14(path2) && statSync14(path2).isDirectory()) repos.push({ fullName, path: path2 });
   }
   if (!repos.length) return noRepo(`A pasta do reposit\xF3rio ${list[0][0]} n\xE3o existe: ${list[0][1]}`);
   const text = jobInstruction({ ...job, type: "continuar" }) ?? "";
-  const tmp = mkdtempSync6(join17(os10.tmpdir(), "benflow-conversa-"));
+  const tmp = mkdtempSync6(join18(os10.tmpdir(), "benflow-conversa-"));
   try {
-    const filesDir = join17(tmp, "arquivos");
-    mkdirSync8(filesDir, { mode: 448 });
+    const filesDir = join18(tmp, "arquivos");
+    mkdirSync9(filesDir, { mode: 448 });
     const files = [];
     for (const a of job.attachments ?? []) {
       try {
@@ -34514,7 +34762,7 @@ async function runConversa(opts, job, h) {
       }
     }
     if (!text && !files.length) return h.fail("A mensagem veio vazia. Nada foi mandado para o Claude.");
-    const mcpConfigPath = join17(tmp, "mcp.json");
+    const mcpConfigPath = join18(tmp, "mcp.json");
     const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
     writeFileSync11(
       mcpConfigPath,
@@ -34556,7 +34804,7 @@ async function runConversa(opts, job, h) {
     const systemRules = panel ? (orchestrating ? buildOrquestradorRules : buildPainelRules)({ orgName: job.orgName ?? null, ownerName: job.ownerName ?? null, panel, instructions: job.instructions ?? null }) : buildConversaRules({ orgName: job.orgName ?? null, ownerName: job.ownerName ?? null, instructions: job.instructions ?? null });
     let systemRulesFile = null;
     if (launch.shell) {
-      systemRulesFile = join17(tmp, "regras.txt");
+      systemRulesFile = join18(tmp, "regras.txt");
       writeFileSync11(systemRulesFile, systemRules, { mode: 384 });
     }
     const exec = opts.exec ?? defaultExec;
@@ -34598,7 +34846,7 @@ async function supervise(opts, job, cwd, args, finish2, redact, extraEnv = {}, l
   const { client, entry } = opts;
   const log = opts.log ?? (() => {
   });
-  const spawnFn = opts.spawnFn ?? ((cmd, a, o) => spawn5(cmd, a, o));
+  const spawnFn = opts.spawnFn ?? ((cmd, a, o) => spawn6(cmd, a, o));
   const cancelPollMs = opts.cancelPollMs ?? 1e4;
   const logFlushMs = opts.logFlushMs ?? 3e3;
   const killGraceMs = opts.killGraceMs ?? 5e3;
@@ -34805,9 +35053,9 @@ async function supervise(opts, job, cwd, args, finish2, redact, extraEnv = {}, l
     error62 = "O conector foi encerrado durante o trabalho.";
   } else {
     status = "erro";
-    const tail2 = stderrTail.slice(-15).join("\n").slice(-1500);
-    error62 = `O Claude parou sem terminar (${exit.code !== null ? `c\xF3digo ${exit.code}` : `sinal ${exit.signal ?? "desconhecido"}`}).${tail2 ? ` \xDAltimas linhas do erro:
-${tail2}` : ""}`;
+    const tail3 = stderrTail.slice(-15).join("\n").slice(-1500);
+    error62 = `O Claude parou sem terminar (${exit.code !== null ? `c\xF3digo ${exit.code}` : `sinal ${exit.signal ?? "desconhecido"}`}).${tail3 ? ` \xDAltimas linhas do erro:
+${tail3}` : ""}`;
   }
   if (resumed && status === "erro" && killReason !== "cancelado" && killReason !== "encerrado" && isVanishedSession(finalResult, stderrTail)) {
     push([{ at: (/* @__PURE__ */ new Date()).toISOString(), kind: "texto", text: "A sess\xE3o anterior do Claude n\xE3o existe mais nesta m\xE1quina. Come\xE7ando uma sess\xE3o nova com a instru\xE7\xE3o." }]);
@@ -34849,9 +35097,10 @@ var Executor = class {
     this.opts = opts;
     const key = agentKey(opts.entry.url, opts.entry.token);
     this.presence = presencePath(opts.configFile, key);
+    this.localState = localStatePath(opts.configFile, key);
     this.local = opts.localTracker ?? new LocalTracker({
       repos: () => opts.entry.repos,
-      statePath: localStatePath(opts.configFile, key),
+      statePath: this.localState,
       detect: (repos) => detectLocalServers(repos, { exec: this.exec })
     });
   }
@@ -34876,6 +35125,11 @@ var Executor = class {
   loop = null;
   watchTimer = null;
   local;
+  localState;
+  // Pedido de conferir ou subir o ambiente local já tratado (o mesmo id pode vir em mais de um batimento).
+  localCheckDone = null;
+  localCheckRunning = false;
+  localChecked = null;
   presence;
   // Pedidos de vínculo com outro projeto já tratados por este processo (o batimento seguinte não repete).
   linksDone = /* @__PURE__ */ new Set();
@@ -34987,7 +35241,10 @@ var Executor = class {
           env: this.opts.env,
           quota: this.quota
         });
+        const checked = this.localChecked;
+        if (checked) body.localChecked = checked;
         const res = await this.opts.client.heartbeat(body, { retries: 1 });
+        if (checked && this.localChecked === checked) this.localChecked = null;
         if (this.lastHeartbeatError) this.log("Conex\xE3o com o servidor restabelecida.");
         this.lastHeartbeatError = "";
         this.agent = res?.agent ?? this.agent;
@@ -35006,6 +35263,7 @@ var Executor = class {
         if (res?.mergeChecks?.length) void this.runMergeChecks(res.mergeChecks);
         if (res?.keyFetches?.length) void this.runKeyFetches(res.keyFetches);
         if (res?.branchShares?.length) void this.runBranchShares(res.branchShares);
+        if (res?.localCheck?.id) void this.runLocalCheck(res.localCheck);
         return this.agent;
       } catch (err) {
         const message = msgOf(err);
@@ -35022,6 +35280,29 @@ var Executor = class {
       }
     })();
     return this.beating;
+  }
+  // Atualizar ou Subir o ambiente em Conexões: no Subir, religa as receitas que caíram (até 90 s cada, em paralelo);
+  // nos dois, manda um batimento novo na hora, com os endereços conferidos agora e o id do pedido.
+  async runLocalCheck(req) {
+    if (this.localCheckDone === req.id || this.localCheckRunning) return;
+    this.localCheckDone = req.id;
+    this.localCheckRunning = true;
+    try {
+      let outcomes = [];
+      if (req.religar) {
+        try {
+          outcomes = await (this.opts.relaunchLocal ?? ((path2) => relaunchDown(path2, { env: this.opts.env })))(this.localState);
+        } catch (err) {
+          this.log(`N\xE3o deu para subir o ambiente local de novo: ${msgOf(err)}`);
+        }
+        for (const o of outcomes) this.log(o.ok ? `Ambiente local de volta: ${o.label} ${o.url}.` : `O ambiente local ${o.label} ${o.url} n\xE3o voltou: ${(o.error ?? "").split("\n")[0]}`);
+      }
+      this.localChecked = { id: req.id, religados: outcomes.filter((o) => o.ok).length, falhas: outcomes.filter((o) => !o.ok).map((o) => o.url).slice(0, 10) };
+      if (this.beating) await this.beating.catch(() => null);
+      await this.heartbeat();
+    } finally {
+      this.localCheckRunning = false;
+    }
   }
   // Conferência de merge pedida no painel antes de o card seguir (mergeCheck.ts): roda à parte, só lendo o git, uma vez
   // por pedido, mesmo com os trabalhos ocupando as vagas.
@@ -35324,11 +35605,11 @@ var Executor = class {
 };
 
 // connector/mcp.ts
-import { closeSync as closeSync2, mkdirSync as mkdirSync9, mkdtempSync as mkdtempSync7, openSync as openSync2, readFileSync as readFileSync13, readSync, realpathSync as realpathSync8, rmSync as rmSync10, statSync as statSync14 } from "node:fs";
+import { closeSync as closeSync3, mkdirSync as mkdirSync10, mkdtempSync as mkdtempSync7, openSync as openSync3, readFileSync as readFileSync14, readSync, realpathSync as realpathSync9, rmSync as rmSync10, statSync as statSync15 } from "node:fs";
 import os11 from "node:os";
-import { basename as basename5, extname as extname3, isAbsolute as isAbsolute5, join as join18, resolve as resolve7, sep as sep5 } from "node:path";
+import { basename as basename5, extname as extname3, isAbsolute as isAbsolute6, join as join19, resolve as resolve8, sep as sep5 } from "node:path";
 
-// node_modules/zod/v3/helpers/util.js
+// ../benflow/node_modules/zod/v3/helpers/util.js
 var util;
 (function(util2) {
   util2.assertEqual = (_) => {
@@ -35462,7 +35743,7 @@ var getParsedType2 = (data) => {
   }
 };
 
-// node_modules/zod/v3/ZodError.js
+// ../benflow/node_modules/zod/v3/ZodError.js
 var ZodIssueCode2 = util.arrayToEnum([
   "invalid_type",
   "invalid_literal",
@@ -35591,7 +35872,7 @@ ZodError2.create = (issues) => {
   return error62;
 };
 
-// node_modules/zod/v3/locales/en.js
+// ../benflow/node_modules/zod/v3/locales/en.js
 var errorMap = (issue2, _ctx) => {
   let message;
   switch (issue2.code) {
@@ -35694,13 +35975,13 @@ var errorMap = (issue2, _ctx) => {
 };
 var en_default2 = errorMap;
 
-// node_modules/zod/v3/errors.js
+// ../benflow/node_modules/zod/v3/errors.js
 var overrideErrorMap = en_default2;
 function getErrorMap2() {
   return overrideErrorMap;
 }
 
-// node_modules/zod/v3/helpers/parseUtil.js
+// ../benflow/node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
   const { data, path: path2, errorMaps, issueData } = params;
   const fullPath = [...path2, ...issueData.path || []];
@@ -35809,14 +36090,14 @@ var isDirty = (x) => x.status === "dirty";
 var isValid = (x) => x.status === "valid";
 var isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
 
-// node_modules/zod/v3/helpers/errorUtil.js
+// ../benflow/node_modules/zod/v3/helpers/errorUtil.js
 var errorUtil;
 (function(errorUtil2) {
   errorUtil2.errToObj = (message) => typeof message === "string" ? { message } : message || {};
   errorUtil2.toString = (message) => typeof message === "string" ? message : message?.message;
 })(errorUtil || (errorUtil = {}));
 
-// node_modules/zod/v3/types.js
+// ../benflow/node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
   constructor(parent, value, path2, key) {
     this._cachedPath = [];
@@ -39223,7 +39504,7 @@ var nullableType = ZodNullable2.create;
 var preprocessType = ZodEffects.createWithPreprocess;
 var pipelineType = ZodPipeline.create;
 
-// node_modules/zod/v4/mini/schemas.js
+// ../benflow/node_modules/zod/v4/mini/schemas.js
 var ZodMiniType = /* @__PURE__ */ $constructor("ZodMiniType", (inst, def) => {
   if (!inst._zod)
     throw new Error("Uninitialized schema in ZodMiniType.");
@@ -39289,7 +39570,7 @@ function object2(shape, params) {
   return new ZodMiniObject(def);
 }
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-compat.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-compat.js
 function isZ4Schema(s2) {
   const schema = s2;
   return !!schema._zod;
@@ -39449,7 +39730,7 @@ function getLiteralValue(schema) {
   return void 0;
 }
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/types.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/types.js
 var LATEST_PROTOCOL_VERSION = "2025-11-25";
 var SUPPORTED_PROTOCOL_VERSIONS = [LATEST_PROTOCOL_VERSION, "2025-06-18", "2025-03-26", "2024-11-05", "2024-10-07"];
 var RELATED_TASK_META_KEY = "io.modelcontextprotocol/related-task";
@@ -40980,12 +41261,12 @@ var UrlElicitationRequiredError = class extends McpError {
   }
 };
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/interfaces.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/interfaces.js
 function isTerminal(status) {
   return status === "completed" || status === "failed" || status === "cancelled";
 }
 
-// node_modules/zod-to-json-schema/dist/esm/Options.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/Options.js
 var ignoreOverride = /* @__PURE__ */ Symbol("Let zodToJsonSchema decide on which parser to use");
 var defaultOptions = {
   name: void 0,
@@ -41019,7 +41300,7 @@ var getDefaultOptions = (options) => typeof options === "string" ? {
   ...options
 };
 
-// node_modules/zod-to-json-schema/dist/esm/Refs.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/Refs.js
 var getRefs = (options) => {
   const _options = getDefaultOptions(options);
   const currentPath = _options.name !== void 0 ? [..._options.basePath, _options.definitionPath, _options.name] : _options.basePath;
@@ -41040,7 +41321,7 @@ var getRefs = (options) => {
   };
 };
 
-// node_modules/zod-to-json-schema/dist/esm/errorMessages.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/errorMessages.js
 function addErrorMessage(res, key, errorMessage2, refs) {
   if (!refs?.errorMessages)
     return;
@@ -41056,7 +41337,7 @@ function setResponseValueAndErrors(res, key, value, errorMessage2, refs) {
   addErrorMessage(res, key, errorMessage2, refs);
 }
 
-// node_modules/zod-to-json-schema/dist/esm/getRelativePath.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/getRelativePath.js
 var getRelativePath = (pathA, pathB) => {
   let i = 0;
   for (; i < pathA.length && i < pathB.length; i++) {
@@ -41066,7 +41347,7 @@ var getRelativePath = (pathA, pathB) => {
   return [(pathA.length - i).toString(), ...pathB.slice(i)].join("/");
 };
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/any.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/any.js
 function parseAnyDef(refs) {
   if (refs.target !== "openAi") {
     return {};
@@ -41082,7 +41363,7 @@ function parseAnyDef(refs) {
   };
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/array.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/array.js
 function parseArrayDef(def, refs) {
   const res = {
     type: "array"
@@ -41106,7 +41387,7 @@ function parseArrayDef(def, refs) {
   return res;
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/bigint.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/bigint.js
 function parseBigintDef(def, refs) {
   const res = {
     type: "integer",
@@ -41152,24 +41433,24 @@ function parseBigintDef(def, refs) {
   return res;
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/boolean.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/boolean.js
 function parseBooleanDef() {
   return {
     type: "boolean"
   };
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/branded.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/branded.js
 function parseBrandedDef(_def, refs) {
   return parseDef(_def.type._def, refs);
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/catch.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/catch.js
 var parseCatchDef = (def, refs) => {
   return parseDef(def.innerType._def, refs);
 };
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/date.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/date.js
 function parseDateDef(def, refs, overrideDateStrategy) {
   const strategy = overrideDateStrategy ?? refs.dateStrategy;
   if (Array.isArray(strategy)) {
@@ -41228,7 +41509,7 @@ var integerDateParser = (def, refs) => {
   return res;
 };
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/default.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/default.js
 function parseDefaultDef(_def, refs) {
   return {
     ...parseDef(_def.innerType._def, refs),
@@ -41236,12 +41517,12 @@ function parseDefaultDef(_def, refs) {
   };
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/effects.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/effects.js
 function parseEffectsDef(_def, refs) {
   return refs.effectStrategy === "input" ? parseDef(_def.schema._def, refs) : parseAnyDef(refs);
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/enum.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/enum.js
 function parseEnumDef(def) {
   return {
     type: "string",
@@ -41249,7 +41530,7 @@ function parseEnumDef(def) {
   };
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/intersection.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/intersection.js
 var isJsonSchema7AllOfType = (type) => {
   if ("type" in type && type.type === "string")
     return false;
@@ -41291,7 +41572,7 @@ function parseIntersectionDef(def, refs) {
   } : void 0;
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/literal.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/literal.js
 function parseLiteralDef(def, refs) {
   const parsedType2 = typeof def.value;
   if (parsedType2 !== "bigint" && parsedType2 !== "number" && parsedType2 !== "boolean" && parsedType2 !== "string") {
@@ -41311,7 +41592,7 @@ function parseLiteralDef(def, refs) {
   };
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/string.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/string.js
 var emojiRegex2 = void 0;
 var zodPatterns = {
   /**
@@ -41636,7 +41917,7 @@ function stringifyRegExpWithFlags(regex, refs) {
   return pattern;
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/record.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/record.js
 function parseRecordDef(def, refs) {
   if (refs.target === "openAi") {
     console.warn("Warning: OpenAI may not support records in schemas! Try an array of key-value pairs instead.");
@@ -41688,7 +41969,7 @@ function parseRecordDef(def, refs) {
   return schema;
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/map.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/map.js
 function parseMapDef(def, refs) {
   if (refs.mapStrategy === "record") {
     return parseRecordDef(def, refs);
@@ -41713,7 +41994,7 @@ function parseMapDef(def, refs) {
   };
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/nativeEnum.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/nativeEnum.js
 function parseNativeEnumDef(def) {
   const object3 = def.values;
   const actualKeys = Object.keys(def.values).filter((key) => {
@@ -41727,7 +42008,7 @@ function parseNativeEnumDef(def) {
   };
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/never.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/never.js
 function parseNeverDef(refs) {
   return refs.target === "openAi" ? void 0 : {
     not: parseAnyDef({
@@ -41737,7 +42018,7 @@ function parseNeverDef(refs) {
   };
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/null.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/null.js
 function parseNullDef(refs) {
   return refs.target === "openApi3" ? {
     enum: ["null"],
@@ -41747,7 +42028,7 @@ function parseNullDef(refs) {
   };
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/union.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/union.js
 var primitiveMappings = {
   ZodString: "string",
   ZodNumber: "number",
@@ -41815,7 +42096,7 @@ var asAnyOf = (def, refs) => {
   return anyOf.length ? { anyOf } : void 0;
 };
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/nullable.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/nullable.js
 function parseNullableDef(def, refs) {
   if (["ZodString", "ZodNumber", "ZodBigInt", "ZodBoolean", "ZodNull"].includes(def.innerType._def.typeName) && (!def.innerType._def.checks || !def.innerType._def.checks.length)) {
     if (refs.target === "openApi3") {
@@ -41847,7 +42128,7 @@ function parseNullableDef(def, refs) {
   return base && { anyOf: [base, { type: "null" }] };
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/number.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/number.js
 function parseNumberDef(def, refs) {
   const res = {
     type: "number"
@@ -41896,7 +42177,7 @@ function parseNumberDef(def, refs) {
   return res;
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/object.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/object.js
 function parseObjectDef(def, refs) {
   const forceOptionalIntoNullable = refs.target === "openAi";
   const result = {
@@ -41966,7 +42247,7 @@ function safeIsOptional(schema) {
   }
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/optional.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/optional.js
 var parseOptionalDef = (def, refs) => {
   if (refs.currentPath.toString() === refs.propertyPath?.toString()) {
     return parseDef(def.innerType._def, refs);
@@ -41985,7 +42266,7 @@ var parseOptionalDef = (def, refs) => {
   } : parseAnyDef(refs);
 };
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/pipeline.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/pipeline.js
 var parsePipelineDef = (def, refs) => {
   if (refs.pipeStrategy === "input") {
     return parseDef(def.in._def, refs);
@@ -42005,12 +42286,12 @@ var parsePipelineDef = (def, refs) => {
   };
 };
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/promise.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/promise.js
 function parsePromiseDef(def, refs) {
   return parseDef(def.type._def, refs);
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/set.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/set.js
 function parseSetDef(def, refs) {
   const items = parseDef(def.valueType._def, {
     ...refs,
@@ -42030,7 +42311,7 @@ function parseSetDef(def, refs) {
   return schema;
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/tuple.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/tuple.js
 function parseTupleDef(def, refs) {
   if (def.rest) {
     return {
@@ -42058,24 +42339,24 @@ function parseTupleDef(def, refs) {
   }
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/undefined.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/undefined.js
 function parseUndefinedDef(refs) {
   return {
     not: parseAnyDef(refs)
   };
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/unknown.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/unknown.js
 function parseUnknownDef(refs) {
   return parseAnyDef(refs);
 }
 
-// node_modules/zod-to-json-schema/dist/esm/parsers/readonly.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parsers/readonly.js
 var parseReadonlyDef = (def, refs) => {
   return parseDef(def.innerType._def, refs);
 };
 
-// node_modules/zod-to-json-schema/dist/esm/selectParser.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/selectParser.js
 var selectParser = (def, typeName, refs) => {
   switch (typeName) {
     case ZodFirstPartyTypeKind2.ZodString:
@@ -42151,7 +42432,7 @@ var selectParser = (def, typeName, refs) => {
   }
 };
 
-// node_modules/zod-to-json-schema/dist/esm/parseDef.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/parseDef.js
 function parseDef(def, refs, forceResolution = false) {
   const seenItem = refs.seen.get(def);
   if (refs.override) {
@@ -42207,7 +42488,7 @@ var addMeta = (def, refs, jsonSchema) => {
   return jsonSchema;
 };
 
-// node_modules/zod-to-json-schema/dist/esm/zodToJsonSchema.js
+// ../benflow/node_modules/zod-to-json-schema/dist/esm/zodToJsonSchema.js
 var zodToJsonSchema = (schema, options) => {
   const refs = getRefs(options);
   let definitions = typeof options === "object" && options.definitions ? Object.entries(options.definitions).reduce((acc, [name2, schema2]) => ({
@@ -42269,7 +42550,7 @@ var zodToJsonSchema = (schema, options) => {
   return combined;
 };
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-json-schema-compat.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-json-schema-compat.js
 function mapMiniTarget(t) {
   if (!t)
     return "draft-7";
@@ -42311,7 +42592,7 @@ function parseWithCompat(schema, data) {
   return result.data;
 }
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/shared/protocol.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/protocol.js
 var DEFAULT_REQUEST_TIMEOUT_MSEC = 6e4;
 var Protocol = class {
   constructor(_options) {
@@ -42811,7 +43092,7 @@ var Protocol = class {
           return;
         }
         const pollInterval = task2.pollInterval ?? this._options?.defaultTaskPollInterval ?? 1e3;
-        await new Promise((resolve9) => setTimeout(resolve9, pollInterval));
+        await new Promise((resolve10) => setTimeout(resolve10, pollInterval));
         options?.signal?.throwIfAborted();
       }
     } catch (error62) {
@@ -42828,7 +43109,7 @@ var Protocol = class {
    */
   request(request, resultSchema, options) {
     const { relatedRequestId, resumptionToken, onresumptiontoken, task, relatedTask } = options ?? {};
-    return new Promise((resolve9, reject) => {
+    return new Promise((resolve10, reject) => {
       const earlyReject = (error62) => {
         reject(error62);
       };
@@ -42906,7 +43187,7 @@ var Protocol = class {
           if (!parseResult.success) {
             reject(parseResult.error);
           } else {
-            resolve9(parseResult.data);
+            resolve10(parseResult.data);
           }
         } catch (error62) {
           reject(error62);
@@ -43167,12 +43448,12 @@ var Protocol = class {
       }
     } catch {
     }
-    return new Promise((resolve9, reject) => {
+    return new Promise((resolve10, reject) => {
       if (signal.aborted) {
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
         return;
       }
-      const timeoutId = setTimeout(resolve9, interval);
+      const timeoutId = setTimeout(resolve10, interval);
       signal.addEventListener("abort", () => {
         clearTimeout(timeoutId);
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
@@ -43265,7 +43546,7 @@ function mergeCapabilities(base, additional) {
   return result;
 }
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/validation/ajv-provider.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/validation/ajv-provider.js
 var import_ajv = __toESM(require_ajv(), 1);
 var import_ajv_formats = __toESM(require_dist(), 1);
 function createDefaultAjvInstance() {
@@ -43333,7 +43614,7 @@ var AjvJsonSchemaValidator = class {
   }
 };
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/server.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/server.js
 var ExperimentalServerTasks = class {
   constructor(_server) {
     this._server = _server;
@@ -43546,7 +43827,7 @@ var ExperimentalServerTasks = class {
   }
 };
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/helpers.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/helpers.js
 function assertToolsCallTaskCapability(requests, method, entityName) {
   if (!requests) {
     throw new Error(`${entityName} does not support task creation (required for ${method})`);
@@ -43581,7 +43862,7 @@ function assertClientRequestTaskCapability(requests, method, entityName) {
   }
 }
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/server/index.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/server/index.js
 var Server = class extends Protocol {
   /**
    * Initializes this server with the given name and version information.
@@ -43952,7 +44233,7 @@ var Server = class extends Protocol {
   }
 };
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/server/completable.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/server/completable.js
 var COMPLETABLE_SYMBOL = /* @__PURE__ */ Symbol.for("mcp.completable");
 function isCompletable(schema) {
   return !!schema && typeof schema === "object" && COMPLETABLE_SYMBOL in schema;
@@ -43966,7 +44247,7 @@ var McpZodTypeKind;
   McpZodTypeKind2["Completable"] = "McpCompletable";
 })(McpZodTypeKind || (McpZodTypeKind = {}));
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/shared/toolNameValidation.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/toolNameValidation.js
 var TOOL_NAME_REGEX = /^[A-Za-z0-9._-]{1,128}$/;
 function validateToolName(name) {
   const warnings = [];
@@ -44024,7 +44305,7 @@ function validateAndWarnToolName(name) {
   return result.isValid;
 }
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/mcp-server.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/mcp-server.js
 var ExperimentalMcpServerTasks = class {
   constructor(_mcpServer) {
     this._mcpServer = _mcpServer;
@@ -44039,7 +44320,7 @@ var ExperimentalMcpServerTasks = class {
   }
 };
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/server/mcp.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/server/mcp.js
 var McpServer = class {
   constructor(serverInfo, options) {
     this._registeredResources = {};
@@ -44263,7 +44544,7 @@ var McpServer = class {
     let task = createTaskResult.task;
     const pollInterval = task.pollInterval ?? 5e3;
     while (task.status !== "completed" && task.status !== "failed" && task.status !== "cancelled") {
-      await new Promise((resolve9) => setTimeout(resolve9, pollInterval));
+      await new Promise((resolve10) => setTimeout(resolve10, pollInterval));
       const updatedTask = await extra.taskStore.getTask(taskId);
       if (!updatedTask) {
         throw new McpError(ErrorCode.InternalError, `Task ${taskId} not found during polling`);
@@ -44831,10 +45112,10 @@ var EMPTY_COMPLETION_RESULT = {
   }
 };
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
 import process2 from "node:process";
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/shared/stdio.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/stdio.js
 var STDIO_DEFAULT_MAX_BUFFER_SIZE = 10 * 1024 * 1024;
 var ReadBuffer = class {
   constructor(options) {
@@ -44871,7 +45152,7 @@ function serializeMessage(message) {
   return JSON.stringify(message) + "\n";
 }
 
-// node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
+// ../benflow/node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
 var StdioServerTransport = class {
   constructor(_stdin = process2.stdin, _stdout = process2.stdout, options) {
     this._stdin = _stdin;
@@ -44927,12 +45208,12 @@ var StdioServerTransport = class {
     this.onclose?.();
   }
   send(message) {
-    return new Promise((resolve9) => {
+    return new Promise((resolve10) => {
       const json2 = serializeMessage(message);
       if (this._stdout.write(json2)) {
-        resolve9();
+        resolve10();
       } else {
-        this._stdout.once("drain", resolve9);
+        this._stdout.once("drain", resolve10);
       }
     });
   }
@@ -45524,6 +45805,7 @@ var TOOL_NAMES = [
   "ler_nota",
   "ambientes",
   "informar_ambiente_local",
+  "subir_ambiente_local",
   "registrar_dependencia",
   "criar_chamado",
   "anexar_arquivo",
@@ -45865,13 +46147,13 @@ var IMAGE_EXT = /* @__PURE__ */ new Set([".png", ".jpg", ".jpeg", ".gif", ".webp
 var TEXT_EXT = /* @__PURE__ */ new Set(["", ".txt", ".log", ".out", ".md", ".json", ".csv", ".tsv", ".html", ".htm", ".xml", ".yml", ".yaml", ".junit", ".tap"]);
 var PRIVATE_KEY_RE = /-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----/;
 function readHead(path2, bytes) {
-  const fd = openSync2(path2, "r");
+  const fd = openSync3(path2, "r");
   try {
     const buf = Buffer.alloc(bytes);
     const n2 = readSync(fd, buf, 0, bytes, 0);
     return buf.subarray(0, n2);
   } finally {
-    closeSync2(fd);
+    closeSync3(fd);
   }
 }
 function isImageData(head) {
@@ -45882,7 +46164,7 @@ function isImageData(head) {
 }
 function realOrNull(p) {
   try {
-    return realpathSync8.native(p);
+    return realpathSync9.native(p);
   } catch {
     return null;
   }
@@ -45893,10 +46175,10 @@ function isInsideFolder(root, target) {
   return t === r || t.startsWith(`${r}/`);
 }
 function resolveEvidenceFile(input2, opts) {
-  const abs = isAbsolute5(input2) ? input2 : resolve7(opts.cwd, input2);
+  const abs = isAbsolute6(input2) ? input2 : resolve8(opts.cwd, input2);
   const real2 = realOrNull(abs);
   if (!real2) throw new Error(`Arquivo n\xE3o encontrado: ${abs}`);
-  const st = statSync14(real2);
+  const st = statSync15(real2);
   if (!st.isFile()) throw new Error(`N\xE3o \xE9 um arquivo: ${abs}`);
   if (isSensitivePath(abs) || isSensitivePath(real2)) throw new Error("Esse arquivo parece conter segredos e n\xE3o pode ser enviado como evid\xEAncia.");
   const roots = opts.roots.map(realOrNull).filter((r) => !!r);
@@ -45916,15 +46198,15 @@ function resolveEvidenceFile(input2, opts) {
     if (PRIVATE_KEY_RE.test(head.toString("latin1"))) throw new Error("Esse arquivo parece conter segredos e n\xE3o pode ser enviado como evid\xEAncia.");
     return { path: real2, upload: real2 };
   }
-  const text = readFileSync13(real2, "utf8");
+  const text = readFileSync14(real2, "utf8");
   if (PRIVATE_KEY_RE.test(text)) throw new Error("Esse arquivo parece conter segredos e n\xE3o pode ser enviado como evid\xEAncia.");
   return { path: real2, upload: { name: basename5(real2), data: Buffer.from(opts.redact(text), "utf8"), type: guessMime(real2) } };
 }
 function resolveAttachmentFile(input2, opts) {
-  const abs = isAbsolute5(input2) ? input2 : resolve7(opts.cwd, input2.replace(/^~(?=$|\/)/, os11.homedir()));
+  const abs = isAbsolute6(input2) ? input2 : resolve8(opts.cwd, input2.replace(/^~(?=$|\/)/, os11.homedir()));
   const real2 = realOrNull(abs);
   if (!real2) throw new Error(`Arquivo n\xE3o encontrado: ${abs}`);
-  const st = statSync14(real2);
+  const st = statSync15(real2);
   if (!st.isFile()) throw new Error(`N\xE3o \xE9 um arquivo: ${abs}`);
   if (isSensitivePath(abs) || isSensitivePath(real2)) throw new Error(`${basename5(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
   if (st.size === 0) throw new Error(`${basename5(abs)} est\xE1 vazio.`);
@@ -45936,7 +46218,7 @@ function resolveAttachmentFile(input2, opts) {
     if (PRIVATE_KEY_RE.test(head.toString("latin1"))) throw new Error(`${basename5(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
     return { path: real2, upload: real2 };
   }
-  const text = readFileSync13(real2, "utf8");
+  const text = readFileSync14(real2, "utf8");
   if (PRIVATE_KEY_RE.test(text)) throw new Error(`${basename5(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
   return { path: real2, upload: { name: basename5(real2), data: Buffer.from(opts.redact(text), "utf8"), type: guessMime(real2) } };
 }
@@ -45944,7 +46226,7 @@ function parseFolders(raw) {
   if (!raw) return [];
   try {
     const list = JSON.parse(raw);
-    return Array.isArray(list) ? list.filter((p) => typeof p === "string" && isAbsolute5(p)).slice(0, 20) : [];
+    return Array.isArray(list) ? list.filter((p) => typeof p === "string" && isAbsolute6(p)).slice(0, 20) : [];
   } catch {
     return [];
   }
@@ -45990,7 +46272,7 @@ function createChamadosMcpServer(deps) {
   let downloadDir = deps.downloadDir ?? null;
   const redact = (text) => entry.token.length >= 8 ? text.split(entry.token).join("***") : text;
   const terminalMode = !jobMode && !testMode && !conversaMode && !painelMode;
-  const startSentence = terminalMode ? " Ao come\xE7ar a trabalhar num chamado, use iniciar_execucao: o card passa a mostrar que o terminal assumiu o trabalho (se esquecer, as ferramentas que escrevem no card abrem a execu\xE7\xE3o sozinhas com o card em A fazer ou Em andamento; o comentar n\xE3o abre)." : "";
+  const startSentence = terminalMode ? " Ao come\xE7ar a trabalhar num chamado, use iniciar_execucao: o card passa a mostrar que o terminal assumiu o trabalho (se esquecer, as ferramentas que escrevem no card abrem a execu\xE7\xE3o sozinhas com o card em A fazer ou Em andamento; o comentar n\xE3o abre). Tarefa nova sem card numa pasta de reposit\xF3rio do projeto: iniciar_execucao sem numero, com titulo e descricao escritos por voc\xEA, cria o card e j\xE1 come\xE7a o trabalho nele." : "";
   const server = new McpServer(
     { name: "benflow", version: connectorVersion() },
     {
@@ -46094,12 +46376,12 @@ ${text}` : text;
     };
   }
   function ensureDownloadDir() {
-    if (!downloadDir && painelFilesDir && statSync14(painelFilesDir, { throwIfNoEntry: false })?.isDirectory()) {
-      downloadDir = join18(painelFilesDir, "anexos");
-      mkdirSync9(downloadDir, { recursive: true, mode: 448 });
+    if (!downloadDir && painelFilesDir && statSync15(painelFilesDir, { throwIfNoEntry: false })?.isDirectory()) {
+      downloadDir = join19(painelFilesDir, "anexos");
+      mkdirSync10(downloadDir, { recursive: true, mode: 448 });
     }
     if (!downloadDir) {
-      downloadDir = mkdtempSync7(join18(os11.tmpdir(), "benflow-anexos-"));
+      downloadDir = mkdtempSync7(join19(os11.tmpdir(), "benflow-anexos-"));
       const dir = downloadDir;
       process.once("exit", () => rmSync10(dir, { recursive: true, force: true }));
     }
@@ -46248,19 +46530,30 @@ ${text}` : text;
     "iniciar_execucao",
     {
       title: "Iniciar execu\xE7\xE3o",
-      description: 'Registra que a IA come\xE7ou a trabalhar no chamado (execu\xE7\xE3o modo "ia"): o card passa a mostrar que o terminal assumiu o trabalho. Use ao come\xE7ar a trabalhar num chamado pelo terminal, antes de mexer no c\xF3digo. Se o chamado j\xE1 tem trabalho deste Claude em andamento, continua nele.',
+      description: 'Registra que a IA come\xE7ou a trabalhar no chamado (execu\xE7\xE3o modo "ia"): o card passa a mostrar que o terminal assumiu o trabalho (cor de terminal e o \xEDcone de terminal no quadro). Use ao come\xE7ar a trabalhar num chamado pelo terminal, antes de mexer no c\xF3digo. Se o chamado j\xE1 tem trabalho deste Claude em andamento, continua nele. Tarefa nova sem card: em vez de numero, informe titulo e descricao escritos por voc\xEA a partir do pedido (n\xE3o copie o texto cru da pessoa) e o Benflow cria o card e j\xE1 come\xE7a o trabalho nele.',
       inputSchema: {
-        numero,
+        numero: numero.optional(),
+        titulo: external_exports.string().min(3).max(200).optional().describe("Tarefa nova sem card: t\xEDtulo curto e claro, escrito por voc\xEA a partir do pedido"),
+        descricao: external_exports.string().max(4800).optional().describe("Tarefa nova sem card: o que a pessoa pediu, o que vai ser feito e como conferir, em poucas linhas"),
         modo: external_exports.literal("ia").optional().describe('Sempre "ia"'),
         complemento: external_exports.string().max(4e3).optional().describe("Orienta\xE7\xE3o extra do dev para o trabalho")
       }
     },
-    async ({ numero: n2, complemento }) => {
-      const res = await client.startExecution(n2, complemento ?? null);
+    async ({ numero: n2, titulo, descricao, complemento }) => {
+      let target = n2;
+      let created = "";
+      if (!target) {
+        if (!titulo) throw new Error("Informe o numero do chamado ou, para uma tarefa nova sem card, titulo e descricao para o Benflow criar o card.");
+        const card = await client.createTask({ title: titulo, description: descricao ? redact(descricao) : null, category: null, dueDate: null, assignees: [] });
+        target = card.task.number;
+        created = `Card #${target} criado pelo terminal: "${card.task.title}". No painel: ${entry.url.replace(/\/+$/, "")}${card.task.path}
+`;
+      }
+      const res = await client.startExecution(target, complemento ?? null);
       const ex = obj2(res?.execution);
       const id = num(ex.id);
       if (id) keepAlive(id);
-      return `Execu\xE7\xE3o #${str4(ex.id) ?? "?"} iniciada no chamado #${n2} (modo IA): o card mostra o trabalho pelo terminal. Informe o andamento com atualizar_progresso.`;
+      return `${created}Execu\xE7\xE3o #${str4(ex.id) ?? "?"} iniciada no chamado #${target} (modo IA): o card mostra o trabalho pelo terminal. Use ver_chamado com numero ${target} para a etiqueta de commit e informe o andamento com atualizar_progresso.`;
     }
   );
   if (conversaMode) register(
@@ -46597,6 +46890,52 @@ ${wrapData("nota", note.content)}`;
       return lines2.join("\n");
     }
   );
+  if ((!painelMode || painelLevel !== "consultar") && !testMode) register(
+    "subir_ambiente_local",
+    {
+      title: "Subir o ambiente local",
+      description: 'Sobe um servidor de desenvolvimento desta m\xE1quina que continua no ar depois que voc\xEA termina (um "npm run dev" em segundo plano no Bash cai junto com o trabalho) e mostra o endere\xE7o no painel, com a situa\xE7\xE3o em verde ou vermelho. Use quando pedirem para subir ou deixar acess\xEDvel o ambiente local. Prepare antes o que faltar (depend\xEAncias, arquivo de vari\xE1veis de desenvolvimento, banco de desenvolvimento) e chame uma vez por parte: primeiro a API, depois o front ligado nela. O comando \xE9 um script do package.json da pasta: "npm run <script>" (ou pnpm, yarn, bun), com argumentos depois de "--" (ex.: "npm run dev -- --port 5174"). A ferramenta espera o endere\xE7o responder (at\xE9 90 s) e devolve o fim do log se n\xE3o subir.',
+      inputSchema: {
+        repo: external_exports.string().regex(/^[\w.-]+\/[\w.-]+$/, "Use owner/nome").describe("Reposit\xF3rio no formato owner/nome"),
+        rotulo: external_exports.string().min(1).max(40).describe("front ou API"),
+        pasta: external_exports.string().max(500).optional().describe('Pasta do app dentro do reposit\xF3rio (a que tem o package.json); "." ou vazio para a raiz'),
+        comando: external_exports.string().min(5).max(300).describe("Script do package.json, ex.: npm run dev -- --port 5174"),
+        url: external_exports.string().min(8).max(300).describe("Endere\xE7o em que ele responde, ex.: http://localhost:5174"),
+        variaveis: external_exports.record(external_exports.string(), external_exports.string().max(500)).optional().describe('Vari\xE1veis de ambiente do servidor, ex.: { "PORT": "3001", "VITE_API_URL": "http://localhost:3001" }')
+      }
+    },
+    async ({ repo, rotulo, pasta, comando, url: url2, variaveis }) => {
+      if (!entry.token) throw new Error(NOT_CONFIGURED);
+      if (!isLocalUrl(url2)) throw new Error("Use um endere\xE7o desta m\xE1quina (http://localhost:porta, 127.0.0.1 ou [::1]).");
+      const label = cleanLabel(rotulo);
+      if (!label) throw new Error("Informe um r\xF3tulo, como front ou API.");
+      const repoPath = entry.repos[repo];
+      if (!repoPath) {
+        const known = Object.keys(entry.repos);
+        throw new Error(`O reposit\xF3rio ${repo} n\xE3o est\xE1 no config deste Claude.${known.length ? ` Reposit\xF3rios desta m\xE1quina: ${known.join(", ")}.` : ""}`);
+      }
+      const parsed = parseRecipe({ pasta, comando, variaveis }, repoPath);
+      if ("error" in parsed) throw new Error(parsed.error);
+      const shown = displayLocalUrl(url2);
+      const statePath = localStatePath(configFile, key);
+      const launch = deps.launchLocal ?? ((r, u, log2) => launchRecipe(r, u, log2, { env, probe }));
+      const res = await launch(parsed.recipe, shown, localLogPath(statePath, shown));
+      if (!res.ok) {
+        const lines3 = [`${label} n\xE3o respondeu em ${shown} depois de ${recipeCommand(parsed.recipe)} em ${parsed.recipe.dir}.`];
+        if (res.log) lines3.push("Fim do log:", wrapData("log", redact(res.log)));
+        lines3.push("Corrija o que faltar (depend\xEAncia, vari\xE1veis, porta, banco) e chame de novo. Nada foi gravado no painel.");
+        throw new Error(lines3.join("\n"));
+      }
+      saveRecipeEntry(statePath, { repo, url: shown, label, recipe: parsed.recipe, up: true });
+      const lines2 = [
+        res.already ? `${label} j\xE1 estava no ar em ${shown} (${repo}): guardei a receita para subir de novo.` : `${label} no ar em ${shown} (${repo}), respondeu ${res.http}.`,
+        `Log: ${localLogPath(statePath, shown)}. O servidor continua no ar depois deste trabalho; se cair, o dono sobe de novo pelo bot\xE3o Subir o ambiente em Conex\xF5es.`
+      ];
+      if (jobMode || isExecutorRunning(presencePath(configFile, key))) lines2.push("O painel mostra o link no pr\xF3ximo batimento do executor (em segundos).");
+      else lines2.push("O executor do Benflow n\xE3o est\xE1 ligado nesta m\xE1quina: o link aparece no painel quando ele ligar (benflow.mjs executar).");
+      return lines2.join("\n");
+    }
+  );
   const qaProducao = (jobMode || testMode) && benflowEnv(env, "QA_PRODUCAO") === "1";
   const videoRaw = jobMode || testMode ? benflowEnv(env, "VIDEO") : null;
   const videoMode = videoRaw === "depois" || videoRaw === "nao" ? videoRaw : "agora";
@@ -46653,7 +46992,7 @@ ${wrapData("nota", note.content)}`;
   const MSG_URL_SCREEN = qaProducao ? "Use o endere\xE7o de produ\xE7\xE3o (ou de homologa\xE7\xE3o) do projeto cadastrado em Ambientes, ou o servidor de desenvolvimento desta m\xE1quina. Outros sites ficam de fora." : "Use o servidor de desenvolvimento desta m\xE1quina (http://localhost:porta/caminho, 127.0.0.1 ou [::1]) ou o endere\xE7o de homologa\xE7\xE3o do projeto cadastrado em Ambientes. A produ\xE7\xE3o e outros sites ficam de fora.";
   function ensureCaptureDir() {
     if (!captureDir) {
-      captureDir = mkdtempSync7(join18(os11.tmpdir(), "benflow-capturas-"));
+      captureDir = mkdtempSync7(join19(os11.tmpdir(), "benflow-capturas-"));
       const dir = captureDir;
       process.once("exit", () => rmSync10(dir, { recursive: true, force: true }));
     }
@@ -46690,7 +47029,7 @@ ${wrapData("nota", note.content)}`;
       const problem = actionsProblem(acoes);
       if (problem) throw new Error(problem);
       const work = a.registrar === false ? null : await workFor(a.numero);
-      const out = join18(ensureCaptureDir(), captureFileName(a.titulo, ++captureSeq));
+      const out = join19(ensureCaptureDir(), captureFileName(a.titulo, ++captureSeq));
       const shot = await capture({ url: a.url, out, celular: a.celular, paginaInteira: a.pagina_inteira, esperarMs: a.esperar_ms, acoes, login: loginFor });
       const size = `${shot.width} x ${shot.height}${a.celular ? ", celular" : ""}`;
       const page = `A p\xE1gina ficou em ${plain(shot.url)}${shot.title ? `, com o t\xEDtulo ${inlineData("titulo", shot.title, 150)}` : ""}.`;
@@ -46743,7 +47082,7 @@ ${wrapData("nota", note.content)}`;
       const work = a.registrar === false ? null : await workFor(a.numero);
       const tell = (stage, reason) => work === null || testMode ? Promise.resolve() : client.videoProgress(work.id, { stage, reason: reason ?? null }).then(() => void 0, () => void 0);
       await tell("gravando");
-      const out = join18(ensureCaptureDir(), videoFileName(a.titulo, ++videoSeq));
+      const out = join19(ensureCaptureDir(), videoFileName(a.titulo, ++videoSeq));
       let video;
       try {
         video = await record2({ url: a.url, out, titulo: a.titulo, celular: a.celular, passos: a.passos, allowUrl, login: loginFor });
@@ -46818,10 +47157,8 @@ async function runMcpStdio(opts = {}) {
 
 // connector/session.ts
 var OPEN = /* @__PURE__ */ new Set(["a_fazer", "em_andamento", "em_homologacao", "em_producao"]);
-function repoFromRemote(url2) {
-  const m = /[/:]([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/.exec(url2.trim());
-  return m ? `${m[1]}/${m[2]}` : null;
-}
+var CONTEXT_SOURCES = /* @__PURE__ */ new Set(["startup", "clear", "compact"]);
+var TERMINAL_CARD_RULE = "Tarefa nova pedida aqui no terminal (mudar o c\xF3digo deste reposit\xF3rio; pergunta, explica\xE7\xE3o ou conversa n\xE3o contam) sem card citado (#N): antes de mexer no c\xF3digo, chame iniciar_execucao sem numero, com titulo e descricao escritos por voc\xEA a partir do pedido (curtos e claros, n\xE3o o texto cru da pessoa). O Benflow cria o card, j\xE1 come\xE7a o trabalho nele e o quadro mostra que ele est\xE1 sendo feito pelo terminal. Os pedidos seguintes da mesma tarefa continuam no mesmo card (informe o andamento com atualizar_progresso); tarefa diferente ganha card novo. Se a pessoa citar um card, use iniciar_execucao com o numero dele. Se ela disser que n\xE3o quer card, siga sem.";
 function parseInput(text) {
   if (!text) return {};
   try {
@@ -46842,7 +47179,8 @@ async function sessionHook(deps) {
   const env = deps.env ?? process.env;
   if (benflowEnv(env, "EXECUTOR") === "1" || benflowEnv(env, "EXECUTION_ID")) return null;
   const input2 = parseInput(deps.stdinText);
-  if (input2.source && input2.source !== "startup") return null;
+  if (input2.source && !CONTEXT_SOURCES.has(input2.source)) return null;
+  const opening = !input2.source || input2.source === "startup";
   const cwd = input2.cwd || deps.cwd || process.cwd();
   let entry = null;
   try {
@@ -46889,7 +47227,8 @@ async function sessionHook(deps) {
     if (open2.length > max) lines2.push(`- e mais ${open2.length - max} (use listar_chamados para ver todos)`);
   }
   lines2.push(
-    "Se a pessoa falar de chamados, cards ou tarefas, use a skill benflow: pergunte se ela quer se conectar ao Benflow, mostre a lista e pergunte o que fazer. N\xE3o comece a mexer no c\xF3digo nem fa\xE7a push sem ela pedir."
+    "Se a pessoa falar de chamados, cards ou tarefas, use a skill benflow: pergunte se ela quer se conectar ao Benflow, mostre a lista e pergunte o que fazer. N\xE3o comece a mexer no c\xF3digo nem fa\xE7a push sem ela pedir.",
+    TERMINAL_CARD_RULE
   );
   if (outdated) {
     lines2.push(
@@ -46898,7 +47237,8 @@ async function sessionHook(deps) {
   }
   const summary = open2.length ? `Benflow: ${open2.length} chamado(s) aberto(s)${mineSet.size ? `, ${mineCount} com voc\xEA` : ""}. Pe\xE7a "o que tem pra fazer" para ver a lista.` : "Benflow: nenhum chamado aberto no momento.";
   const system = outdated ? `${summary} Plugin do Benflow desatualizado (${version2}; a atual \xE9 a ${outdated}): pe\xE7a "atualize o plugin do Benflow".` : summary;
-  return { hookSpecificOutput: { hookEventName: "SessionStart", additionalContext: lines2.join("\n") }, systemMessage: system };
+  const hookSpecificOutput = { hookEventName: "SessionStart", additionalContext: lines2.join("\n") };
+  return opening ? { hookSpecificOutput, systemMessage: system } : { hookSpecificOutput };
 }
 
 // connector/cli.ts
@@ -46946,7 +47286,7 @@ function defaultIO() {
 }
 function isDir2(p) {
   try {
-    return statSync15(p).isDirectory();
+    return statSync16(p).isDirectory();
   } catch {
     return false;
   }
@@ -47007,7 +47347,7 @@ function parseRepoArgs(values) {
     const eq = raw.indexOf("=");
     if (eq <= 0) throw new Error(`Use --repo owner/nome=/caminho (recebido: ${raw}).`);
     const name = raw.slice(0, eq).trim();
-    const path2 = resolve8(expandHome(raw.slice(eq + 1).trim()));
+    const path2 = resolve9(expandHome(raw.slice(eq + 1).trim()));
     if (!REPO_RE2.test(name)) throw new Error(`Reposit\xF3rio inv\xE1lido: ${name}. Use owner/nome.`);
     if (!isDir2(path2)) throw new Error(`A pasta do reposit\xF3rio ${name} n\xE3o existe: ${path2}`);
     repos[name] = path2;
@@ -47038,12 +47378,12 @@ async function cmdConfigurar(args, deps, io) {
   const repos = parseRepoArgs(values.repo ?? []);
   let vault = null;
   if (values.cofre) {
-    vault = resolve8(expandHome(values.cofre.trim()));
+    vault = resolve9(expandHome(values.cofre.trim()));
     if (!isDir2(vault)) throw new Error(`A pasta do cofre pessoal n\xE3o existe: ${vault}`);
   }
   let projectVault = null;
   if (values["cofre-projeto"]) {
-    projectVault = resolve8(expandHome(values["cofre-projeto"].trim()));
+    projectVault = resolve9(expandHome(values["cofre-projeto"].trim()));
     if (!isDir2(projectVault)) throw new Error(`A pasta do cofre do projeto n\xE3o existe: ${projectVault}`);
   }
   const file2 = configPath(env);
@@ -47101,12 +47441,12 @@ async function cmdStatus(args, deps, io) {
   io.out(autoUpdateLine(autoUpdateState({ env, ...deps.claudeFs })));
   const stable = refreshStableDir(deps);
   if (stable) io.out(`Caminho fixo do plugin, para servi\xE7o do sistema: ${stable}`);
-  if (!existsSync14(file2)) {
+  if (!existsSync15(file2)) {
     io.out(`Arquivo de configura\xE7\xE3o: ${file2} (n\xE3o existe)`);
     io.out("Rode: configurar --url <endere\xE7o> --token <token>");
     return 1;
   }
-  const mode = (statSync15(file2).mode & 511).toString(8);
+  const mode = (statSync16(file2).mode & 511).toString(8);
   io.out(`Arquivo de configura\xE7\xE3o: ${file2} (permiss\xE3o ${mode})`);
   if (file2 !== configPath(env)) io.out(`  Config antigo: rode "configurar" de novo para gravar em ${configPath(env)}.`);
   const cfg = loadConfig(file2, io.err);
@@ -47173,10 +47513,10 @@ function executorTarget(self, fs) {
   const mine = connectorVersion();
   if (!isClaudeManaged(self, fs)) return { script: self, version: mine, managed: false };
   const installed = installedBenflow(fs);
-  if (installed && (isOlderVersion(mine, installed.version) || !existsSync14(self))) return { script: installed.script, version: installed.version, managed: true };
+  if (installed && (isOlderVersion(mine, installed.version) || !existsSync15(self))) return { script: installed.script, version: installed.version, managed: true };
   let real2 = self;
   try {
-    real2 = realpathSync9(self);
+    real2 = realpathSync10(self);
   } catch {
   }
   return { script: real2, version: mine, managed: true };
@@ -47186,13 +47526,13 @@ function refreshStableDir(deps) {
   const self = deps.selfScript ?? process.argv[1];
   if (!self || !isClaudeManaged(self, fs)) return null;
   const target = executorTarget(self, fs);
-  if (!refreshStablePluginDir(dirname10(dirname10(target.script)), { dir: deps.benflowDir, platform: deps.platform })) return null;
-  return join19(stablePluginDir(deps.benflowDir), "server", "benflow.mjs");
+  if (!refreshStablePluginDir(dirname11(dirname11(target.script)), { dir: deps.benflowDir, platform: deps.platform })) return null;
+  return join20(stablePluginDir(deps.benflowDir), "server", "benflow.mjs");
 }
 async function superviseExecutar(args, deps, io) {
   const env = deps.env ?? process.env;
   const fs = { env, ...deps.claudeFs };
-  const spawnFn = deps.spawn ?? ((cmd, a, o) => spawn6(cmd, a, o));
+  const spawnFn = deps.spawn ?? ((cmd, a, o) => spawn7(cmd, a, o));
   const platform = deps.platform ?? process.platform;
   const self = deps.selfScript ?? process.argv[1];
   const restarts = [];
@@ -47211,7 +47551,7 @@ async function superviseLoop(args, deps, io, ctx) {
   const { env, fs, spawnFn, platform, self, restarts } = ctx;
   for (; ; ) {
     const target = executorTarget(self, fs);
-    if (target.managed) refreshStablePluginDir(dirname10(dirname10(target.script)), { dir: deps.benflowDir, platform });
+    if (target.managed) refreshStablePluginDir(dirname11(dirname11(target.script)), { dir: deps.benflowDir, platform });
     const launch = nodeScriptLaunch(target.script, ["executar", "--filho", ...args]);
     let child;
     try {
@@ -47327,7 +47667,7 @@ async function cmdCofre(args, deps, io) {
   const file2 = readableConfigPath(configPath(env));
   const cfg = loadConfig(file2, io.err);
   const entry = pickServer(cfg, values.org ?? orgFromEnv(env), values.url ?? null);
-  const dir = values.pasta ? resolve8(expandHome(values.pasta.trim())) : entry.projectVault;
+  const dir = values.pasta ? resolve9(expandHome(values.pasta.trim())) : entry.projectVault;
   if (!dir) throw new Error('Informe a pasta do cofre: cofre enviar --pasta "/caminho/da/pasta/do/Obsidian/do/projeto".');
   if (!isDir2(dir)) throw new Error(`A pasta do cofre n\xE3o existe nesta m\xE1quina: ${dir}`);
   io.out(`Lendo as notas de ${dir}...`);
@@ -47443,7 +47783,7 @@ function isMain() {
   const arg = process.argv[1];
   if (!arg) return false;
   try {
-    return realpathSync9(arg) === realpathSync9(fileURLToPath3(import.meta.url));
+    return realpathSync10(arg) === realpathSync10(fileURLToPath3(import.meta.url));
   } catch {
     return false;
   }
