@@ -886,8 +886,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.47") {
-    cached = "0.1.47";
+  if ("0.1.48") {
+    cached = "0.1.48";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
