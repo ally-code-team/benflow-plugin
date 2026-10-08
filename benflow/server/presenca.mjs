@@ -552,7 +552,7 @@ var AgentClient = class _AgentClient {
 };
 
 // connector/config.ts
-import { chmodSync, existsSync, mkdirSync, readFileSync, renameSync, statSync as statSync2, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, readFileSync, realpathSync, renameSync, statSync as statSync2, writeFileSync } from "node:fs";
 import os from "node:os";
 import { dirname, join as join2, resolve } from "node:path";
 
@@ -796,7 +796,7 @@ function pickServer(cfg, orgSlug, url) {
   return first;
 }
 var NOT_CONFIGURED = "O Benflow ainda n\xE3o est\xE1 configurado nesta m\xE1quina. No Claude Code, abra /plugin, escolha o plugin benflow e preencha o endere\xE7o e o token do agente (Equipe IA > Ligar meu Claude), ou rode: node benflow.mjs configurar --url <endere\xE7o>.";
-function resolveServer(cfg, env = process.env) {
+function resolveServer(cfg, env = process.env, cwd = process.cwd()) {
   const rawUrl = benflowEnv(env, "URL", "CLAUDE_PLUGIN_OPTION_URL");
   const token = benflowEnv(env, "TOKEN", "CLAUDE_PLUGIN_OPTION_TOKEN");
   const org = orgFromEnv(env);
@@ -815,18 +815,45 @@ function resolveServer(cfg, env = process.env) {
     };
   }
   if (!cfg.servers.length) return null;
+  if (rawUrl) return pickServer(cfg, org, rawUrl);
+  if (!org) {
+    const here = serverForFolder(cfg.servers, cwd);
+    if (here) return here;
+  }
   return pickServer(cfg, org);
+}
+function realOrSelf(p) {
+  try {
+    return realpathSync.native(p);
+  } catch {
+    return p;
+  }
+}
+function serverForFolder(servers, folder) {
+  const norm2 = (p) => {
+    const r = realOrSelf(resolve(p)).replace(/[\\/]+$/, "");
+    return process.platform === "win32" || process.platform === "darwin" ? r.toLowerCase() : r;
+  };
+  const here = norm2(folder);
+  for (const s of servers) {
+    for (const path of Object.values(s.repos ?? {})) {
+      if (!path) continue;
+      const repo = norm2(path);
+      if (here === repo || here.startsWith(`${repo}/`) || here.startsWith(`${repo}\\`)) return s;
+    }
+  }
+  return null;
 }
 
 // connector/local.ts
-import { chmodSync as chmodSync2, existsSync as existsSync2, mkdirSync as mkdirSync2, readFileSync as readFileSync2, readlinkSync, realpathSync, renameSync as renameSync2, rmSync, statSync as statSync3, writeFileSync as writeFileSync2 } from "node:fs";
+import { chmodSync as chmodSync2, existsSync as existsSync2, mkdirSync as mkdirSync2, readFileSync as readFileSync2, readlinkSync, realpathSync as realpathSync2, renameSync as renameSync2, rmSync, statSync as statSync3, writeFileSync as writeFileSync2 } from "node:fs";
 function norm(p, platform) {
   const s = p.replace(/\\/g, "/").replace(/\/+$/, "");
   return platform === "darwin" || platform === "win32" ? s.toLowerCase() : s;
 }
 function realOr(p) {
   try {
-    return realpathSync.native(p);
+    return realpathSync2.native(p);
   } catch {
     return p;
   }
@@ -858,8 +885,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.43") {
-    cached = "0.1.43";
+  if ("0.1.44") {
+    cached = "0.1.44";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));

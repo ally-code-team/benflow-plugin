@@ -2987,7 +2987,7 @@ var require_compile = __commonJS({
       const schOrFunc = root.refs[ref];
       if (schOrFunc)
         return schOrFunc;
-      let _sch = resolve10.call(this, root, ref);
+      let _sch = resolve11.call(this, root, ref);
       if (_sch === void 0) {
         const schema = (_a3 = root.localRefs) === null || _a3 === void 0 ? void 0 : _a3[ref];
         const { schemaId } = this.opts;
@@ -3014,7 +3014,7 @@ var require_compile = __commonJS({
     function sameSchemaEnv(s1, s2) {
       return s1.schema === s2.schema && s1.root === s2.root && s1.baseId === s2.baseId;
     }
-    function resolve10(root, ref) {
+    function resolve11(root, ref) {
       let sch;
       while (typeof (sch = this.refs[ref]) == "string")
         ref = sch;
@@ -3844,7 +3844,7 @@ var require_fast_uri = __commonJS({
       }
       return uri;
     }
-    function resolve10(baseURI, relativeURI, options) {
+    function resolve11(baseURI, relativeURI, options) {
       const schemelessOptions = options ? Object.assign({ scheme: "null" }, options) : { scheme: "null" };
       const {
         parsed: baseParsed,
@@ -3877,49 +3877,49 @@ var require_fast_uri = __commonJS({
       schemelessOptions.skipEscape = true;
       return serialize(resolved, schemelessOptions);
     }
-    function resolveComponent(base, relative4, options, skipNormalization) {
+    function resolveComponent(base, relative5, options, skipNormalization) {
       const target = {};
       if (!skipNormalization) {
         base = parse3(serialize(base, options), options);
-        relative4 = parse3(serialize(relative4, options), options);
+        relative5 = parse3(serialize(relative5, options), options);
       }
       options = options || {};
-      if (!options.tolerant && relative4.scheme) {
-        target.scheme = relative4.scheme;
-        target.userinfo = relative4.userinfo;
-        target.host = relative4.host;
-        target.port = relative4.port;
-        target.path = removeDotSegments(relative4.path || "");
-        target.query = relative4.query;
+      if (!options.tolerant && relative5.scheme) {
+        target.scheme = relative5.scheme;
+        target.userinfo = relative5.userinfo;
+        target.host = relative5.host;
+        target.port = relative5.port;
+        target.path = removeDotSegments(relative5.path || "");
+        target.query = relative5.query;
       } else {
-        if (relative4.userinfo !== void 0 || relative4.host !== void 0 || relative4.port !== void 0) {
-          target.userinfo = relative4.userinfo;
-          target.host = relative4.host;
-          target.port = relative4.port;
-          target.path = removeDotSegments(relative4.path || "");
-          target.query = relative4.query;
+        if (relative5.userinfo !== void 0 || relative5.host !== void 0 || relative5.port !== void 0) {
+          target.userinfo = relative5.userinfo;
+          target.host = relative5.host;
+          target.port = relative5.port;
+          target.path = removeDotSegments(relative5.path || "");
+          target.query = relative5.query;
         } else {
-          if (!relative4.path) {
+          if (!relative5.path) {
             target.path = base.path;
-            if (relative4.query !== void 0) {
-              target.query = relative4.query;
+            if (relative5.query !== void 0) {
+              target.query = relative5.query;
             } else {
               target.query = base.query;
             }
           } else {
-            if (relative4.path[0] === "/") {
-              target.path = removeDotSegments(relative4.path);
+            if (relative5.path[0] === "/") {
+              target.path = removeDotSegments(relative5.path);
             } else {
               if ((base.userinfo !== void 0 || base.host !== void 0 || base.port !== void 0) && !base.path) {
-                target.path = "/" + relative4.path;
+                target.path = "/" + relative5.path;
               } else if (!base.path) {
-                target.path = relative4.path;
+                target.path = relative5.path;
               } else {
-                target.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative4.path;
+                target.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative5.path;
               }
               target.path = removeDotSegments(target.path);
             }
-            target.query = relative4.query;
+            target.query = relative5.query;
           }
           target.userinfo = base.userinfo;
           target.host = base.host;
@@ -3927,7 +3927,7 @@ var require_fast_uri = __commonJS({
         }
         target.scheme = base.scheme;
       }
-      target.fragment = relative4.fragment;
+      target.fragment = relative5.fragment;
       return target;
     }
     function equal(uriA, uriB, options) {
@@ -4213,7 +4213,7 @@ var require_fast_uri = __commonJS({
     var fastUri = {
       SCHEMES,
       normalize,
-      resolve: resolve10,
+      resolve: resolve11,
       resolveComponent,
       equal,
       serialize,
@@ -7204,19 +7204,19 @@ var require_dist = __commonJS({
 
 // connector/cli.ts
 import { spawn as spawn7 } from "node:child_process";
-import { existsSync as existsSync15, realpathSync as realpathSync10, statSync as statSync16 } from "node:fs";
-import { dirname as dirname11, join as join20, resolve as resolve9 } from "node:path";
+import { existsSync as existsSync15, realpathSync as realpathSync12, statSync as statSync16 } from "node:fs";
+import { dirname as dirname12, join as join21, resolve as resolve10 } from "node:path";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
 import { parseArgs } from "node:util";
 
 // connector/atualizacao.ts
-import { chmodSync as chmodSync2, existsSync as existsSync2, lstatSync, mkdirSync as mkdirSync2, readFileSync as readFileSync2, readlinkSync, realpathSync, renameSync as renameSync2, rmSync, statSync as statSync2, symlinkSync, writeFileSync as writeFileSync2 } from "node:fs";
+import { chmodSync as chmodSync2, existsSync as existsSync2, lstatSync, mkdirSync as mkdirSync2, readFileSync as readFileSync2, readlinkSync, realpathSync as realpathSync2, renameSync as renameSync2, rmSync, statSync as statSync2, symlinkSync, writeFileSync as writeFileSync2 } from "node:fs";
 import os2 from "node:os";
 import { dirname as dirname2, join as join2, resolve as resolve2, sep } from "node:path";
 
 // connector/config.ts
 import { randomBytes } from "node:crypto";
-import { chmodSync, existsSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, readFileSync, realpathSync, renameSync, statSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import { dirname, join, resolve } from "node:path";
 
@@ -7521,7 +7521,7 @@ function pickServer(cfg, orgSlug, url2) {
   return first;
 }
 var NOT_CONFIGURED = "O Benflow ainda n\xE3o est\xE1 configurado nesta m\xE1quina. No Claude Code, abra /plugin, escolha o plugin benflow e preencha o endere\xE7o e o token do agente (Equipe IA > Ligar meu Claude), ou rode: node benflow.mjs configurar --url <endere\xE7o>.";
-function resolveServer(cfg, env = process.env) {
+function resolveServer(cfg, env = process.env, cwd = process.cwd()) {
   const rawUrl = benflowEnv(env, "URL", "CLAUDE_PLUGIN_OPTION_URL");
   const token = benflowEnv(env, "TOKEN", "CLAUDE_PLUGIN_OPTION_TOKEN");
   const org = orgFromEnv(env);
@@ -7540,7 +7540,34 @@ function resolveServer(cfg, env = process.env) {
     };
   }
   if (!cfg.servers.length) return null;
+  if (rawUrl) return pickServer(cfg, org, rawUrl);
+  if (!org) {
+    const here = serverForFolder(cfg.servers, cwd);
+    if (here) return here;
+  }
   return pickServer(cfg, org);
+}
+function realOrSelf(p) {
+  try {
+    return realpathSync.native(p);
+  } catch {
+    return p;
+  }
+}
+function serverForFolder(servers, folder) {
+  const norm3 = (p) => {
+    const r = realOrSelf(resolve(p)).replace(/[\\/]+$/, "");
+    return process.platform === "win32" || process.platform === "darwin" ? r.toLowerCase() : r;
+  };
+  const here = norm3(folder);
+  for (const s2 of servers) {
+    for (const path2 of Object.values(s2.repos ?? {})) {
+      if (!path2) continue;
+      const repo = norm3(path2);
+      if (here === repo || here.startsWith(`${repo}/`) || here.startsWith(`${repo}\\`)) return s2;
+    }
+  }
+  return null;
 }
 function describeToken(token) {
   return token ? "configurado" : "ausente";
@@ -7588,9 +7615,9 @@ function installedBenflow(deps = {}) {
   const keys = Object.keys(plugins).filter((k) => k.startsWith(`${PLUGIN_NAME}@`)).sort((a, b) => Number(b === preferred) - Number(a === preferred));
   for (const key of keys) {
     const raw = plugins[key];
-    const entries = (Array.isArray(raw) ? raw : [raw]).map(asObject).filter((e) => e !== null);
-    entries.sort((a, b) => Number(b.scope === "user") - Number(a.scope === "user"));
-    for (const e of entries) {
+    const entries2 = (Array.isArray(raw) ? raw : [raw]).map(asObject).filter((e) => e !== null);
+    entries2.sort((a, b) => Number(b.scope === "user") - Number(a.scope === "user"));
+    for (const e of entries2) {
       const installPath = typeof e.installPath === "string" ? e.installPath : null;
       const version2 = typeof e.version === "string" ? e.version : null;
       if (!installPath || !version2) continue;
@@ -7603,7 +7630,7 @@ function installedBenflow(deps = {}) {
 }
 function realOrResolved(path2) {
   try {
-    return realpathSync(path2);
+    return realpathSync2(path2);
   } catch {
     return resolve2(path2);
   }
@@ -7622,7 +7649,7 @@ function refreshStablePluginDir(installPath, opts = {}) {
   const link = stablePluginDir(opts.dir);
   let target;
   try {
-    target = realpathSync(installPath);
+    target = realpathSync2(installPath);
   } catch {
     return false;
   }
@@ -8310,20 +8337,837 @@ var AgentClient = class _AgentClient {
 
 // connector/executor.ts
 import { execFile as execFile2, execFileSync, spawn as spawn6 } from "node:child_process";
-import { existsSync as existsSync14, mkdirSync as mkdirSync9, mkdtempSync as mkdtempSync6, readFileSync as readFileSync14, realpathSync as realpathSync8, rmSync as rmSync10, statSync as statSync14, writeFileSync as writeFileSync11 } from "node:fs";
+import { existsSync as existsSync14, mkdirSync as mkdirSync9, mkdtempSync as mkdtempSync6, readFileSync as readFileSync14, realpathSync as realpathSync10, rmSync as rmSync10, statSync as statSync14, writeFileSync as writeFileSync12 } from "node:fs";
 import { createRequire } from "node:module";
-import os10 from "node:os";
-import { isAbsolute as isAbsolute5, join as join18, relative as relative3, resolve as resolve7 } from "node:path";
+import os11 from "node:os";
+import { isAbsolute as isAbsolute6, join as join19, relative as relative4, resolve as resolve8 } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath as fileURLToPath2, pathToFileURL } from "node:url";
 
-// connector/launch.ts
-import { readFileSync as readFileSync3, statSync as statSync4 } from "node:fs";
+// connector/isolamento.ts
+import { readdirSync as readdirSync2, realpathSync as realpathSync4, writeFileSync as writeFileSync4 } from "node:fs";
 import os3 from "node:os";
+import { dirname as dirname4, isAbsolute as isAbsolute3, join as join6, relative, resolve as resolve4 } from "node:path";
+
+// connector/workspace.ts
+import { copyFileSync, existsSync as existsSync4, mkdirSync as mkdirSync3, readdirSync, readFileSync as readFileSync3, readlinkSync as readlinkSync2, realpathSync as realpathSync3, rmSync as rmSync2, statSync as statSync4, writeFileSync as writeFileSync3 } from "node:fs";
+import { basename as basename2, dirname as dirname3, isAbsolute as isAbsolute2, join as join5, resolve as resolve3, sep as sep2 } from "node:path";
+
+// connector/sync.ts
+import { existsSync as existsSync3 } from "node:fs";
+import { isAbsolute, join as join4 } from "node:path";
+var HOMOLOG_QUESTION_TOOL = "Benflow";
+function homologQuestionCommand(fullName, branch, ref = "origin/develop") {
+  return `Trazer a homologa\xE7\xE3o (${ref}) para a branch ${branch} em ${fullName}`;
+}
+function homologQuestionDescription(info) {
+  const n2 = info.count === 1 ? "1 commit" : `${info.count} commits`;
+  const sample = info.subjects.slice(0, 2).map((s2) => s2.length > 60 ? `${s2.slice(0, 57)}...` : s2);
+  const ex = sample.length ? `, por exemplo: ${sample.join("; ")}` : "";
+  return `A homologa\xE7\xE3o tem ${n2} que ainda n\xE3o est\xE3o em produ\xE7\xE3o nem neste card${ex}. Trazer antes de a IA come\xE7ar evita conflito na hora de subir.`.slice(0, 300);
+}
+async function git(exec, cwd, args, timeoutMs = 6e4) {
+  return exec("git", ["-C", cwd, ...args], { timeoutMs });
+}
+function firstLine(text) {
+  return (text || "").trim().split("\n")[0]?.slice(0, 300) ?? "";
+}
+async function hasRef(exec, path2, ref) {
+  const res = await git(exec, path2, ["rev-parse", "--verify", "--quiet", `${ref}^{commit}`]);
+  return res.code === 0 && !!res.stdout.trim();
+}
+async function remoteRefs(exec, path2) {
+  let prod = null;
+  for (const r of ["origin/main", "origin/master"]) {
+    if (await hasRef(exec, path2, `refs/remotes/${r}`)) {
+      prod = r;
+      break;
+    }
+  }
+  const homolog = await hasRef(exec, path2, "refs/remotes/origin/develop") ? "origin/develop" : null;
+  return { prod, homolog };
+}
+async function missing(exec, path2, head, ref, exclude = null) {
+  const range = [`${head}..${ref}`, ...exclude ? [`^${exclude}`] : []];
+  const total = await git(exec, path2, ["rev-list", "--count", ...range]);
+  const n2 = total.code === 0 ? Number(total.stdout.trim()) || 0 : 0;
+  if (!n2) return { total: 0, shown: 0 };
+  const real2 = await git(exec, path2, ["rev-list", "--count", "--no-merges", ...range]);
+  const m = real2.code === 0 ? Number(real2.stdout.trim()) || 0 : 0;
+  return { total: n2, shown: m || n2 };
+}
+async function subjects(exec, path2, head, ref, exclude) {
+  const res = await git(exec, path2, ["log", "--no-merges", "--format=%s", "-n", "3", `${head}..${ref}`, ...exclude ? [`^${exclude}`] : []]);
+  if (res.code !== 0) return [];
+  return res.stdout.split("\n").map((s2) => s2.replace(/\s+/g, " ").trim()).filter(Boolean);
+}
+async function midOperation(exec, path2) {
+  for (const mark of ["MERGE_HEAD", "rebase-merge", "rebase-apply", "CHERRY_PICK_HEAD", "REVERT_HEAD"]) {
+    const res = await git(exec, path2, ["rev-parse", "--git-path", mark]);
+    const at = res.code === 0 ? res.stdout.trim() : "";
+    if (at && existsSync3(isAbsolute(at) ? at : join4(path2, at))) return true;
+  }
+  return false;
+}
+async function dirtyTree(exec, path2) {
+  const st = await git(exec, path2, ["status", "--porcelain", "--untracked-files=no"], 12e4);
+  return st.code !== 0 || !!st.stdout.trim() || await midOperation(exec, path2);
+}
+async function mergeRef(exec, path2, ref, message) {
+  const res = await git(exec, path2, ["merge", "--no-edit", "-m", message, ref], 3e5);
+  if (res.code === 0) return { ok: true };
+  const un = await git(exec, path2, ["diff", "--name-only", "--diff-filter=U"]);
+  const conflicts = un.code === 0 ? un.stdout.split("\n").map((s2) => s2.trim()).filter(Boolean) : [];
+  if (await midOperation(exec, path2)) await git(exec, path2, ["merge", "--abort"]);
+  return { ok: false, conflicts, error: firstLine(res.stderr) || firstLine(res.stdout) || `c\xF3digo ${res.code}` };
+}
+var SOURCE_TEXT = {
+  card: "Traz a branch do card do GitHub",
+  producao: "Traz a produ\xE7\xE3o",
+  homologacao: "Traz a homologa\xE7\xE3o"
+};
+function mergeMessage(tag, source, ref) {
+  return `[${tag}] ${SOURCE_TEXT[source]} (${ref}) para a branch`;
+}
+async function apply(exec, path2, step, tag, blocked) {
+  if (blocked) return { ...step, status: "claude", reason: blocked };
+  const merged = await mergeRef(exec, path2, step.ref, mergeMessage(tag, step.source, step.ref));
+  if (merged.ok) return { ...step, status: "feito" };
+  return { ...step, status: "claude", ...merged.conflicts.length ? { conflicts: merged.conflicts.slice(0, 20), reason: "conflito" } : { reason: merged.error } };
+}
+async function syncCard(exec, repo, opts) {
+  const { path: path2 } = repo;
+  const refs = await remoteRefs(exec, path2);
+  const steps = [];
+  let blocked = await dirtyTree(exec, path2) ? "mudan\xE7a sem commit" : null;
+  const plan = [];
+  if (await hasRef(exec, path2, `refs/remotes/origin/${opts.branch}`)) plan.push({ source: "card", ref: `origin/${opts.branch}` });
+  if (refs.prod) plan.push({ source: "producao", ref: refs.prod });
+  for (const p of plan) {
+    const m = await missing(exec, path2, "HEAD", p.ref);
+    if (!m.total) continue;
+    const step = await apply(exec, path2, { ...p, count: m.shown }, opts.tag, blocked);
+    steps.push(step);
+    if (step.status === "claude") blocked = blocked ?? "passo anterior";
+  }
+  let homolog = null;
+  if (refs.homolog) {
+    const m = await missing(exec, path2, "HEAD", refs.homolog, refs.prod);
+    if (m.total) homolog = { ref: refs.homolog, count: m.shown, subjects: await subjects(exec, path2, "HEAD", refs.homolog, refs.prod) };
+  }
+  return { fullName: repo.fullName, path: path2, steps, homolog };
+}
+async function bringHomolog(exec, sync, tag) {
+  if (!sync.homolog) return;
+  const pending = sync.steps.some((s2) => s2.status === "claude");
+  const blocked = pending ? "passo anterior" : await dirtyTree(exec, sync.path) ? "mudan\xE7a sem commit" : null;
+  sync.steps.push(await apply(exec, sync.path, { source: "homologacao", ref: sync.homolog.ref, count: sync.homolog.count }, tag, blocked));
+}
+function skipHomolog(sync) {
+  if (sync.homolog) sync.steps.push({ source: "homologacao", ref: sync.homolog.ref, count: sync.homolog.count, status: "sem" });
+}
+async function inspectCard(exec, repo, opts) {
+  const { path: path2 } = repo;
+  const refs = await remoteRefs(exec, path2);
+  const local = await hasRef(exec, path2, `refs/heads/${opts.branch}`) ? opts.branch : null;
+  const remote = await hasRef(exec, path2, `refs/remotes/origin/${opts.branch}`) ? `origin/${opts.branch}` : null;
+  const base = local ?? remote ?? refs.homolog ?? refs.prod;
+  const steps = [];
+  if (!base) return { fullName: repo.fullName, path: path2, steps, homolog: null };
+  if (local && remote) {
+    const m = await missing(exec, path2, local, remote);
+    if (m.total) steps.push({ source: "card", ref: remote, count: m.shown, status: "claude" });
+  }
+  if (refs.prod) {
+    const m = await missing(exec, path2, base, refs.prod);
+    if (m.total) steps.push({ source: "producao", ref: refs.prod, count: m.shown, status: "claude" });
+  }
+  let homolog = null;
+  if (refs.homolog && base !== refs.homolog) {
+    const m = await missing(exec, path2, base, refs.homolog, refs.prod);
+    if (m.total) homolog = { ref: refs.homolog, count: m.shown, subjects: await subjects(exec, path2, base, refs.homolog, refs.prod) };
+  }
+  return { fullName: repo.fullName, path: path2, steps, homolog };
+}
+function homologForClaude(sync) {
+  if (sync.homolog) sync.steps.push({ source: "homologacao", ref: sync.homolog.ref, count: sync.homolog.count, status: "claude" });
+}
+async function fetchOrigin(exec, path2) {
+  const res = await git(exec, path2, ["fetch", "origin", "--quiet"], 18e4);
+  return res.code === 0 ? null : firstLine(res.stderr) || `c\xF3digo ${res.code}`;
+}
+var SOURCE_LABEL = {
+  card: "da branch do card no GitHub",
+  producao: "de produ\xE7\xE3o",
+  homologacao: "da homologa\xE7\xE3o"
+};
+function commits(n2) {
+  return n2 === 1 ? "1 commit" : `${n2} commits`;
+}
+function syncTimelineText(syncs) {
+  const parts = [];
+  const many = syncs.length > 1;
+  for (const s2 of syncs) {
+    const where2 = many ? ` em ${s2.fullName}` : "";
+    const done = s2.steps.filter((x) => x.status === "feito").map((x) => `${commits(x.count)} ${SOURCE_LABEL[x.source]} (${x.ref})`);
+    const todo = s2.steps.filter((x) => x.status === "claude");
+    const skipped = s2.steps.find((x) => x.status === "sem");
+    if (done.length) parts.push(`O Benflow trouxe para a branch${where2} ${done.join(", ")}.`);
+    if (todo.length) {
+      const conflict = todo.find((x) => x.conflicts?.length);
+      const what = todo.map((x) => `${x.ref} (${commits(x.count)} ${SOURCE_LABEL[x.source]})`).join(", ");
+      parts.push(
+        conflict ? `${what}${where2}: deu conflito em ${conflict.conflicts.slice(0, 5).join(", ")}; o Claude resolve antes de come\xE7ar a tarefa.` : `${what}${where2}: o Claude traz antes de come\xE7ar a tarefa.`
+      );
+    }
+    if (skipped) parts.push(`Seguindo sem a homologa\xE7\xE3o${where2} (${commits(skipped.count)} fora deste card), como o dono escolheu.`);
+  }
+  return parts.join(" ");
+}
+
+// connector/workspace.ts
+var MAX_SLOTS = 5;
+function workspaceRoot(configFile) {
+  const dir = dirname3(resolve3(configFile));
+  return join5(dirname3(dir), `${basename2(dir)}-trabalhos`);
+}
+function repoKey(fullName) {
+  return fullName.replace(/[^A-Za-z0-9._-]+/g, "__").replace(/^\.+/, "_");
+}
+function slotPath(root, fullName, n2) {
+  return join5(root, repoKey(fullName), `vaga-${n2}`);
+}
+function real(path2) {
+  try {
+    return realpathSync3(path2);
+  } catch {
+    return resolve3(path2);
+  }
+}
+function inside(root, path2) {
+  return real(path2).startsWith(real(root) + sep2);
+}
+async function git2(exec, cwd, args, timeoutMs = 6e4) {
+  return exec("git", ["-C", cwd, ...args], { timeoutMs });
+}
+function firstLine2(text) {
+  return (text || "").trim().split("\n")[0]?.slice(0, 300) ?? "";
+}
+async function refExists(exec, main, ref) {
+  const res = await git2(exec, main, ["rev-parse", "--verify", "--quiet", `${ref}^{commit}`]);
+  return res.code === 0 && !!res.stdout.trim();
+}
+async function worktreeEntries(exec, main) {
+  const res = await git2(exec, main, ["worktree", "list", "--porcelain"]);
+  const out = [];
+  if (res.code !== 0) return out;
+  let current = null;
+  for (const line of res.stdout.split("\n")) {
+    if (line.startsWith("worktree ")) out.push(current = { path: line.slice("worktree ".length).trim(), branch: null, locked: false });
+    else if (!current) continue;
+    else if (line.startsWith("branch refs/heads/")) current.branch = line.slice("branch refs/heads/".length).trim();
+    else if (line === "locked" || line.startsWith("locked ")) current.locked = true;
+    else if (!line.trim()) current = null;
+  }
+  return out;
+}
+function within(dir, path2) {
+  return path2 === dir || path2.startsWith(dir.endsWith(sep2) ? dir : dir + sep2);
+}
+async function processesIn(exec, path2, platform = process.platform) {
+  const dir = real(path2);
+  const found = [];
+  if (platform === "linux" && existsSync4("/proc/self/cwd")) {
+    let pids;
+    try {
+      pids = readdirSync("/proc").filter((n2) => /^\d+$/.test(n2));
+    } catch {
+      return null;
+    }
+    for (const pid2 of pids) {
+      if (Number(pid2) === process.pid) continue;
+      try {
+        if (!within(dir, readlinkSync2(`/proc/${pid2}/cwd`))) continue;
+        let name2 = "";
+        try {
+          name2 = readFileSync3(`/proc/${pid2}/comm`, "utf8").trim();
+        } catch {
+        }
+        found.push({ pid: Number(pid2), name: name2 });
+      } catch {
+      }
+    }
+    return found;
+  }
+  if (platform !== "darwin" && platform !== "linux") return null;
+  const res = await exec("lsof", ["-n", "-w", "-d", "cwd", "-F", "pcn"], { timeoutMs: 3e4 });
+  if (res.code !== 0 && !res.stdout.trim()) return null;
+  let pid = 0;
+  let name = "";
+  for (const line of res.stdout.split("\n")) {
+    if (line.startsWith("p")) {
+      pid = Number(line.slice(1));
+      name = "";
+    } else if (line.startsWith("c")) name = line.slice(1);
+    else if (line.startsWith("n") && pid && pid !== process.pid && within(dir, line.slice(1))) found.push({ pid, name });
+  }
+  return found;
+}
+async function operationInProgress(exec, path2) {
+  const marks = [
+    ["MERGE_HEAD", "um merge"],
+    ["rebase-merge", "um rebase"],
+    ["rebase-apply", "um rebase"],
+    ["CHERRY_PICK_HEAD", "um cherry-pick"],
+    ["REVERT_HEAD", "um revert"],
+    ["BISECT_LOG", "um bisect"]
+  ];
+  for (const [mark, what] of marks) {
+    const res = await git2(exec, path2, ["rev-parse", "--git-path", mark]);
+    if (res.code !== 0) continue;
+    const at = res.stdout.trim();
+    if (at && existsSync4(isAbsolute2(at) ? at : join5(path2, at))) return what;
+  }
+  return null;
+}
+async function pendingChanges(exec, path2) {
+  const res = await git2(exec, path2, ["status", "--porcelain"], 12e4);
+  if (res.code !== 0) return null;
+  const files = [];
+  for (const line of res.stdout.split("\n")) {
+    if (!line.trim()) continue;
+    const file2 = line.slice(3).trim();
+    if (line.startsWith("??") && basename2(file2.replace(/\/$/, "")) === "node_modules") continue;
+    files.push(file2);
+  }
+  return files;
+}
+async function freeBranch(exec, main, branch, opts) {
+  await git2(exec, main, ["worktree", "prune"]);
+  const entry = (await worktreeEntries(exec, main)).find((w) => w.branch === branch);
+  if (!entry) return { ok: true, where: null, note: null };
+  const where2 = entry.path;
+  if (real(where2) === real(main) || inside(opts.root, where2)) return { ok: true, where: where2, note: null };
+  const stuck = (why, todo) => ({
+    ok: false,
+    error: `A branch ${branch} est\xE1 aberta em outra pasta (${where2}) e ${why}, ent\xE3o o Benflow n\xE3o mexeu nela. ${todo} e mande de novo.`
+  });
+  const detachHint = `git -C "${where2}" checkout --detach`;
+  if (!/^(chamado|hotfix)\//.test(branch)) return stuck("o Benflow s\xF3 solta sozinho as branches de card (chamado/... ou hotfix/...)", `Troque a branch dessa pasta (${detachHint})`);
+  if (entry.locked) return stuck("essa pasta est\xE1 travada no git (git worktree lock)", `Destrave com git worktree unlock "${where2}" ou troque a branch dela (${detachHint})`);
+  const op = await operationInProgress(exec, where2);
+  if (op) return stuck(`tem ${op} pela metade nessa pasta`, "Termine ou cancele (por exemplo, git merge --abort ou git rebase --abort) nessa pasta");
+  const pending = await pendingChanges(exec, where2);
+  if (pending === null) return stuck("n\xE3o deu para ler o estado dessa pasta no git", `Confira a pasta ou troque a branch dela (${detachHint})`);
+  if (pending.length) {
+    const list = pending.slice(0, 5).join(", ") + (pending.length > 5 ? ` e mais ${pending.length - 5}` : "");
+    return stuck(`ela tem mudan\xE7a sem commit (${list})`, "Fa\xE7a commit (ou descarte) dessas mudan\xE7as: com a pasta limpa e sem programa usando, o Benflow solta a branch sozinho");
+  }
+  const users = await (opts.folderUsers ?? ((p) => processesIn(exec, p, opts.platform)))(where2);
+  if (users === null) return stuck("n\xE3o deu para conferir neste sistema se h\xE1 programa usando essa pasta", `Feche o que estiver aberto nela e troque a branch dela (${detachHint})`);
+  if (users.length) {
+    const who = users.slice(0, 3).map((u) => u.name ? `${u.name}, PID ${u.pid}` : `PID ${u.pid}`).join("; ");
+    return stuck(`h\xE1 programa usando essa pasta agora (${who})`, "Feche esse programa (ou termine o trabalho nele): com a pasta livre, o Benflow solta a branch sozinho");
+  }
+  const detached = await git2(exec, where2, ["checkout", "--detach", "--quiet"]);
+  if (detached.code !== 0) return stuck(`n\xE3o consegui soltar a branch de l\xE1 (${firstLine2(detached.stderr) || `c\xF3digo ${detached.code}`})`, `Troque a branch dessa pasta (${detachHint})`);
+  return {
+    ok: true,
+    where: null,
+    note: `A branch ${branch} estava aberta em outra pasta (${where2}), sem mudan\xE7a sem commit e sem programa usando: o Benflow soltou a branch de l\xE1 (a pasta continua no mesmo commit, sem branch) para o card seguir.`
+  };
+}
+async function isWorktree(exec, path2) {
+  if (!existsSync4(path2)) return false;
+  const res = await git2(exec, path2, ["rev-parse", "--is-inside-work-tree"]);
+  return res.code === 0 && res.stdout.trim() === "true";
+}
+async function dropCopy(exec, main, path2, root) {
+  await git2(exec, main, ["worktree", "remove", "--force", path2]);
+  let problem = null;
+  if (existsSync4(path2) && inside(root, path2)) {
+    try {
+      rmSync2(path2, { recursive: true, force: true });
+    } catch (err) {
+      problem = err instanceof Error ? err.message : String(err);
+    }
+  }
+  await git2(exec, main, ["worktree", "prune"]);
+  return problem;
+}
+var CLAUDE_LOCAL_FILES = [".claude/settings.local.json", "CLAUDE.local.md"];
+async function ignoredExtras(exec, main) {
+  const res = await git2(exec, main, ["ls-files", "--others", "--ignored", "--exclude-standard", "--directory", "--no-empty-directory"], 12e4);
+  const envFiles = [];
+  const modules = [];
+  if (res.code !== 0) return { envFiles, modules };
+  for (const raw of res.stdout.split("\n")) {
+    const rel = raw.trim();
+    if (!rel || rel.startsWith("/") || rel.split("/").includes("..")) continue;
+    const parts = rel.replace(/\/$/, "").split("/");
+    if (parts.length > 4) continue;
+    const name = parts[parts.length - 1];
+    if (rel.endsWith("/")) {
+      if (name === "node_modules" && parts.length <= 3) modules.push(parts.join("/"));
+      if (rel === ".claude/") envFiles.push(".claude/settings.local.json");
+      continue;
+    }
+    if (/^\.env(\..+)?$/.test(name) && !parts.includes("node_modules")) envFiles.push(rel);
+    else if (CLAUDE_LOCAL_FILES.includes(rel)) envFiles.push(rel);
+  }
+  return { envFiles: [...new Set(envFiles)], modules };
+}
+async function cloneDir(exec, from, to, platform) {
+  if (existsSync4(to)) return true;
+  mkdirSync3(dirname3(to), { recursive: true });
+  if (platform === "darwin") return (await exec("cp", ["-cR", from, to], { timeoutMs: 18e4 })).code === 0;
+  if (platform === "linux") {
+    const res = await exec("cp", ["-R", "--reflink=always", from, to], { timeoutMs: 18e4 });
+    if (res.code !== 0 && existsSync4(to)) rmSync2(to, { recursive: true, force: true });
+    return res.code === 0;
+  }
+  return false;
+}
+async function copyExtras(exec, main, path2, platform) {
+  const { envFiles, modules } = await ignoredExtras(exec, main);
+  let env = 0;
+  for (const rel of envFiles) {
+    const from = join5(main, rel);
+    const to = join5(path2, rel);
+    try {
+      if (existsSync4(to) || !statSync4(from).isFile()) continue;
+      mkdirSync3(dirname3(to), { recursive: true });
+      copyFileSync(from, to);
+      env++;
+    } catch {
+    }
+  }
+  let cloned = 0;
+  let missing2 = 0;
+  for (const rel of modules) {
+    if (await cloneDir(exec, join5(main, rel), join5(path2, rel), platform)) cloned++;
+    else missing2++;
+  }
+  return { env, modules: cloned, missingModules: missing2 };
+}
+function extrasNote(fullName, extras) {
+  if (extras.missingModules > 0) return `Na c\xF3pia de ${fullName} faltam as depend\xEAncias (node_modules): instale antes de rodar testes ou o servidor.`;
+  return null;
+}
+async function busyTree(exec, path2) {
+  const st = await git2(exec, path2, ["status", "--porcelain", "--untracked-files=no"], 12e4);
+  if (st.code !== 0 || st.stdout.trim()) return true;
+  return await operationInProgress(exec, path2) !== null;
+}
+async function currentRef(exec, path2) {
+  const sym = await git2(exec, path2, ["symbolic-ref", "-q", "--short", "HEAD"]);
+  if (sym.code === 0 && sym.stdout.trim()) return sym.stdout.trim();
+  const sha = await git2(exec, path2, ["rev-parse", "HEAD"]);
+  return sha.code === 0 && sha.stdout.trim() ? sha.stdout.trim() : null;
+}
+function stateFile(root, fullName) {
+  return join5(root, repoKey(fullName), "vagas.json");
+}
+function readState(root, fullName) {
+  try {
+    const data = JSON.parse(readFileSync3(stateFile(root, fullName), "utf8"));
+    return data && typeof data === "object" && !Array.isArray(data) ? data : {};
+  } catch {
+    return {};
+  }
+}
+function writeState(root, fullName, branch, path2) {
+  try {
+    const data = readState(root, fullName);
+    data[branch] = path2;
+    writeFileSync3(stateFile(root, fullName), JSON.stringify(data, null, 1) + "\n");
+  } catch {
+  }
+}
+async function existingSlots(exec, root, fullName) {
+  const dir = join5(root, repoKey(fullName));
+  let names = [];
+  try {
+    names = readdirSync(dir);
+  } catch {
+    return [];
+  }
+  const out = [];
+  for (const name of names) {
+    const m = /^vaga-(\d+)$/.exec(name);
+    if (!m) continue;
+    const path2 = join5(dir, name);
+    if (await isWorktree(exec, path2)) out.push({ n: Number(m[1]), path: path2 });
+  }
+  return out.sort((a, b) => a.n - b.n);
+}
+function slotKindOf(root, fullName, main, path2) {
+  if (real(path2) === real(main)) return "principal";
+  const dir = join5(root, repoKey(fullName));
+  return real(dirname3(path2)) === real(dir) && /^vaga-\d+$/.test(basename2(path2)) ? "vaga" : "antiga";
+}
+function translateClaudeSettings(text, main, slot, home = process.env.HOME ?? "") {
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  if (!data || typeof data !== "object") return null;
+  const pairs = [[main, slot]];
+  const mainReal = real(main);
+  if (mainReal !== main) pairs.push([mainReal, slot]);
+  if (home && main.startsWith(home + sep2) && slot.startsWith(home + sep2)) pairs.push([`~${main.slice(home.length)}`, `~${slot.slice(home.length)}`]);
+  const swap = (rule) => {
+    let out = rule;
+    for (const [from, to] of pairs) out = out.split(from).join(to);
+    return out === rule ? null : out;
+  };
+  const perms = data.permissions;
+  if (perms && typeof perms === "object") {
+    for (const key of ["allow", "ask", "deny", "additionalDirectories"]) {
+      const list = perms[key];
+      if (!Array.isArray(list)) continue;
+      const extra = [];
+      for (const rule of list) {
+        if (typeof rule !== "string") continue;
+        const other = swap(rule);
+        if (other && !list.includes(other) && !extra.includes(other)) extra.push(other);
+      }
+      perms[key] = [...list, ...extra];
+    }
+  }
+  return JSON.stringify(data, null, 2) + "\n";
+}
+async function tracked(exec, path2, rel) {
+  return (await git2(exec, path2, ["ls-files", "--error-unmatch", "--", rel])).code === 0;
+}
+async function syncClaudeLocal(exec, main, path2) {
+  const settings = ".claude/settings.local.json";
+  const from = join5(main, settings);
+  if (existsSync4(from) && !await tracked(exec, path2, settings)) {
+    try {
+      const text = translateClaudeSettings(readFileSync3(from, "utf8"), main, path2);
+      if (text) {
+        mkdirSync3(join5(path2, ".claude"), { recursive: true });
+        writeFileSync3(join5(path2, settings), text);
+      }
+    } catch {
+    }
+  }
+  const notes = "CLAUDE.local.md";
+  if (existsSync4(join5(main, notes)) && !existsSync4(join5(path2, notes)) && !await tracked(exec, path2, notes)) {
+    try {
+      copyFileSync(join5(main, notes), join5(path2, notes));
+    } catch {
+    }
+  }
+}
+async function firstRef(exec, main, refs) {
+  for (const r of refs) if (await refExists(exec, main, r)) return r;
+  return null;
+}
+async function checkoutFor(exec, main, path2, opts) {
+  if (opts.kind === "publicar") {
+    const b = opts.base ?? "origin/develop";
+    const base2 = await firstRef(exec, main, [b, b.replace(/^origin\//, "")]);
+    if (!base2) return `n\xE3o tem a branch ${b.replace(/^origin\//, "")} para publicar`;
+    const res2 = await git2(exec, path2, ["checkout", "--quiet", "--detach", base2], 12e4);
+    return res2.code === 0 ? null : firstLine2(res2.stderr) || `c\xF3digo ${res2.code}`;
+  }
+  const branch = opts.branch;
+  if (await refExists(exec, main, `refs/heads/${branch}`)) {
+    const res2 = await git2(exec, path2, ["checkout", "--quiet", branch], 12e4);
+    return res2.code === 0 ? null : firstLine2(res2.stderr) || `c\xF3digo ${res2.code}`;
+  }
+  const base = await firstRef(exec, main, [`refs/remotes/origin/${branch}`, "origin/develop", "develop", "origin/main", "main", "HEAD"]);
+  if (!base) return `n\xE3o achei de onde criar a branch ${branch}`;
+  const res = await git2(exec, path2, ["checkout", "--quiet", "--no-track", "-b", branch, base], 12e4);
+  return res.code === 0 ? null : firstLine2(res.stderr) || `c\xF3digo ${res.code}`;
+}
+async function prepareOne(repo, opts) {
+  const { exec, root, kind } = opts;
+  const platform = opts.platform ?? process.platform;
+  const claim2 = opts.claim ?? (() => true);
+  const unclaim = opts.unclaim ?? (() => {
+  });
+  const main = repo.path;
+  const dir = join5(root, repoKey(repo.fullName));
+  mkdirSync3(dir, { recursive: true });
+  const fetched = await git2(exec, main, ["fetch", "origin", "--quiet"], 18e4);
+  if (fetched.code !== 0) opts.log?.(`git fetch em ${repo.fullName} falhou (${firstLine2(fetched.stderr) || `c\xF3digo ${fetched.code}`}); o trabalho sai do que j\xE1 est\xE1 nesta m\xE1quina.`);
+  const notes = [];
+  const done = async (path2, slot, reused, restore) => {
+    if (kind === "card") writeState(root, repo.fullName, opts.branch, path2);
+    const sync = kind === "card" && opts.sync ? await syncCard(exec, { fullName: repo.fullName, path: path2 }, { branch: opts.branch, tag: opts.tag }) : null;
+    return { ok: true, copy: { fullName: repo.fullName, main, path: path2, kind, slot, reused, restore }, note: notes.join(" ") || null, sync };
+  };
+  if (kind === "card") {
+    const branch = opts.branch;
+    const freed = await freeBranch(exec, main, branch, { root, platform, folderUsers: opts.folderUsers });
+    if (!freed.ok) return { ok: false, error: freed.error };
+    if (freed.note) notes.push(freed.note);
+    if (freed.where) {
+      const slot = slotKindOf(root, repo.fullName, main, freed.where);
+      const where2 = slot === "principal" ? main : slot === "vaga" ? slotPath(root, repo.fullName, Number(basename2(freed.where).slice("vaga-".length))) : freed.where;
+      const pending = slot === "antiga" ? await pendingChanges(exec, where2) : null;
+      if (slot === "antiga" && pending && !pending.length && !await operationInProgress(exec, where2)) {
+        const problem = await dropCopy(exec, main, where2, root);
+        if (problem || existsSync4(where2)) {
+          await git2(exec, where2, ["checkout", "--quiet", "--detach"]);
+          notes.push(`N\xE3o consegui apagar a pasta antiga ${where2} (${problem ?? "arquivo sem permiss\xE3o"}); a branch foi solta dela. Apague a pasta \xE0 m\xE3o quando puder (no Linux, com sudo se os arquivos forem de outro usu\xE1rio).`);
+        }
+      } else {
+        if (!claim2(where2)) {
+          return {
+            ok: false,
+            error: slot === "principal" ? `A branch ${branch} est\xE1 aberta na pasta do projeto (${where2}), que est\xE1 com outro trabalho agora. Espere o outro trabalho terminar e mande de novo.` : `A branch ${branch} est\xE1 aberta em ${where2}, que est\xE1 com outro trabalho agora. Espere o outro trabalho terminar e mande de novo.`
+          };
+        }
+        if (slot === "vaga") await syncClaudeLocal(exec, main, where2);
+        if (slot !== "principal") {
+          const extras = await copyExtras(exec, main, where2, platform);
+          const note = extrasNote(repo.fullName, extras);
+          if (note) notes.push(note);
+        }
+        return done(where2, slot, true, null);
+      }
+    }
+  }
+  const max = Math.max(2, Math.min(opts.maxSlots ?? MAX_SLOTS, MAX_SLOTS));
+  const existing = await existingSlots(exec, root, repo.fullName);
+  const candidates = [{ path: main, slot: "principal", n: 1 }, ...existing.map((e) => ({ path: e.path, slot: "vaga", n: e.n }))];
+  const last = kind === "card" ? readState(root, repo.fullName)[opts.branch] : void 0;
+  if (last) {
+    const i = candidates.findIndex((c) => real(c.path) === real(last));
+    if (i > 0) candidates.unshift(...candidates.splice(i, 1));
+  }
+  const used = new Set(existing.map((e) => e.n));
+  for (let n2 = 2; n2 <= max && candidates.length < max; n2++) if (!used.has(n2)) candidates.push({ path: slotPath(root, repo.fullName, n2), slot: "vaga", n: n2 });
+  const skipped = [];
+  for (const c of candidates) {
+    if (!claim2(c.path)) {
+      skipped.push(`${c.path} (com outro trabalho)`);
+      continue;
+    }
+    const fresh2 = c.slot === "vaga" && !await isWorktree(exec, c.path);
+    if (fresh2) {
+      if (existsSync4(c.path)) {
+        unclaim(c.path);
+        skipped.push(`${c.path} (pasta que n\xE3o \xE9 do git)`);
+        continue;
+      }
+      const start = await firstRef(exec, main, ["origin/develop", "develop", "origin/main", "main", "HEAD"]) ?? "HEAD";
+      const added = await git2(exec, main, ["worktree", "add", "--detach", c.path, start], 18e4);
+      if (added.code !== 0) {
+        unclaim(c.path);
+        skipped.push(`${c.path} (${firstLine2(added.stderr) || `c\xF3digo ${added.code}`})`);
+        continue;
+      }
+    } else if (await busyTree(exec, c.path)) {
+      unclaim(c.path);
+      skipped.push(`${c.path} (com mudan\xE7a sem commit)`);
+      continue;
+    }
+    const restore = c.slot === "principal" ? await currentRef(exec, c.path) : null;
+    const failed = await checkoutFor(exec, main, c.path, opts);
+    if (failed) {
+      unclaim(c.path);
+      skipped.push(`${c.path} (${failed})`);
+      continue;
+    }
+    if (c.slot === "vaga") {
+      const extras = await copyExtras(exec, main, c.path, platform);
+      await syncClaudeLocal(exec, main, c.path);
+      const note = extrasNote(repo.fullName, extras);
+      if (note) notes.push(note);
+    }
+    return done(c.path, c.slot, !fresh2 && c.slot === "vaga", restore);
+  }
+  return {
+    ok: false,
+    error: `Nenhuma pasta livre para este trabalho em ${repo.fullName}: ${skipped.join("; ")}. Termine ou fa\xE7a commit do que est\xE1 em uma delas e mande de novo.`
+  };
+}
+async function prepareWorkspace(repos, opts) {
+  const copies = [];
+  const out = [];
+  const notes = [];
+  const syncs = [];
+  for (const repo of repos) {
+    const got = await prepareOne(repo, opts);
+    if (!got.ok) return { ok: false, error: got.error, copies };
+    copies.push(got.copy);
+    if (got.note) notes.push(got.note);
+    if (got.sync) syncs.push(got.sync);
+    out.push({ fullName: repo.fullName, path: got.copy.path });
+  }
+  return { ok: true, repos: out, copies, notes, syncs };
+}
+async function releaseWorkspace(copies, opts) {
+  const kept = [];
+  for (const c of copies) {
+    if (await busyTree(opts.exec, c.path)) {
+      kept.push(c);
+      continue;
+    }
+    if (c.slot === "principal") {
+      if (c.restore) {
+        const back = await git2(opts.exec, c.path, ["checkout", "--quiet", c.restore], 12e4);
+        if (back.code !== 0) opts.log?.(`A pasta do projeto ${c.path} n\xE3o voltou para ${c.restore}: ${firstLine2(back.stderr) || `c\xF3digo ${back.code}`}`);
+      }
+    } else if (c.slot === "vaga") {
+      await git2(opts.exec, c.path, ["checkout", "--quiet", "--detach"]);
+    } else {
+      const pending = await pendingChanges(opts.exec, c.path);
+      if (pending && !pending.length) {
+        const problem = await dropCopy(opts.exec, c.main, c.path, opts.root);
+        if (problem) opts.log?.(`N\xE3o consegui apagar a pasta antiga ${c.path}: ${problem}`);
+      } else kept.push(c);
+    }
+  }
+  return kept;
+}
+
+// connector/isolamento.ts
+var FILE_TOOLS = ["Read", "Glob", "Grep", "Edit", "Write", "MultiEdit", "NotebookEdit"];
+function splitRules(entry) {
+  const rules = [];
+  let depth = 0;
+  let current = "";
+  for (const ch of entry) {
+    if (ch === "(") depth++;
+    else if (ch === ")" && depth > 0) depth--;
+    if (depth === 0 && (ch === "," || /\s/.test(ch))) {
+      if (current) rules.push(current);
+      current = "";
+    } else current += ch;
+  }
+  if (current.trim()) rules.push(current.trim());
+  return rules;
+}
+var FILE_RULE = new RegExp(`(^|[\\s,])(${FILE_TOOLS.join("|")})([\\s,()]|$)`);
+function withoutFileRules(tools) {
+  return tools.flatMap(splitRules).filter((t) => !FILE_RULE.test(t));
+}
+var RULE_UNSAFE = /[()*?[\]{}\\!,"]/;
+function denyRulesFor(target) {
+  let path2 = target;
+  const drive = /^([A-Za-z]):[\\/]/.exec(path2);
+  if (drive) path2 = `/${drive[1].toLowerCase()}/${path2.slice(3).replace(/\\/g, "/")}`;
+  path2 = path2.replace(/\/+$/, "");
+  if (!path2.startsWith("/") || path2 === "" || RULE_UNSAFE.test(path2)) return [];
+  return ["Read", "Edit", "Write"].flatMap((tool) => [`${tool}(/${path2})`, `${tool}(/${path2}/**)`]);
+}
+function realOr(p) {
+  try {
+    return realpathSync4.native(p);
+  } catch {
+    return p;
+  }
+}
+function sameOrInside(a, b) {
+  const x = a.replace(/[\\/]+$/, "");
+  const y = b.replace(/[\\/]+$/, "");
+  if (process.platform === "win32" || process.platform === "darwin") {
+    const xl = x.toLowerCase();
+    const yl = y.toLowerCase();
+    return xl === yl || xl.startsWith(`${yl}/`) || xl.startsWith(`${yl}\\`);
+  }
+  return x === y || x.startsWith(`${y}/`);
+}
+function overlaps(dir, keep) {
+  return keep.some((k) => sameOrInside(dir, k) || sameOrInside(k, dir));
+}
+function subdirs(dir) {
+  try {
+    return readdirSync2(dir, { withFileTypes: true }).filter((d) => d.isDirectory() || d.isSymbolicLink()).map((d) => join6(dir, d.name));
+  } catch {
+    return [];
+  }
+}
+function entries(dir) {
+  try {
+    return readdirSync2(dir).map((name) => join6(dir, name));
+  } catch {
+    return [];
+  }
+}
+function claudeProjectSlug(path2) {
+  return path2.replace(/[^A-Za-z0-9]/g, "-");
+}
+var CLAUDE_HOME_KEEP = /* @__PURE__ */ new Set(["plugins", "skills", "agents", "commands", "output-styles", "projects"]);
+var isSameEntry = (a, b) => a.url === b.url && a.orgSlug === b.orgSlug;
+function blockedDirsFor(input2) {
+  const home = input2.home ?? os3.homedir();
+  const own2 = [
+    ...input2.workDirs,
+    ...Object.values(input2.entry.repos ?? {}),
+    ...input2.entry.personalVault ? [input2.entry.personalVault] : [],
+    ...input2.entry.projectVault ? [input2.entry.projectVault] : []
+  ].filter(Boolean).flatMap((p) => [resolve4(p), realOr(resolve4(p))]);
+  const ownRepoNames = new Set(Object.keys(input2.entry.repos ?? {}).map((n2) => n2.toLowerCase()));
+  const candidates = [];
+  for (const s2 of input2.servers) {
+    if (isSameEntry(s2, input2.entry)) continue;
+    candidates.push(...Object.values(s2.repos ?? {}));
+    if (s2.personalVault) candidates.push(s2.personalVault);
+    if (s2.projectVault) candidates.push(s2.projectVault);
+  }
+  if (input2.workspaceRoot) {
+    const ownKeys = new Set([...ownRepoNames].map((n2) => repoKey(n2).toLowerCase()));
+    for (const dir of subdirs(input2.workspaceRoot)) {
+      const name = dir.slice(input2.workspaceRoot.replace(/[\\/]+$/, "").length + 1).toLowerCase();
+      if (!ownKeys.has(name)) candidates.push(dir);
+    }
+  }
+  const bases = new Set(
+    [...input2.servers.flatMap((s2) => Object.values(s2.repos ?? {})), join6(home, "Developer", "benflow-ia")].filter(Boolean).map((p) => dirname4(resolve4(p)))
+  );
+  for (const base of bases) {
+    const rel = relative(home, base);
+    if (!rel || rel.startsWith("..") || isAbsolute3(rel) || rel.split(/[\\/]/).length < 2) continue;
+    candidates.push(...subdirs(base));
+  }
+  const claudeDir = join6(home, ".claude");
+  for (const path2 of entries(claudeDir)) {
+    const name = path2.slice(claudeDir.length + 1);
+    if (!CLAUDE_HOME_KEEP.has(name)) candidates.push(path2);
+  }
+  const ownSlugs = new Set(own2.map(claudeProjectSlug));
+  for (const dir of subdirs(join6(claudeDir, "projects"))) {
+    const name = dir.slice(join6(claudeDir, "projects").length + 1);
+    if (!ownSlugs.has(name)) candidates.push(dir);
+  }
+  const out = [];
+  const seen = /* @__PURE__ */ new Set();
+  for (const raw of candidates) {
+    if (!raw) continue;
+    for (const p of /* @__PURE__ */ new Set([resolve4(raw), realOr(resolve4(raw))])) {
+      if (overlaps(p, own2) || seen.has(p)) continue;
+      seen.add(p);
+      out.push(p);
+    }
+  }
+  return out;
+}
+function isolationDenyRules(dirs) {
+  return [...new Set(dirs.flatMap(denyRulesFor))];
+}
+function writeIsolationSettings(file2, dirs) {
+  const deny = isolationDenyRules(dirs);
+  if (!deny.length) return null;
+  writeFileSync4(file2, JSON.stringify({ permissions: { deny } }, null, 2), { mode: 384 });
+  return file2;
+}
+
+// connector/launch.ts
+import { readFileSync as readFileSync4, statSync as statSync5 } from "node:fs";
+import os4 from "node:os";
 import path from "node:path";
 function defaultIsFile(p) {
   try {
-    return statSync4(p).isFile();
+    return statSync5(p).isFile();
   } catch {
     return false;
   }
@@ -8351,8 +9195,8 @@ function resolveClaudeLaunch(bin, deps = {}) {
   if (platform !== "win32") return { command: bin, prefixArgs: [], shell: false };
   const env = deps.env ?? process.env;
   const isFile = deps.isFile ?? defaultIsFile;
-  const readText = deps.readText ?? ((p) => readFileSync3(p, "utf8"));
-  const home = deps.homedir ?? os3.homedir();
+  const readText = deps.readText ?? ((p) => readFileSync4(p, "utf8"));
+  const home = deps.homedir ?? os4.homedir();
   const hasDir = /[\\/]/.test(bin);
   const ext = path.win32.extname(bin).toLowerCase();
   const names = ext && WIN_EXTS.includes(ext) ? [bin] : WIN_EXTS.map((e) => `${bin}${e}`);
@@ -8397,8 +9241,8 @@ function cmdShellArgs(command, args) {
 
 // connector/local.ts
 import { createHash } from "node:crypto";
-import { chmodSync as chmodSync3, existsSync as existsSync3, mkdirSync as mkdirSync3, readFileSync as readFileSync4, readlinkSync as readlinkSync2, realpathSync as realpathSync2, renameSync as renameSync3, rmSync as rmSync2, statSync as statSync5, writeFileSync as writeFileSync3 } from "node:fs";
-import { dirname as dirname3, join as join4 } from "node:path";
+import { chmodSync as chmodSync3, existsSync as existsSync5, mkdirSync as mkdirSync4, readFileSync as readFileSync5, readlinkSync as readlinkSync3, realpathSync as realpathSync5, renameSync as renameSync3, rmSync as rmSync3, statSync as statSync6, writeFileSync as writeFileSync5 } from "node:fs";
+import { dirname as dirname5, join as join7 } from "node:path";
 var IGNORED_PORTS = /* @__PURE__ */ new Set([9229, 9230, 9231, 24678, 35729, 5037]);
 function isLocalListen(address) {
   const a = address.replace(/^\[|\]$/g, "").toLowerCase();
@@ -8546,9 +9390,9 @@ function norm(p, platform) {
   const s2 = p.replace(/\\/g, "/").replace(/\/+$/, "");
   return platform === "darwin" || platform === "win32" ? s2.toLowerCase() : s2;
 }
-function realOr(p) {
+function realOr2(p) {
   try {
-    return realpathSync2.native(p);
+    return realpathSync5.native(p);
   } catch {
     return p;
   }
@@ -8558,10 +9402,10 @@ function repoFromRemote(url2) {
   return m ? `${m[1]}/${m[2]}` : null;
 }
 function repoForPath(dir, repos, platform = process.platform) {
-  const target = norm(realOr(dir), platform);
+  const target = norm(realOr2(dir), platform);
   let best = null;
   for (const [name, path2] of Object.entries(repos)) {
-    for (const base of /* @__PURE__ */ new Set([norm(path2, platform), norm(realOr(path2), platform)])) {
+    for (const base of /* @__PURE__ */ new Set([norm(path2, platform), norm(realOr2(path2), platform)])) {
       if (!base) continue;
       if (target === base || target.startsWith(`${base}/`)) {
         if (!best || base.length > best.len) best = { name, len: base.length };
@@ -8594,7 +9438,7 @@ async function listenUnix(deps, platform) {
 async function cwdsUnix(pids, deps, platform) {
   const map2 = /* @__PURE__ */ new Map();
   if (platform === "linux") {
-    const read = deps.readlink ?? ((p) => readlinkSync2(p));
+    const read = deps.readlink ?? ((p) => readlinkSync3(p));
     for (const pid of pids) {
       try {
         map2.set(pid, read(`/proc/${pid}/cwd`));
@@ -8663,20 +9507,20 @@ function agentKey(url2, token) {
 ${token}`).digest("hex").slice(0, 16);
 }
 function localStatePath(configFile, key) {
-  return join4(dirname3(configFile), "estado", `local-${key}.json`);
+  return join7(dirname5(configFile), "estado", `local-${key}.json`);
 }
 function writeJsonAtomic2(path2, data) {
-  const dir = dirname3(path2);
-  if (!existsSync3(dir)) mkdirSync3(dir, { recursive: true, mode: 448 });
+  const dir = dirname5(path2);
+  if (!existsSync5(dir)) mkdirSync4(dir, { recursive: true, mode: 448 });
   const tmp = `${path2}.${process.pid}.tmp`;
-  writeFileSync3(tmp, `${JSON.stringify(data, null, 2)}
+  writeFileSync5(tmp, `${JSON.stringify(data, null, 2)}
 `, { mode: 384 });
   if (process.platform !== "win32") chmodSync3(tmp, 384);
   renameSync3(tmp, path2);
 }
 function readReportedLocal(path2) {
   try {
-    const data = JSON.parse(readFileSync4(path2, "utf8"));
+    const data = JSON.parse(readFileSync5(path2, "utf8"));
     if (!Array.isArray(data.entries)) return [];
     return data.entries.filter((e) => {
       const o = e;
@@ -8686,12 +9530,12 @@ function readReportedLocal(path2) {
     return [];
   }
 }
-function writeReportedLocal(path2, entries) {
-  if (!entries.length) {
-    rmSync2(path2, { force: true });
+function writeReportedLocal(path2, entries2) {
+  if (!entries2.length) {
+    rmSync3(path2, { force: true });
     return;
   }
-  writeJsonAtomic2(path2, { entries });
+  writeJsonAtomic2(path2, { entries: entries2 });
 }
 function reportLocal(path2, input2, now = /* @__PURE__ */ new Date()) {
   const url2 = displayLocalUrl(input2.url);
@@ -8793,14 +9637,14 @@ var LocalTracker = class {
   stateStamp() {
     if (!this.opts.statePath) return 0;
     try {
-      return statSync5(this.opts.statePath).mtimeMs;
+      return statSync6(this.opts.statePath).mtimeMs;
     } catch {
       return 0;
     }
   }
 };
 function presencePath(configFile, key) {
-  return join4(dirname3(configFile), "estado", `executor-${key}.json`);
+  return join7(dirname5(configFile), "estado", `executor-${key}.json`);
 }
 function markExecutorRunning(path2, pid = process.pid) {
   try {
@@ -8810,21 +9654,21 @@ function markExecutorRunning(path2, pid = process.pid) {
 }
 function clearExecutorRunning(path2, pid = process.pid) {
   try {
-    const data = JSON.parse(readFileSync4(path2, "utf8"));
-    if (data.pid === pid) rmSync2(path2, { force: true });
+    const data = JSON.parse(readFileSync5(path2, "utf8"));
+    if (data.pid === pid) rmSync3(path2, { force: true });
   } catch {
   }
 }
 function runningExecutorPid(path2) {
   try {
-    const data = JSON.parse(readFileSync4(path2, "utf8"));
+    const data = JSON.parse(readFileSync5(path2, "utf8"));
     if (!data.pid || !Number.isSafeInteger(data.pid)) return null;
     process.kill(data.pid, 0);
     return data.pid;
   } catch (err) {
     if (err?.code !== "EPERM") return null;
     try {
-      return JSON.parse(readFileSync4(path2, "utf8")).pid ?? null;
+      return JSON.parse(readFileSync5(path2, "utf8")).pid ?? null;
     } catch {
       return null;
     }
@@ -8832,7 +9676,7 @@ function runningExecutorPid(path2) {
 }
 function isExecutorRunning(path2) {
   try {
-    const data = JSON.parse(readFileSync4(path2, "utf8"));
+    const data = JSON.parse(readFileSync5(path2, "utf8"));
     if (!data.pid) return false;
     process.kill(data.pid, 0);
     return true;
@@ -8847,8 +9691,8 @@ function cleanLabel(raw) {
 
 // connector/localUp.ts
 import { spawn } from "node:child_process";
-import { closeSync, existsSync as existsSync4, mkdirSync as mkdirSync4, openSync, readFileSync as readFileSync5, realpathSync as realpathSync3, statSync as statSync6, writeSync } from "node:fs";
-import { dirname as dirname4, isAbsolute, join as join5, resolve as resolve3 } from "node:path";
+import { closeSync, existsSync as existsSync6, mkdirSync as mkdirSync5, openSync, readFileSync as readFileSync6, realpathSync as realpathSync6, statSync as statSync7, writeSync } from "node:fs";
+import { dirname as dirname6, isAbsolute as isAbsolute4, join as join8, resolve as resolve5 } from "node:path";
 var RECIPE_TOOLS = ["npm", "pnpm", "yarn", "bun"];
 var SAFE_TOKEN = /^[\w@+=:,./-]+$/;
 var SCRIPT_NAME = /^[\w:.@/-]{1,80}$/;
@@ -8857,27 +9701,27 @@ var BLOCKED_ENV = /^(PATH|HOME|SHELL|USER|LOGNAME|TMPDIR|NODE_OPTIONS|NODE_PATH|
 var RECIPE_ENV_MAX = 20;
 var RECIPE_ARGS_MAX = 12;
 var LOCAL_UP_WAIT_MS = 9e4;
-function realOr2(p) {
+function realOr3(p) {
   try {
-    return realpathSync3.native(p);
+    return realpathSync6.native(p);
   } catch {
     return p;
   }
 }
-function inside(child, base) {
+function inside2(child, base) {
   const norm3 = (p) => {
     const s2 = p.replace(/\\/g, "/").replace(/\/+$/, "");
     return process.platform === "darwin" || process.platform === "win32" ? s2.toLowerCase() : s2;
   };
   const within2 = (c, b) => c === b || c.startsWith(`${b}/`);
-  const realChild = norm3(realOr2(child));
-  const realBase = norm3(realOr2(base));
-  if (existsSync4(child)) return within2(realChild, realBase);
+  const realChild = norm3(realOr3(child));
+  const realBase = norm3(realOr3(base));
+  if (existsSync6(child)) return within2(realChild, realBase);
   return within2(norm3(child), norm3(base)) || within2(realChild, realBase);
 }
 function packageScripts(dir) {
   try {
-    const pkg = JSON.parse(readFileSync5(join5(dir, "package.json"), "utf8"));
+    const pkg = JSON.parse(readFileSync6(join8(dir, "package.json"), "utf8"));
     return pkg.scripts && typeof pkg.scripts === "object" ? pkg.scripts : {};
   } catch {
     return null;
@@ -8885,9 +9729,9 @@ function packageScripts(dir) {
 }
 function parseRecipe(input2, repoPath) {
   const rel = (input2.pasta ?? "").trim() || ".";
-  const dir = isAbsolute(rel) ? resolve3(rel) : resolve3(repoPath, rel);
-  if (!inside(dir, repoPath)) return { error: `A pasta tem de ficar dentro do reposit\xF3rio (${repoPath}).` };
-  if (!existsSync4(dir) || !statSync6(dir).isDirectory()) return { error: `A pasta ${dir} n\xE3o existe.` };
+  const dir = isAbsolute4(rel) ? resolve5(rel) : resolve5(repoPath, rel);
+  if (!inside2(dir, repoPath)) return { error: `A pasta tem de ficar dentro do reposit\xF3rio (${repoPath}).` };
+  if (!existsSync6(dir) || !statSync7(dir).isDirectory()) return { error: `A pasta ${dir} n\xE3o existe.` };
   const scripts = packageScripts(dir);
   if (!scripts) return { error: `N\xE3o achei o package.json em ${dir}. Informe a pasta do app (a que tem o package.json).` };
   const tokens = input2.comando.trim().split(/\s+/).filter(Boolean);
@@ -8930,7 +9774,7 @@ function recipeCommand(recipe) {
   return [recipe.tool, "run", recipe.script, ...recipe.args.length ? ["--", ...recipe.args] : []].join(" ");
 }
 function localLogDir(statePath) {
-  return join5(dirname4(statePath), "local-logs");
+  return join8(dirname6(statePath), "local-logs");
 }
 function portOf2(url2) {
   try {
@@ -8942,11 +9786,11 @@ function portOf2(url2) {
 }
 function localLogPath(statePath, url2) {
   const base = statePath.replace(/^.*[\\/]/, "").replace(/\.json$/, "");
-  return join5(localLogDir(statePath), `${base}-${portOf2(url2)}.log`);
+  return join8(localLogDir(statePath), `${base}-${portOf2(url2)}.log`);
 }
 function tail(path2, lines2 = 25) {
   try {
-    const text = readFileSync5(path2, "utf8");
+    const text = readFileSync6(path2, "utf8");
     return text.split(/\r?\n/).slice(-lines2).join("\n").trim();
   } catch {
     return "";
@@ -8957,7 +9801,7 @@ async function launchRecipe(recipe, url2, logPath, deps = {}) {
   const probe = deps.probe ?? ((u) => probeHttp(u, 1500));
   const before = await probe(url2);
   if (isUp(before)) return { ok: true, http: before, pid: null, log: "", already: true };
-  mkdirSync4(dirname4(logPath), { recursive: true, mode: 448 });
+  mkdirSync5(dirname6(logPath), { recursive: true, mode: 448 });
   const fd = openSync(logPath, "a", 384);
   let pid = null;
   try {
@@ -9023,9 +9867,9 @@ function saveRecipeEntry(statePath, input2, now = /* @__PURE__ */ new Date()) {
 }
 async function relaunchDown(statePath, deps = {}) {
   const probe = deps.probe ?? ((u) => probeHttp(u, 1500));
-  const entries = readReportedLocal(statePath);
+  const entries2 = readReportedLocal(statePath);
   const results = await Promise.all(
-    entries.map(async (e) => {
+    entries2.map(async (e) => {
       const recipe = recipeOf(e.recipe);
       if (!recipe || !isLocalUrl(e.url)) return null;
       if (isUp(await probe(e.url))) return null;
@@ -9652,6 +10496,17 @@ var GIT_ESCAPES = [
   "Bash(git fetch*://*)",
   "Bash(git pull*://*)"
 ];
+var ISOLATION_BASH_RULES = [
+  "Bash(git *--no-index*)",
+  "Bash(git commit* -F*)",
+  "Bash(git commit*--file*)",
+  "Bash(git commit* -t *)",
+  "Bash(git commit*--template*)",
+  "Bash(git merge* -F*)",
+  "Bash(git merge*--file*)",
+  "Bash(git tag* -F*)",
+  "Bash(git tag*--file*)"
+];
 var PUSH_ALWAYS = [
   "Bash(git push*--force*)",
   "Bash(git push* -f*)",
@@ -9668,7 +10523,7 @@ var OUTSIDE_TOOLS = ["SendMessage", "ListAgents", "RemoteTrigger", "CronCreate",
 function disallowedToolsFor(job, _tag) {
   const secrets = SECRET_PATH_RULES.flatMap((p) => [`Read(${p})`, `Edit(${p})`, `Write(${p})`]);
   const gitInternals = ["Edit(**/.git/**)", "Write(**/.git/**)"];
-  const base = [...secrets, ...gitInternals, ...GIT_ESCAPES, ...OUTSIDE_TOOLS];
+  const base = [...secrets, ...gitInternals, ...GIT_ESCAPES, ...ISOLATION_BASH_RULES, ...OUTSIDE_TOOLS];
   if (isLocalOnly(job)) return [...base, "Bash(git push)", "Bash(git push*)"];
   if (job.environment === "producao") return [...base, ...PUSH_ALWAYS, "Bash(git push*develop*)", "Bash(git push* :main*)"];
   return [...base, ...PUSH_ALWAYS, "Bash(git push*main*)", "Bash(git push*master*)", "Bash(git push* :develop*)"];
@@ -9709,692 +10564,12 @@ function pushBlockEnv(remotes, base = {}) {
   return env;
 }
 
-// connector/workspace.ts
-import { copyFileSync, existsSync as existsSync6, mkdirSync as mkdirSync5, readdirSync, readFileSync as readFileSync6, readlinkSync as readlinkSync3, realpathSync as realpathSync4, rmSync as rmSync3, statSync as statSync7, writeFileSync as writeFileSync4 } from "node:fs";
-import { basename as basename2, dirname as dirname5, isAbsolute as isAbsolute3, join as join7, resolve as resolve4, sep as sep2 } from "node:path";
-
-// connector/sync.ts
-import { existsSync as existsSync5 } from "node:fs";
-import { isAbsolute as isAbsolute2, join as join6 } from "node:path";
-var HOMOLOG_QUESTION_TOOL = "Benflow";
-function homologQuestionCommand(fullName, branch, ref = "origin/develop") {
-  return `Trazer a homologa\xE7\xE3o (${ref}) para a branch ${branch} em ${fullName}`;
-}
-function homologQuestionDescription(info) {
-  const n2 = info.count === 1 ? "1 commit" : `${info.count} commits`;
-  const sample = info.subjects.slice(0, 2).map((s2) => s2.length > 60 ? `${s2.slice(0, 57)}...` : s2);
-  const ex = sample.length ? `, por exemplo: ${sample.join("; ")}` : "";
-  return `A homologa\xE7\xE3o tem ${n2} que ainda n\xE3o est\xE3o em produ\xE7\xE3o nem neste card${ex}. Trazer antes de a IA come\xE7ar evita conflito na hora de subir.`.slice(0, 300);
-}
-async function git(exec, cwd, args, timeoutMs = 6e4) {
-  return exec("git", ["-C", cwd, ...args], { timeoutMs });
-}
-function firstLine(text) {
-  return (text || "").trim().split("\n")[0]?.slice(0, 300) ?? "";
-}
-async function hasRef(exec, path2, ref) {
-  const res = await git(exec, path2, ["rev-parse", "--verify", "--quiet", `${ref}^{commit}`]);
-  return res.code === 0 && !!res.stdout.trim();
-}
-async function remoteRefs(exec, path2) {
-  let prod = null;
-  for (const r of ["origin/main", "origin/master"]) {
-    if (await hasRef(exec, path2, `refs/remotes/${r}`)) {
-      prod = r;
-      break;
-    }
-  }
-  const homolog = await hasRef(exec, path2, "refs/remotes/origin/develop") ? "origin/develop" : null;
-  return { prod, homolog };
-}
-async function missing(exec, path2, head, ref, exclude = null) {
-  const range = [`${head}..${ref}`, ...exclude ? [`^${exclude}`] : []];
-  const total = await git(exec, path2, ["rev-list", "--count", ...range]);
-  const n2 = total.code === 0 ? Number(total.stdout.trim()) || 0 : 0;
-  if (!n2) return { total: 0, shown: 0 };
-  const real2 = await git(exec, path2, ["rev-list", "--count", "--no-merges", ...range]);
-  const m = real2.code === 0 ? Number(real2.stdout.trim()) || 0 : 0;
-  return { total: n2, shown: m || n2 };
-}
-async function subjects(exec, path2, head, ref, exclude) {
-  const res = await git(exec, path2, ["log", "--no-merges", "--format=%s", "-n", "3", `${head}..${ref}`, ...exclude ? [`^${exclude}`] : []]);
-  if (res.code !== 0) return [];
-  return res.stdout.split("\n").map((s2) => s2.replace(/\s+/g, " ").trim()).filter(Boolean);
-}
-async function midOperation(exec, path2) {
-  for (const mark of ["MERGE_HEAD", "rebase-merge", "rebase-apply", "CHERRY_PICK_HEAD", "REVERT_HEAD"]) {
-    const res = await git(exec, path2, ["rev-parse", "--git-path", mark]);
-    const at = res.code === 0 ? res.stdout.trim() : "";
-    if (at && existsSync5(isAbsolute2(at) ? at : join6(path2, at))) return true;
-  }
-  return false;
-}
-async function dirtyTree(exec, path2) {
-  const st = await git(exec, path2, ["status", "--porcelain", "--untracked-files=no"], 12e4);
-  return st.code !== 0 || !!st.stdout.trim() || await midOperation(exec, path2);
-}
-async function mergeRef(exec, path2, ref, message) {
-  const res = await git(exec, path2, ["merge", "--no-edit", "-m", message, ref], 3e5);
-  if (res.code === 0) return { ok: true };
-  const un = await git(exec, path2, ["diff", "--name-only", "--diff-filter=U"]);
-  const conflicts = un.code === 0 ? un.stdout.split("\n").map((s2) => s2.trim()).filter(Boolean) : [];
-  if (await midOperation(exec, path2)) await git(exec, path2, ["merge", "--abort"]);
-  return { ok: false, conflicts, error: firstLine(res.stderr) || firstLine(res.stdout) || `c\xF3digo ${res.code}` };
-}
-var SOURCE_TEXT = {
-  card: "Traz a branch do card do GitHub",
-  producao: "Traz a produ\xE7\xE3o",
-  homologacao: "Traz a homologa\xE7\xE3o"
-};
-function mergeMessage(tag, source, ref) {
-  return `[${tag}] ${SOURCE_TEXT[source]} (${ref}) para a branch`;
-}
-async function apply(exec, path2, step, tag, blocked) {
-  if (blocked) return { ...step, status: "claude", reason: blocked };
-  const merged = await mergeRef(exec, path2, step.ref, mergeMessage(tag, step.source, step.ref));
-  if (merged.ok) return { ...step, status: "feito" };
-  return { ...step, status: "claude", ...merged.conflicts.length ? { conflicts: merged.conflicts.slice(0, 20), reason: "conflito" } : { reason: merged.error } };
-}
-async function syncCard(exec, repo, opts) {
-  const { path: path2 } = repo;
-  const refs = await remoteRefs(exec, path2);
-  const steps = [];
-  let blocked = await dirtyTree(exec, path2) ? "mudan\xE7a sem commit" : null;
-  const plan = [];
-  if (await hasRef(exec, path2, `refs/remotes/origin/${opts.branch}`)) plan.push({ source: "card", ref: `origin/${opts.branch}` });
-  if (refs.prod) plan.push({ source: "producao", ref: refs.prod });
-  for (const p of plan) {
-    const m = await missing(exec, path2, "HEAD", p.ref);
-    if (!m.total) continue;
-    const step = await apply(exec, path2, { ...p, count: m.shown }, opts.tag, blocked);
-    steps.push(step);
-    if (step.status === "claude") blocked = blocked ?? "passo anterior";
-  }
-  let homolog = null;
-  if (refs.homolog) {
-    const m = await missing(exec, path2, "HEAD", refs.homolog, refs.prod);
-    if (m.total) homolog = { ref: refs.homolog, count: m.shown, subjects: await subjects(exec, path2, "HEAD", refs.homolog, refs.prod) };
-  }
-  return { fullName: repo.fullName, path: path2, steps, homolog };
-}
-async function bringHomolog(exec, sync, tag) {
-  if (!sync.homolog) return;
-  const pending = sync.steps.some((s2) => s2.status === "claude");
-  const blocked = pending ? "passo anterior" : await dirtyTree(exec, sync.path) ? "mudan\xE7a sem commit" : null;
-  sync.steps.push(await apply(exec, sync.path, { source: "homologacao", ref: sync.homolog.ref, count: sync.homolog.count }, tag, blocked));
-}
-function skipHomolog(sync) {
-  if (sync.homolog) sync.steps.push({ source: "homologacao", ref: sync.homolog.ref, count: sync.homolog.count, status: "sem" });
-}
-async function inspectCard(exec, repo, opts) {
-  const { path: path2 } = repo;
-  const refs = await remoteRefs(exec, path2);
-  const local = await hasRef(exec, path2, `refs/heads/${opts.branch}`) ? opts.branch : null;
-  const remote = await hasRef(exec, path2, `refs/remotes/origin/${opts.branch}`) ? `origin/${opts.branch}` : null;
-  const base = local ?? remote ?? refs.homolog ?? refs.prod;
-  const steps = [];
-  if (!base) return { fullName: repo.fullName, path: path2, steps, homolog: null };
-  if (local && remote) {
-    const m = await missing(exec, path2, local, remote);
-    if (m.total) steps.push({ source: "card", ref: remote, count: m.shown, status: "claude" });
-  }
-  if (refs.prod) {
-    const m = await missing(exec, path2, base, refs.prod);
-    if (m.total) steps.push({ source: "producao", ref: refs.prod, count: m.shown, status: "claude" });
-  }
-  let homolog = null;
-  if (refs.homolog && base !== refs.homolog) {
-    const m = await missing(exec, path2, base, refs.homolog, refs.prod);
-    if (m.total) homolog = { ref: refs.homolog, count: m.shown, subjects: await subjects(exec, path2, base, refs.homolog, refs.prod) };
-  }
-  return { fullName: repo.fullName, path: path2, steps, homolog };
-}
-function homologForClaude(sync) {
-  if (sync.homolog) sync.steps.push({ source: "homologacao", ref: sync.homolog.ref, count: sync.homolog.count, status: "claude" });
-}
-async function fetchOrigin(exec, path2) {
-  const res = await git(exec, path2, ["fetch", "origin", "--quiet"], 18e4);
-  return res.code === 0 ? null : firstLine(res.stderr) || `c\xF3digo ${res.code}`;
-}
-var SOURCE_LABEL = {
-  card: "da branch do card no GitHub",
-  producao: "de produ\xE7\xE3o",
-  homologacao: "da homologa\xE7\xE3o"
-};
-function commits(n2) {
-  return n2 === 1 ? "1 commit" : `${n2} commits`;
-}
-function syncTimelineText(syncs) {
-  const parts = [];
-  const many = syncs.length > 1;
-  for (const s2 of syncs) {
-    const where2 = many ? ` em ${s2.fullName}` : "";
-    const done = s2.steps.filter((x) => x.status === "feito").map((x) => `${commits(x.count)} ${SOURCE_LABEL[x.source]} (${x.ref})`);
-    const todo = s2.steps.filter((x) => x.status === "claude");
-    const skipped = s2.steps.find((x) => x.status === "sem");
-    if (done.length) parts.push(`O Benflow trouxe para a branch${where2} ${done.join(", ")}.`);
-    if (todo.length) {
-      const conflict = todo.find((x) => x.conflicts?.length);
-      const what = todo.map((x) => `${x.ref} (${commits(x.count)} ${SOURCE_LABEL[x.source]})`).join(", ");
-      parts.push(
-        conflict ? `${what}${where2}: deu conflito em ${conflict.conflicts.slice(0, 5).join(", ")}; o Claude resolve antes de come\xE7ar a tarefa.` : `${what}${where2}: o Claude traz antes de come\xE7ar a tarefa.`
-      );
-    }
-    if (skipped) parts.push(`Seguindo sem a homologa\xE7\xE3o${where2} (${commits(skipped.count)} fora deste card), como o dono escolheu.`);
-  }
-  return parts.join(" ");
-}
-
-// connector/workspace.ts
-var MAX_SLOTS = 5;
-function workspaceRoot(configFile) {
-  const dir = dirname5(resolve4(configFile));
-  return join7(dirname5(dir), `${basename2(dir)}-trabalhos`);
-}
-function repoKey(fullName) {
-  return fullName.replace(/[^A-Za-z0-9._-]+/g, "__").replace(/^\.+/, "_");
-}
-function slotPath(root, fullName, n2) {
-  return join7(root, repoKey(fullName), `vaga-${n2}`);
-}
-function real(path2) {
-  try {
-    return realpathSync4(path2);
-  } catch {
-    return resolve4(path2);
-  }
-}
-function inside2(root, path2) {
-  return real(path2).startsWith(real(root) + sep2);
-}
-async function git2(exec, cwd, args, timeoutMs = 6e4) {
-  return exec("git", ["-C", cwd, ...args], { timeoutMs });
-}
-function firstLine2(text) {
-  return (text || "").trim().split("\n")[0]?.slice(0, 300) ?? "";
-}
-async function refExists(exec, main, ref) {
-  const res = await git2(exec, main, ["rev-parse", "--verify", "--quiet", `${ref}^{commit}`]);
-  return res.code === 0 && !!res.stdout.trim();
-}
-async function worktreeEntries(exec, main) {
-  const res = await git2(exec, main, ["worktree", "list", "--porcelain"]);
-  const out = [];
-  if (res.code !== 0) return out;
-  let current = null;
-  for (const line of res.stdout.split("\n")) {
-    if (line.startsWith("worktree ")) out.push(current = { path: line.slice("worktree ".length).trim(), branch: null, locked: false });
-    else if (!current) continue;
-    else if (line.startsWith("branch refs/heads/")) current.branch = line.slice("branch refs/heads/".length).trim();
-    else if (line === "locked" || line.startsWith("locked ")) current.locked = true;
-    else if (!line.trim()) current = null;
-  }
-  return out;
-}
-function within(dir, path2) {
-  return path2 === dir || path2.startsWith(dir.endsWith(sep2) ? dir : dir + sep2);
-}
-async function processesIn(exec, path2, platform = process.platform) {
-  const dir = real(path2);
-  const found = [];
-  if (platform === "linux" && existsSync6("/proc/self/cwd")) {
-    let pids;
-    try {
-      pids = readdirSync("/proc").filter((n2) => /^\d+$/.test(n2));
-    } catch {
-      return null;
-    }
-    for (const pid2 of pids) {
-      if (Number(pid2) === process.pid) continue;
-      try {
-        if (!within(dir, readlinkSync3(`/proc/${pid2}/cwd`))) continue;
-        let name2 = "";
-        try {
-          name2 = readFileSync6(`/proc/${pid2}/comm`, "utf8").trim();
-        } catch {
-        }
-        found.push({ pid: Number(pid2), name: name2 });
-      } catch {
-      }
-    }
-    return found;
-  }
-  if (platform !== "darwin" && platform !== "linux") return null;
-  const res = await exec("lsof", ["-n", "-w", "-d", "cwd", "-F", "pcn"], { timeoutMs: 3e4 });
-  if (res.code !== 0 && !res.stdout.trim()) return null;
-  let pid = 0;
-  let name = "";
-  for (const line of res.stdout.split("\n")) {
-    if (line.startsWith("p")) {
-      pid = Number(line.slice(1));
-      name = "";
-    } else if (line.startsWith("c")) name = line.slice(1);
-    else if (line.startsWith("n") && pid && pid !== process.pid && within(dir, line.slice(1))) found.push({ pid, name });
-  }
-  return found;
-}
-async function operationInProgress(exec, path2) {
-  const marks = [
-    ["MERGE_HEAD", "um merge"],
-    ["rebase-merge", "um rebase"],
-    ["rebase-apply", "um rebase"],
-    ["CHERRY_PICK_HEAD", "um cherry-pick"],
-    ["REVERT_HEAD", "um revert"],
-    ["BISECT_LOG", "um bisect"]
-  ];
-  for (const [mark, what] of marks) {
-    const res = await git2(exec, path2, ["rev-parse", "--git-path", mark]);
-    if (res.code !== 0) continue;
-    const at = res.stdout.trim();
-    if (at && existsSync6(isAbsolute3(at) ? at : join7(path2, at))) return what;
-  }
-  return null;
-}
-async function pendingChanges(exec, path2) {
-  const res = await git2(exec, path2, ["status", "--porcelain"], 12e4);
-  if (res.code !== 0) return null;
-  const files = [];
-  for (const line of res.stdout.split("\n")) {
-    if (!line.trim()) continue;
-    const file2 = line.slice(3).trim();
-    if (line.startsWith("??") && basename2(file2.replace(/\/$/, "")) === "node_modules") continue;
-    files.push(file2);
-  }
-  return files;
-}
-async function freeBranch(exec, main, branch, opts) {
-  await git2(exec, main, ["worktree", "prune"]);
-  const entry = (await worktreeEntries(exec, main)).find((w) => w.branch === branch);
-  if (!entry) return { ok: true, where: null, note: null };
-  const where2 = entry.path;
-  if (real(where2) === real(main) || inside2(opts.root, where2)) return { ok: true, where: where2, note: null };
-  const stuck = (why, todo) => ({
-    ok: false,
-    error: `A branch ${branch} est\xE1 aberta em outra pasta (${where2}) e ${why}, ent\xE3o o Benflow n\xE3o mexeu nela. ${todo} e mande de novo.`
-  });
-  const detachHint = `git -C "${where2}" checkout --detach`;
-  if (!/^(chamado|hotfix)\//.test(branch)) return stuck("o Benflow s\xF3 solta sozinho as branches de card (chamado/... ou hotfix/...)", `Troque a branch dessa pasta (${detachHint})`);
-  if (entry.locked) return stuck("essa pasta est\xE1 travada no git (git worktree lock)", `Destrave com git worktree unlock "${where2}" ou troque a branch dela (${detachHint})`);
-  const op = await operationInProgress(exec, where2);
-  if (op) return stuck(`tem ${op} pela metade nessa pasta`, "Termine ou cancele (por exemplo, git merge --abort ou git rebase --abort) nessa pasta");
-  const pending = await pendingChanges(exec, where2);
-  if (pending === null) return stuck("n\xE3o deu para ler o estado dessa pasta no git", `Confira a pasta ou troque a branch dela (${detachHint})`);
-  if (pending.length) {
-    const list = pending.slice(0, 5).join(", ") + (pending.length > 5 ? ` e mais ${pending.length - 5}` : "");
-    return stuck(`ela tem mudan\xE7a sem commit (${list})`, "Fa\xE7a commit (ou descarte) dessas mudan\xE7as: com a pasta limpa e sem programa usando, o Benflow solta a branch sozinho");
-  }
-  const users = await (opts.folderUsers ?? ((p) => processesIn(exec, p, opts.platform)))(where2);
-  if (users === null) return stuck("n\xE3o deu para conferir neste sistema se h\xE1 programa usando essa pasta", `Feche o que estiver aberto nela e troque a branch dela (${detachHint})`);
-  if (users.length) {
-    const who = users.slice(0, 3).map((u) => u.name ? `${u.name}, PID ${u.pid}` : `PID ${u.pid}`).join("; ");
-    return stuck(`h\xE1 programa usando essa pasta agora (${who})`, "Feche esse programa (ou termine o trabalho nele): com a pasta livre, o Benflow solta a branch sozinho");
-  }
-  const detached = await git2(exec, where2, ["checkout", "--detach", "--quiet"]);
-  if (detached.code !== 0) return stuck(`n\xE3o consegui soltar a branch de l\xE1 (${firstLine2(detached.stderr) || `c\xF3digo ${detached.code}`})`, `Troque a branch dessa pasta (${detachHint})`);
-  return {
-    ok: true,
-    where: null,
-    note: `A branch ${branch} estava aberta em outra pasta (${where2}), sem mudan\xE7a sem commit e sem programa usando: o Benflow soltou a branch de l\xE1 (a pasta continua no mesmo commit, sem branch) para o card seguir.`
-  };
-}
-async function isWorktree(exec, path2) {
-  if (!existsSync6(path2)) return false;
-  const res = await git2(exec, path2, ["rev-parse", "--is-inside-work-tree"]);
-  return res.code === 0 && res.stdout.trim() === "true";
-}
-async function dropCopy(exec, main, path2, root) {
-  await git2(exec, main, ["worktree", "remove", "--force", path2]);
-  let problem = null;
-  if (existsSync6(path2) && inside2(root, path2)) {
-    try {
-      rmSync3(path2, { recursive: true, force: true });
-    } catch (err) {
-      problem = err instanceof Error ? err.message : String(err);
-    }
-  }
-  await git2(exec, main, ["worktree", "prune"]);
-  return problem;
-}
-var CLAUDE_LOCAL_FILES = [".claude/settings.local.json", "CLAUDE.local.md"];
-async function ignoredExtras(exec, main) {
-  const res = await git2(exec, main, ["ls-files", "--others", "--ignored", "--exclude-standard", "--directory", "--no-empty-directory"], 12e4);
-  const envFiles = [];
-  const modules = [];
-  if (res.code !== 0) return { envFiles, modules };
-  for (const raw of res.stdout.split("\n")) {
-    const rel = raw.trim();
-    if (!rel || rel.startsWith("/") || rel.split("/").includes("..")) continue;
-    const parts = rel.replace(/\/$/, "").split("/");
-    if (parts.length > 4) continue;
-    const name = parts[parts.length - 1];
-    if (rel.endsWith("/")) {
-      if (name === "node_modules" && parts.length <= 3) modules.push(parts.join("/"));
-      if (rel === ".claude/") envFiles.push(".claude/settings.local.json");
-      continue;
-    }
-    if (/^\.env(\..+)?$/.test(name) && !parts.includes("node_modules")) envFiles.push(rel);
-    else if (CLAUDE_LOCAL_FILES.includes(rel)) envFiles.push(rel);
-  }
-  return { envFiles: [...new Set(envFiles)], modules };
-}
-async function cloneDir(exec, from, to, platform) {
-  if (existsSync6(to)) return true;
-  mkdirSync5(dirname5(to), { recursive: true });
-  if (platform === "darwin") return (await exec("cp", ["-cR", from, to], { timeoutMs: 18e4 })).code === 0;
-  if (platform === "linux") {
-    const res = await exec("cp", ["-R", "--reflink=always", from, to], { timeoutMs: 18e4 });
-    if (res.code !== 0 && existsSync6(to)) rmSync3(to, { recursive: true, force: true });
-    return res.code === 0;
-  }
-  return false;
-}
-async function copyExtras(exec, main, path2, platform) {
-  const { envFiles, modules } = await ignoredExtras(exec, main);
-  let env = 0;
-  for (const rel of envFiles) {
-    const from = join7(main, rel);
-    const to = join7(path2, rel);
-    try {
-      if (existsSync6(to) || !statSync7(from).isFile()) continue;
-      mkdirSync5(dirname5(to), { recursive: true });
-      copyFileSync(from, to);
-      env++;
-    } catch {
-    }
-  }
-  let cloned = 0;
-  let missing2 = 0;
-  for (const rel of modules) {
-    if (await cloneDir(exec, join7(main, rel), join7(path2, rel), platform)) cloned++;
-    else missing2++;
-  }
-  return { env, modules: cloned, missingModules: missing2 };
-}
-function extrasNote(fullName, extras) {
-  if (extras.missingModules > 0) return `Na c\xF3pia de ${fullName} faltam as depend\xEAncias (node_modules): instale antes de rodar testes ou o servidor.`;
-  return null;
-}
-async function busyTree(exec, path2) {
-  const st = await git2(exec, path2, ["status", "--porcelain", "--untracked-files=no"], 12e4);
-  if (st.code !== 0 || st.stdout.trim()) return true;
-  return await operationInProgress(exec, path2) !== null;
-}
-async function currentRef(exec, path2) {
-  const sym = await git2(exec, path2, ["symbolic-ref", "-q", "--short", "HEAD"]);
-  if (sym.code === 0 && sym.stdout.trim()) return sym.stdout.trim();
-  const sha = await git2(exec, path2, ["rev-parse", "HEAD"]);
-  return sha.code === 0 && sha.stdout.trim() ? sha.stdout.trim() : null;
-}
-function stateFile(root, fullName) {
-  return join7(root, repoKey(fullName), "vagas.json");
-}
-function readState(root, fullName) {
-  try {
-    const data = JSON.parse(readFileSync6(stateFile(root, fullName), "utf8"));
-    return data && typeof data === "object" && !Array.isArray(data) ? data : {};
-  } catch {
-    return {};
-  }
-}
-function writeState(root, fullName, branch, path2) {
-  try {
-    const data = readState(root, fullName);
-    data[branch] = path2;
-    writeFileSync4(stateFile(root, fullName), JSON.stringify(data, null, 1) + "\n");
-  } catch {
-  }
-}
-async function existingSlots(exec, root, fullName) {
-  const dir = join7(root, repoKey(fullName));
-  let names = [];
-  try {
-    names = readdirSync(dir);
-  } catch {
-    return [];
-  }
-  const out = [];
-  for (const name of names) {
-    const m = /^vaga-(\d+)$/.exec(name);
-    if (!m) continue;
-    const path2 = join7(dir, name);
-    if (await isWorktree(exec, path2)) out.push({ n: Number(m[1]), path: path2 });
-  }
-  return out.sort((a, b) => a.n - b.n);
-}
-function slotKindOf(root, fullName, main, path2) {
-  if (real(path2) === real(main)) return "principal";
-  const dir = join7(root, repoKey(fullName));
-  return real(dirname5(path2)) === real(dir) && /^vaga-\d+$/.test(basename2(path2)) ? "vaga" : "antiga";
-}
-function translateClaudeSettings(text, main, slot, home = process.env.HOME ?? "") {
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    return null;
-  }
-  if (!data || typeof data !== "object") return null;
-  const pairs = [[main, slot]];
-  const mainReal = real(main);
-  if (mainReal !== main) pairs.push([mainReal, slot]);
-  if (home && main.startsWith(home + sep2) && slot.startsWith(home + sep2)) pairs.push([`~${main.slice(home.length)}`, `~${slot.slice(home.length)}`]);
-  const swap = (rule) => {
-    let out = rule;
-    for (const [from, to] of pairs) out = out.split(from).join(to);
-    return out === rule ? null : out;
-  };
-  const perms = data.permissions;
-  if (perms && typeof perms === "object") {
-    for (const key of ["allow", "ask", "deny", "additionalDirectories"]) {
-      const list = perms[key];
-      if (!Array.isArray(list)) continue;
-      const extra = [];
-      for (const rule of list) {
-        if (typeof rule !== "string") continue;
-        const other = swap(rule);
-        if (other && !list.includes(other) && !extra.includes(other)) extra.push(other);
-      }
-      perms[key] = [...list, ...extra];
-    }
-  }
-  return JSON.stringify(data, null, 2) + "\n";
-}
-async function tracked(exec, path2, rel) {
-  return (await git2(exec, path2, ["ls-files", "--error-unmatch", "--", rel])).code === 0;
-}
-async function syncClaudeLocal(exec, main, path2) {
-  const settings = ".claude/settings.local.json";
-  const from = join7(main, settings);
-  if (existsSync6(from) && !await tracked(exec, path2, settings)) {
-    try {
-      const text = translateClaudeSettings(readFileSync6(from, "utf8"), main, path2);
-      if (text) {
-        mkdirSync5(join7(path2, ".claude"), { recursive: true });
-        writeFileSync4(join7(path2, settings), text);
-      }
-    } catch {
-    }
-  }
-  const notes = "CLAUDE.local.md";
-  if (existsSync6(join7(main, notes)) && !existsSync6(join7(path2, notes)) && !await tracked(exec, path2, notes)) {
-    try {
-      copyFileSync(join7(main, notes), join7(path2, notes));
-    } catch {
-    }
-  }
-}
-async function firstRef(exec, main, refs) {
-  for (const r of refs) if (await refExists(exec, main, r)) return r;
-  return null;
-}
-async function checkoutFor(exec, main, path2, opts) {
-  if (opts.kind === "publicar") {
-    const b = opts.base ?? "origin/develop";
-    const base2 = await firstRef(exec, main, [b, b.replace(/^origin\//, "")]);
-    if (!base2) return `n\xE3o tem a branch ${b.replace(/^origin\//, "")} para publicar`;
-    const res2 = await git2(exec, path2, ["checkout", "--quiet", "--detach", base2], 12e4);
-    return res2.code === 0 ? null : firstLine2(res2.stderr) || `c\xF3digo ${res2.code}`;
-  }
-  const branch = opts.branch;
-  if (await refExists(exec, main, `refs/heads/${branch}`)) {
-    const res2 = await git2(exec, path2, ["checkout", "--quiet", branch], 12e4);
-    return res2.code === 0 ? null : firstLine2(res2.stderr) || `c\xF3digo ${res2.code}`;
-  }
-  const base = await firstRef(exec, main, [`refs/remotes/origin/${branch}`, "origin/develop", "develop", "origin/main", "main", "HEAD"]);
-  if (!base) return `n\xE3o achei de onde criar a branch ${branch}`;
-  const res = await git2(exec, path2, ["checkout", "--quiet", "--no-track", "-b", branch, base], 12e4);
-  return res.code === 0 ? null : firstLine2(res.stderr) || `c\xF3digo ${res.code}`;
-}
-async function prepareOne(repo, opts) {
-  const { exec, root, kind } = opts;
-  const platform = opts.platform ?? process.platform;
-  const claim2 = opts.claim ?? (() => true);
-  const unclaim = opts.unclaim ?? (() => {
-  });
-  const main = repo.path;
-  const dir = join7(root, repoKey(repo.fullName));
-  mkdirSync5(dir, { recursive: true });
-  const fetched = await git2(exec, main, ["fetch", "origin", "--quiet"], 18e4);
-  if (fetched.code !== 0) opts.log?.(`git fetch em ${repo.fullName} falhou (${firstLine2(fetched.stderr) || `c\xF3digo ${fetched.code}`}); o trabalho sai do que j\xE1 est\xE1 nesta m\xE1quina.`);
-  const notes = [];
-  const done = async (path2, slot, reused, restore) => {
-    if (kind === "card") writeState(root, repo.fullName, opts.branch, path2);
-    const sync = kind === "card" && opts.sync ? await syncCard(exec, { fullName: repo.fullName, path: path2 }, { branch: opts.branch, tag: opts.tag }) : null;
-    return { ok: true, copy: { fullName: repo.fullName, main, path: path2, kind, slot, reused, restore }, note: notes.join(" ") || null, sync };
-  };
-  if (kind === "card") {
-    const branch = opts.branch;
-    const freed = await freeBranch(exec, main, branch, { root, platform, folderUsers: opts.folderUsers });
-    if (!freed.ok) return { ok: false, error: freed.error };
-    if (freed.note) notes.push(freed.note);
-    if (freed.where) {
-      const slot = slotKindOf(root, repo.fullName, main, freed.where);
-      const where2 = slot === "principal" ? main : slot === "vaga" ? slotPath(root, repo.fullName, Number(basename2(freed.where).slice("vaga-".length))) : freed.where;
-      const pending = slot === "antiga" ? await pendingChanges(exec, where2) : null;
-      if (slot === "antiga" && pending && !pending.length && !await operationInProgress(exec, where2)) {
-        const problem = await dropCopy(exec, main, where2, root);
-        if (problem || existsSync6(where2)) {
-          await git2(exec, where2, ["checkout", "--quiet", "--detach"]);
-          notes.push(`N\xE3o consegui apagar a pasta antiga ${where2} (${problem ?? "arquivo sem permiss\xE3o"}); a branch foi solta dela. Apague a pasta \xE0 m\xE3o quando puder (no Linux, com sudo se os arquivos forem de outro usu\xE1rio).`);
-        }
-      } else {
-        if (!claim2(where2)) {
-          return {
-            ok: false,
-            error: slot === "principal" ? `A branch ${branch} est\xE1 aberta na pasta do projeto (${where2}), que est\xE1 com outro trabalho agora. Espere o outro trabalho terminar e mande de novo.` : `A branch ${branch} est\xE1 aberta em ${where2}, que est\xE1 com outro trabalho agora. Espere o outro trabalho terminar e mande de novo.`
-          };
-        }
-        if (slot === "vaga") await syncClaudeLocal(exec, main, where2);
-        if (slot !== "principal") {
-          const extras = await copyExtras(exec, main, where2, platform);
-          const note = extrasNote(repo.fullName, extras);
-          if (note) notes.push(note);
-        }
-        return done(where2, slot, true, null);
-      }
-    }
-  }
-  const max = Math.max(2, Math.min(opts.maxSlots ?? MAX_SLOTS, MAX_SLOTS));
-  const existing = await existingSlots(exec, root, repo.fullName);
-  const candidates = [{ path: main, slot: "principal", n: 1 }, ...existing.map((e) => ({ path: e.path, slot: "vaga", n: e.n }))];
-  const last = kind === "card" ? readState(root, repo.fullName)[opts.branch] : void 0;
-  if (last) {
-    const i = candidates.findIndex((c) => real(c.path) === real(last));
-    if (i > 0) candidates.unshift(...candidates.splice(i, 1));
-  }
-  const used = new Set(existing.map((e) => e.n));
-  for (let n2 = 2; n2 <= max && candidates.length < max; n2++) if (!used.has(n2)) candidates.push({ path: slotPath(root, repo.fullName, n2), slot: "vaga", n: n2 });
-  const skipped = [];
-  for (const c of candidates) {
-    if (!claim2(c.path)) {
-      skipped.push(`${c.path} (com outro trabalho)`);
-      continue;
-    }
-    const fresh2 = c.slot === "vaga" && !await isWorktree(exec, c.path);
-    if (fresh2) {
-      if (existsSync6(c.path)) {
-        unclaim(c.path);
-        skipped.push(`${c.path} (pasta que n\xE3o \xE9 do git)`);
-        continue;
-      }
-      const start = await firstRef(exec, main, ["origin/develop", "develop", "origin/main", "main", "HEAD"]) ?? "HEAD";
-      const added = await git2(exec, main, ["worktree", "add", "--detach", c.path, start], 18e4);
-      if (added.code !== 0) {
-        unclaim(c.path);
-        skipped.push(`${c.path} (${firstLine2(added.stderr) || `c\xF3digo ${added.code}`})`);
-        continue;
-      }
-    } else if (await busyTree(exec, c.path)) {
-      unclaim(c.path);
-      skipped.push(`${c.path} (com mudan\xE7a sem commit)`);
-      continue;
-    }
-    const restore = c.slot === "principal" ? await currentRef(exec, c.path) : null;
-    const failed = await checkoutFor(exec, main, c.path, opts);
-    if (failed) {
-      unclaim(c.path);
-      skipped.push(`${c.path} (${failed})`);
-      continue;
-    }
-    if (c.slot === "vaga") {
-      const extras = await copyExtras(exec, main, c.path, platform);
-      await syncClaudeLocal(exec, main, c.path);
-      const note = extrasNote(repo.fullName, extras);
-      if (note) notes.push(note);
-    }
-    return done(c.path, c.slot, !fresh2 && c.slot === "vaga", restore);
-  }
-  return {
-    ok: false,
-    error: `Nenhuma pasta livre para este trabalho em ${repo.fullName}: ${skipped.join("; ")}. Termine ou fa\xE7a commit do que est\xE1 em uma delas e mande de novo.`
-  };
-}
-async function prepareWorkspace(repos, opts) {
-  const copies = [];
-  const out = [];
-  const notes = [];
-  const syncs = [];
-  for (const repo of repos) {
-    const got = await prepareOne(repo, opts);
-    if (!got.ok) return { ok: false, error: got.error, copies };
-    copies.push(got.copy);
-    if (got.note) notes.push(got.note);
-    if (got.sync) syncs.push(got.sync);
-    out.push({ fullName: repo.fullName, path: got.copy.path });
-  }
-  return { ok: true, repos: out, copies, notes, syncs };
-}
-async function releaseWorkspace(copies, opts) {
-  const kept = [];
-  for (const c of copies) {
-    if (await busyTree(opts.exec, c.path)) {
-      kept.push(c);
-      continue;
-    }
-    if (c.slot === "principal") {
-      if (c.restore) {
-        const back = await git2(opts.exec, c.path, ["checkout", "--quiet", c.restore], 12e4);
-        if (back.code !== 0) opts.log?.(`A pasta do projeto ${c.path} n\xE3o voltou para ${c.restore}: ${firstLine2(back.stderr) || `c\xF3digo ${back.code}`}`);
-      }
-    } else if (c.slot === "vaga") {
-      await git2(opts.exec, c.path, ["checkout", "--quiet", "--detach"]);
-    } else {
-      const pending = await pendingChanges(opts.exec, c.path);
-      if (pending && !pending.length) {
-        const problem = await dropCopy(opts.exec, c.main, c.path, opts.root);
-        if (problem) opts.log?.(`N\xE3o consegui apagar a pasta antiga ${c.path}: ${problem}`);
-      } else kept.push(c);
-    }
-  }
-  return kept;
-}
-
 // connector/preparo.ts
 import { execFile } from "node:child_process";
 import { createHash as createHash2 } from "node:crypto";
-import { accessSync, constants, existsSync as existsSync8, mkdirSync as mkdirSync6, mkdtempSync as mkdtempSync2, readdirSync as readdirSync2, readFileSync as readFileSync7, realpathSync as realpathSync5, rmSync as rmSync5, statSync as statSync8, writeFileSync as writeFileSync6 } from "node:fs";
-import os5 from "node:os";
-import { delimiter, dirname as dirname6, join as join9, resolve as resolve5 } from "node:path";
+import { accessSync, constants, existsSync as existsSync8, mkdirSync as mkdirSync6, mkdtempSync as mkdtempSync2, readdirSync as readdirSync3, readFileSync as readFileSync7, realpathSync as realpathSync7, rmSync as rmSync5, statSync as statSync8, writeFileSync as writeFileSync7 } from "node:fs";
+import os6 from "node:os";
+import { delimiter, dirname as dirname7, join as join10, resolve as resolve6 } from "node:path";
 
 // server/services/machinePrepCatalog.ts
 var CHROME_DEB_URL = "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb";
@@ -10639,9 +10814,9 @@ function prepCommandProblem(cmd, kind) {
 
 // connector/captura.ts
 import { spawn as spawn2 } from "node:child_process";
-import { existsSync as existsSync7, mkdtempSync, rmSync as rmSync4, writeFileSync as writeFileSync5 } from "node:fs";
-import os4 from "node:os";
-import { join as join8 } from "node:path";
+import { existsSync as existsSync7, mkdtempSync, rmSync as rmSync4, writeFileSync as writeFileSync6 } from "node:fs";
+import os5 from "node:os";
+import { join as join9 } from "node:path";
 var SCREENS = {
   computador: { width: 1440, height: 900, scale: 1, mobile: false },
   celular: { width: 390, height: 844, scale: 2, mobile: true }
@@ -10797,7 +10972,7 @@ function captureFileName(titulo, seq) {
   const slug = titulo.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60).replace(/-+$/, "");
   return `captura-${String(seq).padStart(2, "0")}${slug ? `-${slug}` : ""}.png`;
 }
-var sleep = (ms) => new Promise((resolve10) => setTimeout(resolve10, ms));
+var sleep = (ms) => new Promise((resolve11) => setTimeout(resolve11, ms));
 var clampWait = (ms, fallback) => Math.min(Math.max(0, ms ?? fallback), CAPTURE_WAIT_MAX);
 function connect(child) {
   const out = child.stdio[3];
@@ -10836,10 +11011,10 @@ function connect(child) {
     pending.clear();
   });
   return {
-    send: (method, params = {}, sessionId) => new Promise((resolve10, reject) => {
+    send: (method, params = {}, sessionId) => new Promise((resolve11, reject) => {
       if (input2.destroyed) return reject(new Error("O Chrome sem tela j\xE1 fechou."));
       const id = ++seq;
-      pending.set(id, { resolve: resolve10, reject, method });
+      pending.set(id, { resolve: resolve11, reject, method });
       out.write(`${JSON.stringify({ id, method, params, ...sessionId ? { sessionId } : {} })}\0`);
     }),
     on: (fn) => {
@@ -10854,7 +11029,7 @@ async function openTab(conn) {
   if (!targetId || !sessionId) throw new Error("O Chrome sem tela n\xE3o abriu a aba.");
   return {
     send: (method, params) => conn.send(method, params, sessionId),
-    once: (event, timeoutMs) => new Promise((resolve10) => {
+    once: (event, timeoutMs) => new Promise((resolve11) => {
       const off = conn.on((m) => {
         if (m.sessionId === sessionId && m.method === event) done(true);
       });
@@ -10862,7 +11037,7 @@ async function openTab(conn) {
       function done(ok) {
         clearTimeout(timer);
         off();
-        resolve10(ok);
+        resolve11(ok);
       }
     }),
     on: (event, fn) => conn.on((m) => {
@@ -10910,7 +11085,7 @@ async function shoot(tab, req) {
   }
   const shot = await tab.send("Page.captureScreenshot", clip ? { format: "png", captureBeyondViewport: true, clip } : { format: "png" });
   if (!shot.data) throw new Error("O Chrome sem tela n\xE3o devolveu a imagem.");
-  writeFileSync5(req.out, Buffer.from(shot.data, "base64"), { mode: 384 });
+  writeFileSync6(req.out, Buffer.from(shot.data, "base64"), { mode: 384 });
   const where2 = await evaluate(tab, "({ url: location.href, title: document.title })");
   return { path: req.out, width: screen.width, height, url: where2?.url ?? req.url, title: where2?.title ?? "" };
 }
@@ -10943,7 +11118,7 @@ function createScreenCapture(opts = {}) {
   function launch() {
     const bin = findChrome(opts.env ?? process.env, opts.platform ?? process.platform);
     if (!bin) return Promise.reject(new Error(MSG_NO_CHROME));
-    const profile = mkdtempSync(join8(os4.tmpdir(), "benflow-chrome-"));
+    const profile = mkdtempSync(join9(os5.tmpdir(), "benflow-chrome-"));
     const child = spawn2(bin, chromeArgs(profile), { stdio: ["ignore", "ignore", "ignore", "pipe", "pipe"] });
     child.unref();
     for (const s2 of [child.stdio[3], child.stdio[4]]) s2?.unref?.();
@@ -11002,7 +11177,7 @@ var RETRY_FAILED_MS = 6 * 60 * 6e4;
 var INSTALL_TIMEOUT_MS = 15 * 6e4;
 var DEPS_TIMEOUT_MS = 20 * 6e4;
 function prepCachePath(configFile) {
-  return join9(dirname6(resolve5(configFile)), "preparo.json");
+  return join10(dirname7(resolve6(configFile)), "preparo.json");
 }
 function emptyCache() {
   return { v: 1, itens: {}, falhas: {}, pastas: {} };
@@ -11023,8 +11198,8 @@ function updateCache(file2, change) {
     try {
       const c = readPrepCache(file2);
       change(c);
-      mkdirSync6(dirname6(file2), { recursive: true });
-      writeFileSync6(file2, JSON.stringify(c, null, 1) + "\n", { mode: 384 });
+      mkdirSync6(dirname7(file2), { recursive: true });
+      writeFileSync7(file2, JSON.stringify(c, null, 1) + "\n", { mode: 384 });
     } catch {
     }
   });
@@ -11088,14 +11263,14 @@ function executable(path2, platform) {
 }
 function searchDirs(env, platform) {
   const fromPath = (env.PATH ?? env.Path ?? "").split(platform === "win32" ? ";" : delimiter).filter(Boolean);
-  const extra = platform === "win32" ? [] : ["/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin", "/usr/sbin", "/snap/bin", ...env.HOME ? [join9(env.HOME, ".local", "bin")] : []];
+  const extra = platform === "win32" ? [] : ["/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin", "/usr/sbin", "/snap/bin", ...env.HOME ? [join10(env.HOME, ".local", "bin")] : []];
   return [.../* @__PURE__ */ new Set([...fromPath, ...extra])];
 }
 function whichProgram(name, env, platform, isExec = (p) => executable(p, platform)) {
   const exts = platform === "win32" ? ["", ...(env.PATHEXT ?? ".EXE;.CMD;.BAT;.COM").split(";").filter(Boolean)] : [""];
   for (const dir of searchDirs(env, platform)) {
     for (const ext of exts) {
-      const full = join9(dir, name + ext);
+      const full = join10(dir, name + ext);
       if (isExec(full)) return full;
     }
   }
@@ -11147,9 +11322,9 @@ async function runStep(cat, step, ctx) {
     if (ctx.arch !== step.arch) return { ok: false, detail: `O pacote oficial \xE9 s\xF3 para x64 (esta m\xE1quina \xE9 ${ctx.arch}): ${cat.manual?.linux ?? manual}` };
     const downloader = whichProgram("curl", ctx.env, ctx.platform, ctx.probe.isExec) ? "curl" : whichProgram("wget", ctx.env, ctx.platform, ctx.probe.isExec) ? "wget" : null;
     if (!downloader) return { ok: false, detail: `Sem curl nem wget para baixar o pacote: ${manual}` };
-    const dir = mkdtempSync2(join9(os5.tmpdir(), "benflow-preparo-"));
+    const dir = mkdtempSync2(join10(os6.tmpdir(), "benflow-preparo-"));
     try {
-      const file2 = join9(dir, "pacote.deb");
+      const file2 = join10(dir, "pacote.deb");
       const got = downloader === "curl" ? await ctx.exec("curl", ["-fsSL", "--retry", "2", "-o", file2, step.url], { timeoutMs: 10 * 6e4 }) : await ctx.exec("wget", ["-q", "-O", file2, step.url], { timeoutMs: 10 * 6e4 });
       if (got.code !== 0) return { ok: false, detail: `N\xE3o deu para baixar ${step.url}: ${lastLine(got)}` };
       return await aptInstall(ctx, [file2], manual);
@@ -11194,18 +11369,18 @@ function lockDirs(root, maxDirs = 12) {
     if (out.length >= maxDirs) return;
     let names;
     try {
-      names = readdirSync2(abs);
+      names = readdirSync3(abs);
     } catch {
       return;
     }
     const has = new Set(names);
     const js2 = has.has("package.json") ? JS_LOCKS.find((l) => has.has(l.file)) : void 0;
-    if (js2) out.push({ rel, abs, lock: js2.file, kind: js2.kind, depsDir: join9(abs, "node_modules") });
-    if (has.has("composer.json") && has.has("composer.lock")) out.push({ rel, abs, lock: "composer.lock", kind: "composer", depsDir: join9(abs, "vendor") });
+    if (js2) out.push({ rel, abs, lock: js2.file, kind: js2.kind, depsDir: join10(abs, "node_modules") });
+    if (has.has("composer.json") && has.has("composer.lock")) out.push({ rel, abs, lock: "composer.lock", kind: "composer", depsDir: join10(abs, "vendor") });
     if (depth >= 2) return;
     for (const name of names.sort()) {
       if (name.startsWith(".") || SKIP_DIRS.has(name)) continue;
-      const child = join9(abs, name);
+      const child = join10(abs, name);
       try {
         if (!statSync8(child).isDirectory()) continue;
       } catch {
@@ -11221,8 +11396,8 @@ function npmDepsStale(dir) {
   let lock;
   let hidden;
   try {
-    lock = JSON.parse(readFileSync7(join9(dir, "package-lock.json"), "utf8"));
-    hidden = JSON.parse(readFileSync7(join9(dir, "node_modules", ".package-lock.json"), "utf8"));
+    lock = JSON.parse(readFileSync7(join10(dir, "package-lock.json"), "utf8"));
+    hidden = JSON.parse(readFileSync7(join10(dir, "node_modules", ".package-lock.json"), "utf8"));
   } catch {
     return false;
   }
@@ -11235,9 +11410,9 @@ function npmDepsStale(dir) {
 }
 function realDir(path2) {
   try {
-    return realpathSync5(path2);
+    return realpathSync7(path2);
   } catch {
-    return resolve5(path2);
+    return resolve6(path2);
   }
 }
 function fileHash(path2) {
@@ -11256,7 +11431,7 @@ function depsCommand(d, env, platform, isExec) {
     return has("pnpm") ? { cmd: "pnpm", args, label: "pnpm install --frozen-lockfile" } : viaCorepack("pnpm", args) ?? { missing: "pnpm" };
   }
   if (d.kind === "yarn") {
-    const berry = existsSync8(join9(d.abs, ".yarnrc.yml"));
+    const berry = existsSync8(join10(d.abs, ".yarnrc.yml"));
     const args = berry ? ["install", "--immutable"] : ["install", "--frozen-lockfile"];
     return has("yarn") ? { cmd: "yarn", args, label: `yarn ${args.join(" ")}` } : viaCorepack("yarn", args) ?? { missing: "yarn" };
   }
@@ -11352,7 +11527,7 @@ async function prepareMachine(o) {
       for (const d of lockDirs(repo.path)) {
         const folder = realDir(d.abs);
         await withFolderLock(folder, async () => {
-          const hash2 = fileHash(join9(d.abs, d.lock));
+          const hash2 = fileHash(join10(d.abs, d.lock));
           if (!hash2) return;
           const cache = readPrepCache(o.cacheFile);
           const known = cache.pastas[folder]?.[d.lock];
@@ -12107,9 +12282,9 @@ function assertNever(_x) {
 }
 function assert(_) {
 }
-function getEnumValues(entries) {
-  const numericValues = Object.values(entries).filter((v) => typeof v === "number");
-  const values = Object.entries(entries).filter(([k, _]) => numericValues.indexOf(+k) === -1).map(([_, v]) => v);
+function getEnumValues(entries2) {
+  const numericValues = Object.values(entries2).filter((v) => typeof v === "number");
+  const values = Object.entries(entries2).filter(([k, _]) => numericValues.indexOf(+k) === -1).map(([_, v]) => v);
   return values;
 }
 function joinValues(array2, separator = "|") {
@@ -13932,16 +14107,16 @@ var $ZodCheckProperties = /* @__PURE__ */ $constructor("$ZodCheckProperties", (i
   hide(inst, Symbol.iterator, function* () {
     yield inst;
   });
-  let entries;
+  let entries2;
   inst._zod.check = (payload) => {
     if (payload.value == null) {
       payload.issues.push({ expected: "object", code: "invalid_type", input: payload.value, inst });
       return void 0;
     }
-    entries ?? (entries = Reflect.ownKeys(def.shape).map((key) => [key, def.shape[key]]));
+    entries2 ?? (entries2 = Reflect.ownKeys(def.shape).map((key) => [key, def.shape[key]]));
     const input2 = payload.value;
     let proms;
-    for (const [key, schema] of entries) {
+    for (const [key, schema] of entries2) {
       const result = schema._zod.run({ value: input2[key], issues: [] }, {});
       if (result instanceof Promise) {
         proms ?? (proms = []);
@@ -16458,7 +16633,7 @@ var recursive = /* @__PURE__ */ new WeakMap();
 var NONE = 0;
 var ASSUMED = 1;
 var PROVEN = 2;
-function isRecursive(inst, stack, resolve10) {
+function isRecursive(inst, stack, resolve11) {
   const cached3 = recursive.get(inst);
   if (cached3 !== void 0)
     return cached3 ? PROVEN : NONE;
@@ -16468,7 +16643,7 @@ function isRecursive(inst, stack, resolve10) {
   let result = NONE;
   const check2 = (child) => {
     if (result !== PROVEN && child?._zod) {
-      const answer = isRecursive(child, stack, resolve10);
+      const answer = isRecursive(child, stack, resolve11);
       if (answer > result)
         result = answer;
     }
@@ -16479,7 +16654,7 @@ function isRecursive(inst, stack, resolve10) {
       const desc = Object.getOwnPropertyDescriptor(sh, key);
       if (spread && !desc.enumerable)
         continue;
-      const child = desc.get ? ASSUMED : desc.value?._zod ? isRecursive(desc.value, stack, resolve10) : NONE;
+      const child = desc.get ? ASSUMED : desc.value?._zod ? isRecursive(desc.value, stack, resolve11) : NONE;
       if (child > answer)
         answer = child;
     }
@@ -16543,7 +16718,7 @@ function isRecursive(inst, stack, resolve10) {
       break;
     // `$ZodLazy` caches its inner on the def, so a resolved edge is followed exactly
     case "lazy": {
-      const inner = def._cachedInner ?? (resolve10 ? inst._zod.innerType : void 0);
+      const inner = def._cachedInner ?? (resolve11 ? inst._zod.innerType : void 0);
       merge2(inner ? isRecursive(inner, stack, false) : ASSUMED);
       break;
     }
@@ -26723,18 +26898,18 @@ function _set(Class2, valueType, params) {
 }
 // @__NO_SIDE_EFFECTS__
 function _enum(Class2, values, params) {
-  const entries = Array.isArray(values) ? Object.fromEntries(values.map((v) => [v, v])) : values;
+  const entries2 = Array.isArray(values) ? Object.fromEntries(values.map((v) => [v, v])) : values;
   return new Class2({
     type: "enum",
-    entries,
+    entries: entries2,
     ...normalizeParams(params)
   });
 }
 // @__NO_SIDE_EFFECTS__
-function _nativeEnum(Class2, entries, params) {
+function _nativeEnum(Class2, entries2, params) {
   return new Class2({
     type: "enum",
-    entries,
+    entries: entries2,
     ...normalizeParams(params)
   });
 }
@@ -29717,17 +29892,17 @@ var ZodEnum = /* @__PURE__ */ $constructor("ZodEnum", (inst, def) => {
   };
 });
 function _enum2(values, params) {
-  const entries = Array.isArray(values) ? Object.fromEntries(values.map((v) => [v, v])) : values;
+  const entries2 = Array.isArray(values) ? Object.fromEntries(values.map((v) => [v, v])) : values;
   return new ZodEnum({
     type: "enum",
-    entries,
+    entries: entries2,
     ...util_exports.normalizeParams(params)
   });
 }
-function nativeEnum(entries, params) {
+function nativeEnum(entries2, params) {
   return new ZodEnum({
     type: "enum",
-    entries,
+    entries: entries2,
     ...util_exports.normalizeParams(params)
   });
 }
@@ -31278,35 +31453,18 @@ function panelLevel(panel) {
   if (panel.level === "dono") return owner ? "dono" : "consultar";
   return panel.level === "desenvolver" ? "desenvolver" : "consultar";
 }
-var FILE_TOOLS = ["Read", "Glob", "Grep", "Edit", "Write", "MultiEdit", "NotebookEdit"];
 var CONSULT_TOOLS = ["Read", "Glob", "Grep"];
 var DEVELOP_TOOLS = [...CONSULT_TOOLS, "Edit", "Write", "Bash"];
 var CONSULT_REMOVED_TOOLS = ["Bash", "Edit", "Write", "MultiEdit", "NotebookEdit"];
 var COLLEAGUE_PATH_RULES = ["~/.claude/**", "~/.zshrc", "~/.zprofile", "~/.zshenv", "~/.bashrc", "~/.bash_profile", "~/.profile", "~/.gitconfig", "~/.config/**"];
 var COLLEAGUE_BASH_RULES = ["Bash(git diff*--no-index*)", "Bash(git *--no-index*)"];
-function splitRules(entry) {
-  const rules = [];
-  let depth = 0;
-  let current = "";
-  for (const ch of entry) {
-    if (ch === "(") depth++;
-    else if (ch === ")" && depth > 0) depth--;
-    if (depth === 0 && (ch === "," || /\s/.test(ch))) {
-      if (current) rules.push(current);
-      current = "";
-    } else current += ch;
-  }
-  if (current.trim()) rules.push(current.trim());
-  return rules;
-}
-var FILE_RULE = new RegExp(`(^|[\\s,])(${FILE_TOOLS.join("|")})([\\s,()]|$)`);
 function painelPermissions(level, claude, disallowedTools) {
   if (level === "dono") return { claude, disallowedTools, extraArgs: [], extraEnv: {} };
   const denied = [...disallowedTools, ...COLLEAGUE_PATH_RULES.flatMap((p) => [`Read(${p})`, `Edit(${p})`, `Write(${p})`]), ...COLLEAGUE_BASH_RULES];
   const extraArgs = (tools) => ["--setting-sources", "project", "--tools", tools.join(",")];
   const extraEnv = { CLAUDE_CODE_DISABLE_AUTO_MEMORY: "1" };
   if (level === "desenvolver") {
-    const allowedTools = claude.allowedTools.flatMap(splitRules).filter((t) => !FILE_RULE.test(t));
+    const allowedTools = withoutFileRules(claude.allowedTools);
     return { claude: { ...claude, permissionMode: "acceptEdits", allowedTools }, disallowedTools: denied, extraArgs: extraArgs(DEVELOP_TOOLS), extraEnv };
   }
   return { claude: { ...claude, permissionMode: "default", allowedTools: ["mcp__benflow"] }, disallowedTools: [...denied, ...CONSULT_REMOVED_TOOLS], extraArgs: extraArgs(CONSULT_TOOLS), extraEnv };
@@ -32105,22 +32263,22 @@ function usageLimitMessage(limit, opts = {}) {
 
 // connector/suggestions.ts
 import { spawn as spawn3 } from "node:child_process";
-import { mkdtempSync as mkdtempSync3, rmSync as rmSync6, writeFileSync as writeFileSync7 } from "node:fs";
-import os6 from "node:os";
-import { extname as extname2, join as join10 } from "node:path";
+import { mkdtempSync as mkdtempSync3, rmSync as rmSync6, writeFileSync as writeFileSync8 } from "node:fs";
+import os7 from "node:os";
+import { extname as extname2, join as join11 } from "node:path";
 var CODE_READ_TOOLS = ["Read", "Grep", "Glob"];
 var CODE_MAX_TURNS = 80;
 var FILES_READ_TOOLS = ["Read"];
 var FILES_MAX_TURNS = 12;
 var MODEL_PATTERN = /^[a-zA-Z0-9._[\]-]{1,80}$/;
 var MAX_TIMEOUT_MS = 18 * 6e4;
-var RULE_UNSAFE = /[()*?[\]{}\\!,\s]/;
+var RULE_UNSAFE2 = /[()*?[\]{}\\!,\s]/;
 function readRuleFor(dir) {
   let path2 = dir;
   const drive = /^([A-Za-z]):[\\/]/.exec(path2);
   if (drive) path2 = `/${drive[1].toLowerCase()}/${path2.slice(3).replace(/\\/g, "/")}`;
   path2 = path2.replace(/\/+$/, "");
-  if (!path2.startsWith("/") || RULE_UNSAFE.test(path2)) return null;
+  if (!path2.startsWith("/") || RULE_UNSAFE2.test(path2)) return null;
   return `Read(/${path2}/**)`;
 }
 function readRules(extraDirs) {
@@ -32222,12 +32380,12 @@ async function runSuggestions(req, opts) {
 async function runSuggestionsOnce(req, opts) {
   if (!req.system.trim() || !req.prompt.trim()) throw new Error("O pedido de sugest\xF5es veio vazio.");
   if (opts.signal?.aborted) throw new SuggestionsCancelled();
-  const tmp = mkdtempSync3(join10(os6.tmpdir(), "benflow-sugestoes-"));
+  const tmp = mkdtempSync3(join11(os7.tmpdir(), "benflow-sugestoes-"));
   try {
     let systemFile = null;
     if (opts.launch.shell) {
-      systemFile = join10(tmp, "regras.txt");
-      writeFileSync7(systemFile, `${req.system}
+      systemFile = join11(tmp, "regras.txt");
+      writeFileSync8(systemFile, `${req.system}
 
 Formato da resposta (JSON Schema):
 ${JSON.stringify(req.schema)}`, { mode: 384 });
@@ -32236,7 +32394,7 @@ ${JSON.stringify(req.schema)}`, { mode: 384 });
     const spawnFn = opts.spawnFn ?? ((c, a, o) => spawn3(c, a, o));
     const timeoutMs = Math.min(Math.max(req.timeoutMs || 3e5, 3e4), MAX_TIMEOUT_MS);
     const cwd = req.code?.dirs[0] ?? (req.files?.dir || tmp);
-    const stdout = await new Promise((resolve10, reject) => {
+    const stdout = await new Promise((resolve11, reject) => {
       const child = spawnFn(run.command, run.args, { cwd, env: opts.env, stdio: ["pipe", "pipe", "pipe"], windowsHide: true, windowsVerbatimArguments: run.verbatim });
       let out = "";
       let err = "";
@@ -32271,7 +32429,7 @@ ${JSON.stringify(req.schema)}`, { mode: 384 });
       });
       child.on("error", (e) => done(() => reject(e)));
       child.on("close", (code) => {
-        if (code === 0 || out.trim()) done(() => resolve10(out));
+        if (code === 0 || out.trim()) done(() => resolve11(out));
         else done(() => reject(new Error(`o claude saiu com c\xF3digo ${code}: ${err.trim().slice(0, 300)}`)));
       });
       child.stdin?.end(req.prompt);
@@ -32291,7 +32449,7 @@ async function openCodeCopy(exec, repoPath, baseDir, name) {
     }
   }
   if (ref) {
-    const dir = join10(baseDir, name.replace(/[^\w.-]+/g, "-"));
+    const dir = join11(baseDir, name.replace(/[^\w.-]+/g, "-"));
     const added = await exec("git", ["worktree", "add", "--detach", "--quiet", dir, ref], { cwd: repoPath, timeoutMs: 18e4 });
     if (added.code === 0) {
       const sha2 = (await exec("git", ["rev-parse", "--short", "HEAD"], { cwd: dir })).stdout.trim();
@@ -32313,9 +32471,9 @@ async function openCodeCopy(exec, repoPath, baseDir, name) {
 
 // connector/vaultUpdate.ts
 import { spawn as spawn4 } from "node:child_process";
-import { mkdtempSync as mkdtempSync4, readdirSync as readdirSync3, rmSync as rmSync7, statSync as statSync9, writeFileSync as writeFileSync8 } from "node:fs";
-import os7 from "node:os";
-import { join as join11 } from "node:path";
+import { mkdtempSync as mkdtempSync4, readdirSync as readdirSync4, rmSync as rmSync7, statSync as statSync9, writeFileSync as writeFileSync9 } from "node:fs";
+import os8 from "node:os";
+import { join as join12 } from "node:path";
 var VAULT_TOOLS = ["Read", "Edit", "Write", "Glob", "Grep"];
 var VAULT_MAX_TURNS = 80;
 var MAX_TIMEOUT_MS2 = 20 * 6e4;
@@ -32345,7 +32503,7 @@ function norm2(text) {
   return text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
 }
 var PERSONAL_FOLDER = /^(pessoal|pessoais|privad[oa]s?|particular(es)?|rascunhos?|diario|diarios|daily|daily notes|journal|anotacoes pessoais)$/;
-var RULE_UNSAFE2 = /[()*?[\]{}\\!\r\n]/;
+var RULE_UNSAFE3 = /[()*?[\]{}\\!\r\n]/;
 function protectedFolders(vaultDir, people2) {
   const names = /* @__PURE__ */ new Set();
   for (const p of people2) {
@@ -32357,7 +32515,7 @@ function protectedFolders(vaultDir, people2) {
   }
   let dirs = [];
   try {
-    dirs = readdirSync3(vaultDir, { withFileTypes: true }).filter((d) => d.isDirectory());
+    dirs = readdirSync4(vaultDir, { withFileTypes: true }).filter((d) => d.isDirectory());
   } catch {
     dirs = [];
   }
@@ -32369,8 +32527,8 @@ function protectedFolders(vaultDir, people2) {
   return [...out].sort((a, b) => a.localeCompare(b));
 }
 function vaultPermissions(protectedDirs) {
-  const allow = ["Read", "Glob", "Grep", "Edit(./*.md)", "Edit(./**/*.md)"];
-  const deny = protectedDirs.filter((d) => !RULE_UNSAFE2.test(d)).map((d) => `Edit(./${d}/**)`);
+  const allow = ["Read(./**)", "Edit(./*.md)", "Edit(./**/*.md)"];
+  const deny = protectedDirs.filter((d) => !RULE_UNSAFE3.test(d)).map((d) => `Edit(./${d}/**)`);
   return { allow, deny };
 }
 var MODEL_PATTERN2 = /^[a-zA-Z0-9._[\]-]{1,80}$/;
@@ -32469,16 +32627,16 @@ function snapshotNotes(dir) {
   const out = /* @__PURE__ */ new Map();
   const walk = (abs, rel, depth) => {
     if (depth > SNAPSHOT_MAX_DEPTH || out.size >= SNAPSHOT_MAX_FILES) return;
-    let entries;
+    let entries2;
     try {
-      entries = readdirSync3(abs, { withFileTypes: true });
+      entries2 = readdirSync4(abs, { withFileTypes: true });
     } catch {
       return;
     }
-    for (const e of entries) {
+    for (const e of entries2) {
       if (out.size >= SNAPSHOT_MAX_FILES) return;
       if (e.name.startsWith(".")) continue;
-      const childAbs = join11(abs, e.name);
+      const childAbs = join12(abs, e.name);
       const childRel = rel ? `${rel}/${e.name}` : e.name;
       if (e.isDirectory()) walk(childAbs, childRel, depth + 1);
       else if (e.isFile() && /\.md$/i.test(e.name)) {
@@ -32514,14 +32672,14 @@ async function runVaultUpdate(job, vaultDir, opts) {
 async function runClaudeInVault(vaultDir, input2, opts) {
   const permissions = vaultPermissions(input2.protectedDirs);
   const { rules, prompt } = input2;
-  const tmp = mkdtempSync4(join11(os7.tmpdir(), "benflow-cofre-"));
+  const tmp = mkdtempSync4(join12(os8.tmpdir(), "benflow-cofre-"));
   try {
-    const settingsFile = join11(tmp, "permissoes.json");
-    writeFileSync8(settingsFile, JSON.stringify({ permissions: { ...permissions, defaultMode: "dontAsk" } }, null, 2), { mode: 384 });
+    const settingsFile = join12(tmp, "permissoes.json");
+    writeFileSync9(settingsFile, JSON.stringify({ permissions: { ...permissions, defaultMode: "dontAsk" } }, null, 2), { mode: 384 });
     let rulesFile = null;
     if (opts.launch.shell) {
-      rulesFile = join11(tmp, "regras.txt");
-      writeFileSync8(rulesFile, `${rules}
+      rulesFile = join12(tmp, "regras.txt");
+      writeFileSync9(rulesFile, `${rules}
 
 Formato da resposta (JSON Schema):
 ${JSON.stringify(VAULT_OUTPUT_SCHEMA)}`, { mode: 384 });
@@ -32530,7 +32688,7 @@ ${JSON.stringify(VAULT_OUTPUT_SCHEMA)}`, { mode: 384 });
     const spawnFn = opts.spawnFn ?? ((c, a, o2) => spawn4(c, a, o2));
     const timeoutMs = Math.min(Math.max(input2.timeoutMs || DEFAULT_TIMEOUT_MS, 6e4), MAX_TIMEOUT_MS2);
     const before = snapshotNotes(vaultDir);
-    const stdout = await new Promise((resolve10, reject) => {
+    const stdout = await new Promise((resolve11, reject) => {
       const child = spawnFn(run.command, run.args, { cwd: vaultDir, env: opts.env, stdio: ["pipe", "pipe", "pipe"], windowsHide: true, windowsVerbatimArguments: run.verbatim });
       let out = "";
       let err = "";
@@ -32572,7 +32730,7 @@ ${JSON.stringify(VAULT_OUTPUT_SCHEMA)}`, { mode: 384 });
       child.on("error", (e) => done(() => reject(e)));
       child.on("close", (code) => {
         if (code !== 0 && /unknown option.*restricted|restricted.*(unknown|not recognized)/i.test(err)) return done(() => reject(new Error(MSG_CLAUDE_TOO_OLD)));
-        if (code === 0 || out.trim()) done(() => resolve10(out));
+        if (code === 0 || out.trim()) done(() => resolve11(out));
         else done(() => reject(new Error(`o claude saiu com c\xF3digo ${code}: ${err.trim().slice(0, 300)}`)));
       });
       child.stdin?.end(prompt);
@@ -32589,15 +32747,15 @@ ${JSON.stringify(VAULT_OUTPUT_SCHEMA)}`, { mode: 384 });
 }
 
 // connector/vaultSend.ts
-import { existsSync as existsSync9, mkdirSync as mkdirSync7, mkdtempSync as mkdtempSync5, readFileSync as readFileSync9, rmSync as rmSync8, statSync as statSync11, writeFileSync as writeFileSync9 } from "node:fs";
-import os8 from "node:os";
-import { dirname as dirname7, join as join13 } from "node:path";
+import { existsSync as existsSync9, mkdirSync as mkdirSync7, mkdtempSync as mkdtempSync5, readFileSync as readFileSync9, rmSync as rmSync8, statSync as statSync11, writeFileSync as writeFileSync10 } from "node:fs";
+import os9 from "node:os";
+import { dirname as dirname8, join as join14 } from "node:path";
 import { gunzipSync, gzipSync } from "node:zlib";
 
 // connector/vault.ts
-import { readFileSync as readFileSync8, realpathSync as realpathSync6, statSync as statSync10 } from "node:fs";
+import { readFileSync as readFileSync8, realpathSync as realpathSync8, statSync as statSync10 } from "node:fs";
 import { readdir, readFile, realpath, stat } from "node:fs/promises";
-import { basename as basename3, isAbsolute as isAbsolute4, join as join12, relative, resolve as resolve6, sep as sep3 } from "node:path";
+import { basename as basename3, isAbsolute as isAbsolute5, join as join13, relative as relative2, resolve as resolve7, sep as sep3 } from "node:path";
 var VaultPathError = class extends Error {
 };
 var MAX_FILES = 2e4;
@@ -32632,20 +32790,20 @@ async function listNotes(root) {
   const stack = [{ dir: base, depth: 0 }];
   while (stack.length && out.length < MAX_FILES) {
     const { dir, depth } = stack.pop();
-    let entries;
+    let entries2;
     try {
-      entries = await readdir(dir, { withFileTypes: true });
+      entries2 = await readdir(dir, { withFileTypes: true });
     } catch {
       continue;
     }
-    for (const e of entries) {
+    for (const e of entries2) {
       if (e.name.startsWith(".")) continue;
       if (e.isSymbolicLink()) continue;
-      const full = join12(dir, e.name);
+      const full = join13(dir, e.name);
       if (e.isDirectory()) {
         if (depth < MAX_DEPTH) stack.push({ dir: full, depth: depth + 1 });
       } else if (e.isFile() && e.name.toLowerCase().endsWith(".md")) {
-        out.push(relative(base, full));
+        out.push(relative2(base, full));
         if (out.length >= MAX_FILES) break;
       }
     }
@@ -32748,7 +32906,7 @@ async function searchVault(root, query, limit = 8) {
   const rels = await listNotes(base);
   for (let i = 0; i < rels.length; i += READ_BATCH) {
     const batch = rels.slice(i, i + READ_BATCH);
-    const notes = await Promise.all(batch.map((rel) => loadNote(join12(base, rel), rel)));
+    const notes = await Promise.all(batch.map((rel) => loadNote(join13(base, rel), rel)));
     notes.forEach((note, k) => {
       if (!note) return;
       const rel = batch[k];
@@ -32761,7 +32919,7 @@ async function searchVault(root, query, limit = 8) {
         if (inPath || count > 0) matched++;
         score += Math.min(count, 10) + (inPath ? 5 : 0);
       }
-      if (matched) scored.push({ rel, full: join12(base, rel), title: note.title, score: matched * 100 + score });
+      if (matched) scored.push({ rel, full: join13(base, rel), title: note.title, score: matched * 100 + score });
     });
   }
   scored.sort((a, b) => b.score - a.score || a.rel.localeCompare(b.rel));
@@ -32782,17 +32940,17 @@ async function searchVault(root, query, limit = 8) {
 function readVaultNote(root, relPath) {
   const rel = relPath.trim();
   if (!rel || rel.includes("\0")) throw new VaultPathError("Informe o caminho da nota.");
-  if (isAbsolute4(rel)) throw new VaultPathError("Use o caminho relativo \xE0 pasta do cofre pessoal.");
+  if (isAbsolute5(rel)) throw new VaultPathError("Use o caminho relativo \xE0 pasta do cofre pessoal.");
   if (rel.split(/[\\/]+/).includes("..")) throw new VaultPathError("Caminho fora do cofre pessoal n\xE3o \xE9 permitido.");
   let base;
   try {
-    base = realpathSync6(root);
+    base = realpathSync8(root);
   } catch {
     throw new VaultPathError("A pasta do cofre pessoal n\xE3o foi encontrada.");
   }
   let real2;
   try {
-    real2 = realpathSync6(resolve6(base, rel));
+    real2 = realpathSync8(resolve7(base, rel));
   } catch {
     throw new VaultPathError(`Nota n\xE3o encontrada no cofre pessoal: ${rel}`);
   }
@@ -32802,7 +32960,7 @@ function readVaultNote(root, relPath) {
   if (!st.isFile()) throw new VaultPathError(`Nota n\xE3o encontrada no cofre pessoal: ${rel}`);
   if (st.size > MAX_NOTE_BYTES) throw new VaultPathError("A nota \xE9 grande demais para ler de uma vez.");
   const content = readFileSync8(real2, "utf8");
-  const path2 = relative(base, real2);
+  const path2 = relative2(base, real2);
   return { path: path2, title: noteTitle(path2, content), content };
 }
 
@@ -32827,7 +32985,7 @@ async function collectVault(dir) {
       continue;
     }
     try {
-      const abs = join13(dir, rel);
+      const abs = join14(dir, rel);
       if (statSync11(abs).size > NOTE_MAX_BYTES) {
         skipped++;
         continue;
@@ -32852,9 +33010,9 @@ function unpackVault(pkg, dir) {
     if (typeof f.path !== "string" || typeof f.content !== "string") continue;
     const parts = f.path.split("/");
     if (!/\.md$/i.test(f.path) || parts.some((p) => !p || p === "." || p === ".." || p.startsWith(".") || p.includes("\\") || p.includes("\0"))) continue;
-    const abs = join13(dir, ...parts);
-    mkdirSync7(dirname7(abs), { recursive: true });
-    writeFileSync9(abs, f.content, { mode: 384 });
+    const abs = join14(dir, ...parts);
+    mkdirSync7(dirname8(abs), { recursive: true });
+    writeFileSync10(abs, f.content, { mode: 384 });
     n2++;
   }
   return n2;
@@ -32902,7 +33060,7 @@ function sameVault(homolog, localDir) {
   let same = 0;
   for (const [path2, content] of homolog) {
     try {
-      if (readFileSync9(join13(localDir, ...path2.split("/")), "utf8") === content) same++;
+      if (readFileSync9(join14(localDir, ...path2.split("/")), "utf8") === content) same++;
     } catch {
     }
   }
@@ -32910,8 +33068,8 @@ function sameVault(homolog, localDir) {
 }
 async function runVaultRead(job, opts) {
   const progress = (stage, pct) => opts.client.vaultReadProgress(opts.jobId, stage, pct).catch(() => void 0);
-  const base = mkdtempSync5(join13(os8.tmpdir(), "benflow-leitura-"));
-  const dir = join13(base, "cofre");
+  const base = mkdtempSync5(join14(os9.tmpdir(), "benflow-leitura-"));
+  const dir = join14(base, "cofre");
   mkdirSync7(dir);
   let timer = null;
   try {
@@ -32940,7 +33098,7 @@ async function runVaultRead(job, opts) {
       const parts = rel.split("/");
       if (!/\.md$/i.test(rel) || parts.some((p) => !p || p === ".." || p.startsWith("."))) continue;
       try {
-        files.push({ path: rel, content: readFileSync9(join13(dir, ...parts), "utf8") });
+        files.push({ path: rel, content: readFileSync9(join14(dir, ...parts), "utf8") });
       } catch {
       }
     }
@@ -32948,11 +33106,11 @@ async function runVaultRead(job, opts) {
     let copied = 0;
     if (opts.localVault && existsSync9(opts.localVault) && sameVault(homolog, opts.localVault)) {
       for (const f of files) {
-        const target = join13(opts.localVault, ...f.path.split("/"));
+        const target = join14(opts.localVault, ...f.path.split("/"));
         if (existsSync9(target)) continue;
         try {
-          mkdirSync7(dirname7(target), { recursive: true });
-          writeFileSync9(target, f.content, { flag: "wx" });
+          mkdirSync7(dirname8(target), { recursive: true });
+          writeFileSync10(target, f.content, { flag: "wx" });
           copied++;
         } catch {
         }
@@ -32967,8 +33125,8 @@ async function runVaultRead(job, opts) {
 
 // connector/links.ts
 import { spawn as spawn5 } from "node:child_process";
-import { closeSync as closeSync2, existsSync as existsSync10, openSync as openSync2, readFileSync as readFileSync10, statSync as statSync12, writeFileSync as writeFileSync10 } from "node:fs";
-import { dirname as dirname8, join as join14 } from "node:path";
+import { closeSync as closeSync2, existsSync as existsSync10, openSync as openSync2, readFileSync as readFileSync10, statSync as statSync12, writeFileSync as writeFileSync11 } from "node:fs";
+import { dirname as dirname9, join as join15 } from "node:path";
 var isDir = (p) => {
   try {
     return existsSync10(p) && statSync12(p).isDirectory();
@@ -32978,8 +33136,8 @@ var isDir = (p) => {
 };
 function executorFiles(configFile, url2, orgSlug) {
   const host = url2.replace(/^https?:\/\//i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-  const dir = dirname8(configFile);
-  return { pid: join14(dir, `executor-${host}-${orgSlug}.pid`), log: join14(dir, `executor-${host}-${orgSlug}.log`) };
+  const dir = dirname9(configFile);
+  return { pid: join15(dir, `executor-${host}-${orgSlug}.pid`), log: join15(dir, `executor-${host}-${orgSlug}.log`) };
 }
 function findLocalRepos(servers, current, wanted) {
   const ordered = [current, ...servers.filter((s2) => s2 !== current)];
@@ -33014,7 +33172,7 @@ function defaultStartExecutor(url2, orgSlug, files) {
   try {
     const child = spawn5(process.execPath, [script, "executar", "--url", url2, "--org", orgSlug], { detached: true, stdio: ["ignore", out, out], env: process.env });
     child.unref();
-    if (child.pid) writeFileSync10(files.pid, `${child.pid}
+    if (child.pid) writeFileSync11(files.pid, `${child.pid}
 `);
     return child.pid ?? null;
   } finally {
@@ -33029,7 +33187,7 @@ function applyLinkOffer(offer, deps) {
     const cfg = loadConfig(deps.configFile);
     const url2 = normalizeUrl(deps.current.url);
     const { found, missing: missing2 } = findLocalRepos(cfg.servers, deps.current, offer.repos ?? []);
-    const { config: config2, entry, created } = upsertServer(cfg, { url: url2, token: offer.token, orgSlug: offer.orgSlug, repos: found, personalVault: deps.current.personalVault });
+    const { config: config2, entry, created } = upsertServer(cfg, { url: url2, token: offer.token, orgSlug: offer.orgSlug, repos: found });
     if (created) entry.claude = { ...deps.current.claude, allowedTools: [...deps.current.claude.allowedTools] };
     saveConfig(config2, deps.configFile);
     log(`Projeto ${offer.orgName} (${offer.orgSlug}) ligado neste Claude${Object.keys(found).length ? `, com ${Object.keys(found).join(", ")}` : ""}.`);
@@ -33054,9 +33212,9 @@ function applyLinkOffer(offer, deps) {
 }
 
 // connector/keyFetch.ts
-import { existsSync as existsSync11, readFileSync as readFileSync11, realpathSync as realpathSync7, statSync as statSync13 } from "node:fs";
+import { existsSync as existsSync11, readFileSync as readFileSync11, realpathSync as realpathSync9, statSync as statSync13 } from "node:fs";
 import { homedir } from "node:os";
-import { join as join15, relative as relative2, sep as sep4 } from "node:path";
+import { join as join16, relative as relative3, sep as sep4 } from "node:path";
 
 // server/services/keySources.ts
 var KEY_SOURCE_PATH_MAX = 200;
@@ -33157,12 +33315,12 @@ function readRepoFile(repos, path2) {
   const dirs = Object.values(repos).filter((d) => d && existsSync11(d));
   if (!dirs.length) return { error: "Esta m\xE1quina n\xE3o tem a pasta do reposit\xF3rio do projeto." };
   for (const dir of dirs) {
-    const file2 = join15(dir, path2);
+    const file2 = join16(dir, path2);
     if (!existsSync11(file2)) continue;
     try {
-      const realDir2 = realpathSync7(dir);
-      const real2 = realpathSync7(file2);
-      const rel = relative2(realDir2, real2);
+      const realDir2 = realpathSync9(dir);
+      const real2 = realpathSync9(file2);
+      const rel = relative3(realDir2, real2);
       if (!rel || rel.startsWith("..") || rel.startsWith(sep4)) return { error: `${path2} aponta para fora da pasta do reposit\xF3rio.` };
       const st = statSync13(real2);
       if (!st.isFile()) return { error: `${path2} n\xE3o \xE9 um arquivo.` };
@@ -33342,18 +33500,18 @@ async function runBranchShare(exec, repos, req) {
 
 // connector/version.ts
 import { existsSync as existsSync12, readFileSync as readFileSync12 } from "node:fs";
-import { dirname as dirname9, join as join16 } from "node:path";
+import { dirname as dirname10, join as join17 } from "node:path";
 import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.43") {
-    cached2 = "0.1.43";
+  if ("0.1.44") {
+    cached2 = "0.1.44";
     return cached2;
   }
-  let dir = dirname9(fileURLToPath(import.meta.url));
+  let dir = dirname10(fileURLToPath(import.meta.url));
   for (let i = 0; i < 5; i++) {
-    const file2 = join16(dir, "package.json");
+    const file2 = join17(dir, "package.json");
     if (existsSync12(file2)) {
       try {
         const pkg = JSON.parse(readFileSync12(file2, "utf8"));
@@ -33364,7 +33522,7 @@ function connectorVersion() {
       } catch {
       }
     }
-    const parent = dirname9(dir);
+    const parent = dirname10(dir);
     if (parent === dir) break;
     dir = parent;
   }
@@ -33500,9 +33658,9 @@ function toolChange(name, input2, path2) {
 }
 
 // connector/repoProvision.ts
-import { existsSync as existsSync13, mkdirSync as mkdirSync8, readdirSync as readdirSync4, readFileSync as readFileSync13, renameSync as renameSync4, rmSync as rmSync9 } from "node:fs";
-import os9 from "node:os";
-import { basename as basename4, dirname as dirname10, join as join17 } from "node:path";
+import { existsSync as existsSync13, mkdirSync as mkdirSync8, readdirSync as readdirSync5, readFileSync as readFileSync13, renameSync as renameSync4, rmSync as rmSync9 } from "node:fs";
+import os10 from "node:os";
+import { basename as basename4, dirname as dirname11, join as join18 } from "node:path";
 var REPO_RE = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 var CLONE_TIMEOUT_MS = 15 * 6e4;
 var MSG_NO_ACCESS_PREFIX = "Sem acesso ao reposit\xF3rio";
@@ -33510,18 +33668,18 @@ function msgNoAccess(name, detail) {
   const why = detail ? ` (${detail})` : "";
   return `${MSG_NO_ACCESS_PREFIX} ${name} pelo GitHub desta m\xE1quina${why}. Resolva em Ver o erro e resolver > Dar acesso a esta m\xE1quina.`;
 }
-function repoKeyPath(name, home = os9.homedir()) {
-  return join17(home, ".benflow", "ssh", `github-${name.toLowerCase().replace(/[^a-z0-9._-]+/g, "-")}`);
+function repoKeyPath(name, home = os10.homedir()) {
+  return join18(home, ".benflow", "ssh", `github-${name.toLowerCase().replace(/[^a-z0-9._-]+/g, "-")}`);
 }
-async function ensureRepoKey(name, exec, home = os9.homedir()) {
+async function ensureRepoKey(name, exec, home = os10.homedir()) {
   const path2 = repoKeyPath(name, home);
   if (!existsSync13(`${path2}.pub`)) {
     try {
-      mkdirSync8(dirname10(path2), { recursive: true, mode: 448 });
+      mkdirSync8(dirname11(path2), { recursive: true, mode: 448 });
     } catch {
       return null;
     }
-    const res = await exec("ssh-keygen", ["-q", "-t", "ed25519", "-N", "", "-C", `benflow ${os9.hostname()} ${name}`, "-f", path2]);
+    const res = await exec("ssh-keygen", ["-q", "-t", "ed25519", "-N", "", "-C", `benflow ${os10.hostname()} ${name}`, "-f", path2]);
     if (res.code !== 0) return null;
   }
   try {
@@ -33530,18 +33688,18 @@ async function ensureRepoKey(name, exec, home = os9.homedir()) {
     return null;
   }
 }
-function listRepoKeys(home = os9.homedir()) {
-  const dir = join17(home, ".benflow", "ssh");
+function listRepoKeys(home = os10.homedir()) {
+  const dir = join18(home, ".benflow", "ssh");
   let files = [];
   try {
-    files = readdirSync4(dir).filter((f) => f.startsWith("github-") && f.endsWith(".pub"));
+    files = readdirSync5(dir).filter((f) => f.startsWith("github-") && f.endsWith(".pub"));
   } catch {
     return [];
   }
   const out = [];
   for (const f of files.sort()) {
     try {
-      const publicKey = readFileSync13(join17(dir, f), "utf8").trim();
+      const publicKey = readFileSync13(join18(dir, f), "utf8").trim();
       const repo = publicKey.split(/\s+/).pop() ?? "";
       if (REPO_RE.test(repo) && /^ssh-ed25519 \S+/.test(publicKey)) out.push({ repo, publicKey });
     } catch {
@@ -33552,15 +33710,15 @@ function listRepoKeys(home = os9.homedir()) {
 function cloneBase(servers) {
   for (const s2 of servers) {
     for (const path2 of Object.values(s2.repos ?? {})) {
-      if (path2 && existsSync13(path2)) return dirname10(path2);
+      if (path2 && existsSync13(path2)) return dirname11(path2);
     }
   }
-  return join17(os9.homedir(), "Developer", "benflow-ia");
+  return join18(os10.homedir(), "Developer", "benflow-ia");
 }
 function freeTarget(base, name) {
   const repo = basename4(name);
-  let target = join17(base, repo);
-  for (let i = 2; existsSync13(target); i++) target = join17(base, `${repo}-${i}`);
+  let target = join18(base, repo);
+  for (let i = 2; existsSync13(target); i++) target = join18(base, `${repo}-${i}`);
   return target;
 }
 function originMatches(url2, name) {
@@ -33574,7 +33732,7 @@ function gitReason(stderr) {
   return main.replace(/^(remote|fatal):\s*/i, "").slice(0, 200);
 }
 async function isUsableClone(path2, name, exec) {
-  if (!existsSync13(join17(path2, ".git"))) return false;
+  if (!existsSync13(join18(path2, ".git"))) return false;
   const head = await exec("git", ["-C", path2, "rev-parse", "--verify", "--quiet", "HEAD"]);
   if (head.code !== 0) return false;
   const origin = await exec("git", ["-C", path2, "remote", "get-url", "origin"]);
@@ -33622,7 +33780,7 @@ async function doProvision(name, deps) {
   if (!REPO_RE.test(name)) return { ok: false, error: `Reposit\xF3rio inv\xE1lido: ${name}.` };
   const log = deps.log ?? (() => {
   });
-  const home = deps.home ?? os9.homedir();
+  const home = deps.home ?? os10.homedir();
   let servers = [];
   try {
     servers = loadConfig(deps.configFile).servers;
@@ -33635,7 +33793,7 @@ async function doProvision(name, deps) {
   let how = "outra_entrada";
   if (!path2) {
     const base = cloneBase([deps.entry, ...servers]);
-    const manual = join17(base, basename4(name));
+    const manual = join18(base, basename4(name));
     if (await isUsableClone(manual, name, deps.exec)) path2 = manual;
   }
   if (!path2) {
@@ -33691,8 +33849,8 @@ var defaultExec = (cmd, args, opts = {}) => new Promise((done) => {
 var LOADER_FLAGS = /* @__PURE__ */ new Set(["--import", "--loader", "--experimental-loader", "--require", "-r"]);
 function resolveLoaderValue(flag, value) {
   const isRequire = flag === "--require" || flag === "-r";
-  if (value.startsWith("./") || value.startsWith("../")) return isRequire ? resolve7(value) : pathToFileURL(resolve7(value)).href;
-  if (isAbsolute5(value) || /^(file|node|data):/.test(value)) return value;
+  if (value.startsWith("./") || value.startsWith("../")) return isRequire ? resolve8(value) : pathToFileURL(resolve8(value)).href;
+  if (isAbsolute6(value) || /^(file|node|data):/.test(value)) return value;
   try {
     return isRequire ? createRequire(import.meta.url).resolve(value) : import.meta.resolve(value);
   } catch {
@@ -33723,7 +33881,7 @@ function nodeScriptLaunch(script, scriptArgs, execArgv = process.execArgv) {
   return { command: process.execPath, args: [...args, script, ...scriptArgs] };
 }
 function selfMcpLaunch(argv = process.argv, execArgv = process.execArgv) {
-  const script = argv[1] ? resolve7(argv[1]) : fileURLToPath2(new URL("./cli.js", import.meta.url));
+  const script = argv[1] ? resolve8(argv[1]) : fileURLToPath2(new URL("./cli.js", import.meta.url));
   return nodeScriptLaunch(script, ["mcp"], execArgv);
 }
 async function gitRepoState(exec, path2) {
@@ -33758,11 +33916,11 @@ async function claudeVersionOf(exec, bin, launch = resolveClaudeLaunch(bin)) {
   if (res.code !== 0) return null;
   return res.stdout.trim().split(/\r?\n/)[0]?.trim() || null;
 }
-function claudeConfigOf(env = process.env, home = os10.homedir()) {
+function claudeConfigOf(env = process.env, home = os11.homedir()) {
   let settings = {};
   try {
-    const dir = env.CLAUDE_CONFIG_DIR?.trim() || join18(home, ".claude");
-    const parsed = JSON.parse(readFileSync14(join18(dir, "settings.json"), "utf8"));
+    const dir = env.CLAUDE_CONFIG_DIR?.trim() || join19(home, ".claude");
+    const parsed = JSON.parse(readFileSync14(join19(dir, "settings.json"), "utf8"));
     if (parsed && typeof parsed === "object") settings = parsed;
   } catch {
     settings = {};
@@ -33790,7 +33948,7 @@ async function collectHeartbeat(entry, busyExecutionId, deps) {
   const vault = entry.personalVault;
   return {
     version: deps.version ?? connectorVersion(),
-    machine: (deps.hostname ?? os10.hostname)(),
+    machine: (deps.hostname ?? os11.hostname)(),
     repos,
     personalVault: vault ? { path: vault, notes: await (deps.vaultNotes ?? countNotes)(vault) } : null,
     busyExecutionId,
@@ -33831,8 +33989,9 @@ function buildClaudeArgs(p) {
     "--permission-mode",
     p.claude.permissionMode
   ];
+  if (p.isolationSettings) args.push("--settings", p.isolationSettings);
   if (p.resume) args.push("--resume", p.resume);
-  const allowed = [.../* @__PURE__ */ new Set([...p.claude.allowedTools, ...p.allowedTools ?? []])];
+  const allowed = [.../* @__PURE__ */ new Set([...withoutFileRules(p.claude.allowedTools), ...p.allowedTools ?? []])];
   if (allowed.length) args.push("--allowedTools", ...allowed);
   args.push("--max-turns", String(p.claude.maxTurns));
   const model = p.model && isSafeModel(p.model) ? p.model : p.claude.model;
@@ -33849,16 +34008,16 @@ function oneLine(text, max) {
 }
 function shortPath(p, cwd) {
   if (typeof p !== "string" || !p) return "";
-  if (!isAbsolute5(p)) return p;
+  if (!isAbsolute6(p)) return p;
   for (const base of Array.isArray(cwd) ? cwd : [cwd]) {
-    const rel = relative3(base, p);
-    if (rel && !rel.startsWith("..") && !isAbsolute5(rel)) return rel;
+    const rel = relative4(base, p);
+    if (rel && !rel.startsWith("..") && !isAbsolute6(rel)) return rel;
   }
   return p;
 }
 function cwdVariants(cwd) {
   try {
-    const real2 = realpathSync8(cwd);
+    const real2 = realpathSync10(cwd);
     return real2 === cwd ? [cwd] : [cwd, real2];
   } catch {
     return [cwd];
@@ -34087,6 +34246,18 @@ function publishNudgeDecision(input2) {
 function isVanishedSession(result, stderr) {
   if (stderr.some((l) => /no conversation found/i.test(l))) return true;
   return !!result && result.subtype === "error_during_execution" && (result.num_turns ?? 0) === 0;
+}
+function isolationSettingsFor(opts, tmp, workDirs) {
+  let servers = [opts.entry];
+  try {
+    servers = loadConfig(opts.configFile).servers;
+  } catch (err) {
+    ;
+    (opts.log ?? (() => {
+    }))(`N\xE3o consegui ler o config para o isolamento entre projetos (${msgOf(err)}); seguem negadas as vagas e as conversas dos outros projetos.`);
+  }
+  const dirs = blockedDirsFor({ servers, entry: opts.entry, workDirs, workspaceRoot: workspaceRoot(opts.configFile), home: opts.home });
+  return writeIsolationSettings(join19(tmp, "isolamento.json"), dirs);
 }
 function msgOf(err) {
   return err instanceof Error ? err.message : String(err);
@@ -34370,8 +34541,12 @@ async function runInRepos(opts, job, w, h) {
   const { tag, instructions, sessionId, repos } = w;
   const { finish: finish2, redact, sink } = h;
   const input2 = { job, tag, repos, instructions, copy: w.copy, sync: w.sync ?? [], preparo: w.preparo ?? [] };
-  const tmp = mkdtempSync6(join18(os10.tmpdir(), "benflow-job-"));
-  const mcpConfigPath = join18(tmp, "mcp.json");
+  const tmp = mkdtempSync6(join19(os11.tmpdir(), "benflow-job-"));
+  const scratch = join19(tmp, "arquivos");
+  mkdirSync9(scratch, { mode: 448 });
+  const addDirs = [...repos.slice(1).map((r) => r.path), scratch];
+  const isolationSettings = isolationSettingsFor(opts, tmp, [...repos.map((r) => r.path), scratch]);
+  const mcpConfigPath = join19(tmp, "mcp.json");
   const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
   const mcpConfig = {
     mcpServers: {
@@ -34382,6 +34557,9 @@ async function runInRepos(opts, job, w, h) {
         env: {
           CHAMADOS_CONFIG: opts.configFile,
           CHAMADOS_ORG: entry.orgSlug ?? "",
+          // O projeto exato deste trabalho (endereço e slug): o mesmo slug pode estar no painel de teste e no de produção.
+          CHAMADOS_URL: entry.url,
+          CHAMADOS_PASTA_TRABALHO: scratch,
           CHAMADOS_EXECUTION_ID: String(job.executionId),
           CHAMADOS_TASK_NUMBER: String(job.taskNumber),
           // O trabalho deste MCP (cabeçalho X-Benflow-Trabalho): com vários ao mesmo tempo, o servidor sabe o card.
@@ -34401,21 +34579,22 @@ async function runInRepos(opts, job, w, h) {
       }
     }
   };
-  writeFileSync11(mcpConfigPath, JSON.stringify(mcpConfig, null, 2), { mode: 384 });
+  writeFileSync12(mcpConfigPath, JSON.stringify(mcpConfig, null, 2), { mode: 384 });
   const launch = opts.claudeLaunch ?? resolveClaudeLaunch(entry.claude.bin);
   const prompt = buildJobPrompt(input2);
   const systemRules = buildSystemRules(input2);
   let systemRulesFile = null;
   if (launch.shell) {
-    systemRulesFile = join18(tmp, "regras.txt");
-    writeFileSync11(systemRulesFile, systemRules, { mode: 384 });
+    systemRulesFile = join19(tmp, "regras.txt");
+    writeFileSync12(systemRulesFile, systemRules, { mode: 384 });
   }
   const args = buildClaudeArgs({
     prompt,
     systemRules,
     mcpConfigPath,
     claude: entry.claude,
-    addDirs: repos.slice(1).map((r) => r.path),
+    addDirs,
+    isolationSettings,
     allowedTools: allowedToolsFor(job, tag, w.copy),
     disallowedTools: disallowedToolsFor(job, tag),
     resume: sessionId,
@@ -34465,7 +34644,8 @@ async function runInRepos(opts, job, w, h) {
         systemRules,
         mcpConfigPath,
         claude: entry.claude,
-        addDirs: repos.slice(1).map((r) => r.path),
+        addDirs,
+        isolationSettings,
         allowedTools: allowedToolsFor(job, tag, w.copy),
         disallowedTools: disallowedToolsFor(job, tag),
         resume: session,
@@ -34495,7 +34675,8 @@ async function runInRepos(opts, job, w, h) {
       systemRules,
       mcpConfigPath,
       claude: entry.claude,
-      addDirs: repos.slice(1).map((r) => r.path),
+      addDirs,
+      isolationSettings,
       allowedTools: allowedToolsFor(fresh2, tag, w.copy),
       disallowedTools: disallowedToolsFor(fresh2, tag),
       resume: null,
@@ -34524,32 +34705,35 @@ async function runTesteJob(opts, job, h) {
   } catch (err) {
     log(`N\xE3o foi poss\xEDvel ler o chamado #${job.taskNumber} antes do teste: ${msgOf(err)}`);
   }
-  const tmp = mkdtempSync6(join18(os10.tmpdir(), "benflow-teste-"));
+  const tmp = mkdtempSync6(join19(os11.tmpdir(), "benflow-teste-"));
   try {
-    const work = join18(tmp, "teste");
+    const work = join19(tmp, "teste");
     mkdirSync9(work, { mode: 448 });
-    const mcpConfigPath = join18(tmp, "mcp.json");
+    const mcpConfigPath = join19(tmp, "mcp.json");
     const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
     const mcpEnv = {
       CHAMADOS_CONFIG: opts.configFile,
       CHAMADOS_ORG: entry.orgSlug ?? "",
+      // O projeto exato deste trabalho (endereço e slug): o mesmo slug pode estar no painel de teste e no de produção.
+      CHAMADOS_URL: entry.url,
       CHAMADOS_TESTE_ID: String(testId),
       CHAMADOS_TASK_NUMBER: String(job.taskNumber),
       CHAMADOS_TRABALHO_ID: String(job.id),
-      // A pasta do teste: o registrar_evidencia aceita os arquivos dela.
+      // A pasta do teste: o registrar_evidencia aceita os arquivos dela, e os prints e os anexos baixados ficam nela.
       CHAMADOS_PASTAS: JSON.stringify([work]),
+      CHAMADOS_PASTA_TRABALHO: work,
       ...job.qaEnvironment === "producao" ? { CHAMADOS_QA_PRODUCAO: "1" } : {},
       CHAMADOS_VIDEO: jobVideoMode(job)
     };
-    writeFileSync11(mcpConfigPath, JSON.stringify({ mcpServers: { benflow: { type: "stdio", command: mcpLaunch.command, args: mcpLaunch.args, env: mcpEnv } } }, null, 2), { mode: 384 });
+    writeFileSync12(mcpConfigPath, JSON.stringify({ mcpServers: { benflow: { type: "stdio", command: mcpLaunch.command, args: mcpLaunch.args, env: mcpEnv } } }, null, 2), { mode: 384 });
     const launch = opts.claudeLaunch ?? resolveClaudeLaunch(entry.claude.bin);
     const preparo = await prepareMachineFor(opts, job, [], h.sink);
     const prompt = [buildTestePrompt(job), ...preparo].join("\n");
     const systemRules = buildTesteRules({ instructions });
     let systemRulesFile = null;
     if (launch.shell) {
-      systemRulesFile = join18(tmp, "regras.txt");
-      writeFileSync11(systemRulesFile, systemRules, { mode: 384 });
+      systemRulesFile = join19(tmp, "regras.txt");
+      writeFileSync12(systemRulesFile, systemRules, { mode: 384 });
     }
     const args = buildClaudeArgs({
       prompt,
@@ -34557,6 +34741,7 @@ async function runTesteJob(opts, job, h) {
       mcpConfigPath,
       claude: entry.claude,
       disallowedTools: disallowedToolsFor(job),
+      isolationSettings: isolationSettingsFor(opts, tmp, [work]),
       resume: null,
       promptViaStdin: launch.shell,
       systemRulesFile,
@@ -34581,32 +34766,35 @@ async function runVideoEnvJob(opts, job, h) {
   } catch (err) {
     log(`N\xE3o foi poss\xEDvel ler o chamado #${job.taskNumber} antes da grava\xE7\xE3o: ${msgOf(err)}`);
   }
-  const tmp = mkdtempSync6(join18(os10.tmpdir(), "benflow-video-"));
+  const tmp = mkdtempSync6(join19(os11.tmpdir(), "benflow-video-"));
   try {
-    const work = join18(tmp, "video");
+    const work = join19(tmp, "video");
     mkdirSync9(work, { mode: 448 });
-    const mcpConfigPath = join18(tmp, "mcp.json");
+    const mcpConfigPath = join19(tmp, "mcp.json");
     const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
     const mcpEnv = {
       CHAMADOS_CONFIG: opts.configFile,
       CHAMADOS_ORG: entry.orgSlug ?? "",
+      // O projeto exato deste trabalho (endereço e slug): o mesmo slug pode estar no painel de teste e no de produção.
+      CHAMADOS_URL: entry.url,
       CHAMADOS_EXECUTION_ID: String(job.executionId),
       CHAMADOS_TASK_NUMBER: String(job.taskNumber),
       CHAMADOS_TRABALHO_ID: String(job.id),
       CHAMADOS_PASTAS: JSON.stringify([work]),
+      CHAMADOS_PASTA_TRABALHO: work,
       // Na produção o print e o vídeo podem abrir o endereço dela neste trabalho (o roteiro manda só navegar).
       ...job.videoTarget === "producao" ? { CHAMADOS_QA_PRODUCAO: "1" } : {},
       CHAMADOS_VIDEO: jobVideoMode(job)
     };
-    writeFileSync11(mcpConfigPath, JSON.stringify({ mcpServers: { benflow: { type: "stdio", command: mcpLaunch.command, args: mcpLaunch.args, env: mcpEnv } } }, null, 2), { mode: 384 });
+    writeFileSync12(mcpConfigPath, JSON.stringify({ mcpServers: { benflow: { type: "stdio", command: mcpLaunch.command, args: mcpLaunch.args, env: mcpEnv } } }, null, 2), { mode: 384 });
     const launch = opts.claudeLaunch ?? resolveClaudeLaunch(entry.claude.bin);
     const preparo = await prepareMachineFor(opts, job, [], h.sink);
     const prompt = [buildVideoEnvPrompt(job), ...preparo].join("\n");
     const systemRules = buildVideoEnvRules({ instructions });
     let systemRulesFile = null;
     if (launch.shell) {
-      systemRulesFile = join18(tmp, "regras.txt");
-      writeFileSync11(systemRulesFile, systemRules, { mode: 384 });
+      systemRulesFile = join19(tmp, "regras.txt");
+      writeFileSync12(systemRulesFile, systemRules, { mode: 384 });
     }
     const args = buildClaudeArgs({
       prompt,
@@ -34614,6 +34802,7 @@ async function runVideoEnvJob(opts, job, h) {
       mcpConfigPath,
       claude: entry.claude,
       disallowedTools: disallowedToolsFor(job),
+      isolationSettings: isolationSettingsFor(opts, tmp, [work]),
       resume: null,
       promptViaStdin: launch.shell,
       systemRulesFile,
@@ -34668,7 +34857,7 @@ async function runSugestoesJob(opts, job, finish2, redact) {
   let prompt = req.prompt;
   try {
     if (req.analyzeCode && req.codeRepos?.length) {
-      base = mkdtempSync6(join18(os10.tmpdir(), "benflow-codigo-"));
+      base = mkdtempSync6(join19(os11.tmpdir(), "benflow-codigo-"));
       for (const fullName of req.codeRepos) {
         if (ctrl.signal.aborted) break;
         const path2 = opts.entry.repos[fullName];
@@ -34690,7 +34879,7 @@ Pastas do c\xF3digo nesta m\xE1quina: ${checked.map((r, i) => `${r} = ${i === 0 
     }
     const wanted = (Array.isArray(req.files) ? req.files : []).filter((f) => f && Number.isSafeInteger(f.id) && f.id > 0).slice(0, MAX_SUGGESTION_FILES);
     if (wanted.length && !ctrl.signal.aborted) {
-      filesDir = mkdtempSync6(join18(os10.tmpdir(), "benflow-referencias-"));
+      filesDir = mkdtempSync6(join19(os11.tmpdir(), "benflow-referencias-"));
       const files = [];
       for (const f of wanted) {
         const name = typeof f.name === "string" ? f.name : "";
@@ -34858,9 +35047,9 @@ async function runConversa(opts, job, h) {
     repos.push({ fullName: name, path: got.path });
   }
   const text = jobInstruction({ ...job, type: "continuar" }) ?? "";
-  const tmp = mkdtempSync6(join18(os10.tmpdir(), "benflow-conversa-"));
+  const tmp = mkdtempSync6(join19(os11.tmpdir(), "benflow-conversa-"));
   try {
-    const filesDir = join18(tmp, "arquivos");
+    const filesDir = join19(tmp, "arquivos");
     mkdirSync9(filesDir, { mode: 448 });
     const files = [];
     for (const a of job.attachments ?? []) {
@@ -34873,9 +35062,9 @@ async function runConversa(opts, job, h) {
       }
     }
     if (!text && !files.length) return h.fail("A mensagem veio vazia. Nada foi mandado para o Claude.");
-    const mcpConfigPath = join18(tmp, "mcp.json");
+    const mcpConfigPath = join19(tmp, "mcp.json");
     const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
-    writeFileSync11(
+    writeFileSync12(
       mcpConfigPath,
       JSON.stringify(
         {
@@ -34887,6 +35076,10 @@ async function runConversa(opts, job, h) {
               env: {
                 CHAMADOS_CONFIG: opts.configFile,
                 CHAMADOS_ORG: entry.orgSlug ?? "",
+                // O projeto exato deste trabalho (endereço e slug): o mesmo slug pode estar no painel de teste e no de produção.
+                CHAMADOS_URL: entry.url,
+                // Pasta da conversa (isolamento por projeto): os anexos baixados e os prints ficam nela (está no --add-dir).
+                CHAMADOS_PASTA_TRABALHO: filesDir,
                 // PAINEL_NIVEL: o nível do turno (no consultar o MCP não registra o iniciar_execucao).
                 // PAINEL_DONO só quando o servidor diz que quem pede é o dono: sem a marca o MCP trata como colega (e
                 // deixa o cofre pessoal desta máquina fora da conversa).
@@ -34915,11 +35108,12 @@ async function runConversa(opts, job, h) {
     const systemRules = panel ? (orchestrating ? buildOrquestradorRules : buildPainelRules)({ orgName: job.orgName ?? null, ownerName: job.ownerName ?? null, panel, instructions: job.instructions ?? null }) : buildConversaRules({ orgName: job.orgName ?? null, ownerName: job.ownerName ?? null, instructions: job.instructions ?? null });
     let systemRulesFile = null;
     if (launch.shell) {
-      systemRulesFile = join18(tmp, "regras.txt");
-      writeFileSync11(systemRulesFile, systemRules, { mode: 384 });
+      systemRulesFile = join19(tmp, "regras.txt");
+      writeFileSync12(systemRulesFile, systemRules, { mode: 384 });
     }
     const exec = opts.exec ?? defaultExec;
     const remotes = (await Promise.all(repos.map((r) => gitRemotes(exec, r.path)))).flat();
+    const isolationSettings = isolationSettingsFor(opts, tmp, [...repos.map((r) => r.path), filesDir]);
     const perm = panel && level ? (orchestrating ? orquestradorPermissions : painelPermissions)(level, entry.claude, disallowedToolsFor(job)) : null;
     const extraEnv = { ...pushBlockEnv(remotes, opts.env ?? process.env), ...perm ? perm.extraEnv : {} };
     const argsFor = (sessionId2) => {
@@ -34929,9 +35123,10 @@ async function runConversa(opts, job, h) {
         systemRules,
         mcpConfigPath,
         claude: perm ? perm.claude : entry.claude,
-        // No turno de colega o claude só lê as pastas de trabalho: a pasta do turno entra sempre, porque é nela que
-        // o MCP salva os anexos de card que baixar.
-        addDirs: [...repos.slice(1).map((r) => r.path), ...files.length || colleague ? [filesDir] : []],
+        // O claude só lê as pastas de trabalho (isolamento por projeto, em qualquer nível): a pasta da conversa entra
+        // sempre, porque é nela que ficam os arquivos mandados e o MCP salva os anexos de card que baixar.
+        addDirs: [...repos.slice(1).map((r) => r.path), filesDir],
+        isolationSettings,
         disallowedTools: perm ? perm.disallowedTools : disallowedToolsFor(job),
         resume: sessionId2,
         promptViaStdin: launch.shell,
@@ -34979,7 +35174,7 @@ async function supervise(opts, job, cwd, args, finish2, redact, extraEnv = {}, l
     for (const l of lines2) pending.push({ ...l, text: redact(l.text), ...l.diff ? { diff: { ...l.diff, text: redact(l.diff.text) } } : {} });
   };
   const env = sanitizeChildEnv(
-    { ...opts.env ?? process.env, CHAMADOS_ORG: entry.orgSlug ?? "", BENFLOW_EXECUTOR: "1", npm_config_yes: "false", ...extraEnv },
+    { ...opts.env ?? process.env, CHAMADOS_ORG: entry.orgSlug ?? "", CHAMADOS_URL: entry.url, BENFLOW_EXECUTOR: "1", npm_config_yes: "false", ...extraEnv },
     entry.token
   );
   const detached = process.platform !== "win32";
@@ -35740,9 +35935,9 @@ var Executor = class {
 };
 
 // connector/mcp.ts
-import { closeSync as closeSync3, mkdirSync as mkdirSync10, mkdtempSync as mkdtempSync7, openSync as openSync3, readFileSync as readFileSync15, readSync, realpathSync as realpathSync9, rmSync as rmSync11, statSync as statSync15 } from "node:fs";
-import os11 from "node:os";
-import { basename as basename5, extname as extname3, isAbsolute as isAbsolute6, join as join19, resolve as resolve8, sep as sep5 } from "node:path";
+import { closeSync as closeSync3, mkdirSync as mkdirSync10, mkdtempSync as mkdtempSync7, openSync as openSync3, readFileSync as readFileSync15, readSync, realpathSync as realpathSync11, rmSync as rmSync11, statSync as statSync15 } from "node:fs";
+import os12 from "node:os";
+import { basename as basename5, extname as extname3, isAbsolute as isAbsolute7, join as join20, resolve as resolve9, sep as sep5 } from "node:path";
 
 // ../benflow/node_modules/zod/v3/helpers/util.js
 var util;
@@ -43227,7 +43422,7 @@ var Protocol = class {
           return;
         }
         const pollInterval = task2.pollInterval ?? this._options?.defaultTaskPollInterval ?? 1e3;
-        await new Promise((resolve10) => setTimeout(resolve10, pollInterval));
+        await new Promise((resolve11) => setTimeout(resolve11, pollInterval));
         options?.signal?.throwIfAborted();
       }
     } catch (error62) {
@@ -43244,7 +43439,7 @@ var Protocol = class {
    */
   request(request, resultSchema, options) {
     const { relatedRequestId, resumptionToken, onresumptiontoken, task, relatedTask } = options ?? {};
-    return new Promise((resolve10, reject) => {
+    return new Promise((resolve11, reject) => {
       const earlyReject = (error62) => {
         reject(error62);
       };
@@ -43322,7 +43517,7 @@ var Protocol = class {
           if (!parseResult.success) {
             reject(parseResult.error);
           } else {
-            resolve10(parseResult.data);
+            resolve11(parseResult.data);
           }
         } catch (error62) {
           reject(error62);
@@ -43583,12 +43778,12 @@ var Protocol = class {
       }
     } catch {
     }
-    return new Promise((resolve10, reject) => {
+    return new Promise((resolve11, reject) => {
       if (signal.aborted) {
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
         return;
       }
-      const timeoutId = setTimeout(resolve10, interval);
+      const timeoutId = setTimeout(resolve11, interval);
       signal.addEventListener("abort", () => {
         clearTimeout(timeoutId);
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
@@ -44679,7 +44874,7 @@ var McpServer = class {
     let task = createTaskResult.task;
     const pollInterval = task.pollInterval ?? 5e3;
     while (task.status !== "completed" && task.status !== "failed" && task.status !== "cancelled") {
-      await new Promise((resolve10) => setTimeout(resolve10, pollInterval));
+      await new Promise((resolve11) => setTimeout(resolve11, pollInterval));
       const updatedTask = await extra.taskStore.getTask(taskId);
       if (!updatedTask) {
         throw new McpError(ErrorCode.InternalError, `Task ${taskId} not found during polling`);
@@ -45343,19 +45538,19 @@ var StdioServerTransport = class {
     this.onclose?.();
   }
   send(message) {
-    return new Promise((resolve10) => {
+    return new Promise((resolve11) => {
       const json2 = serializeMessage(message);
       if (this._stdout.write(json2)) {
-        resolve10();
+        resolve11();
       } else {
-        this._stdout.once("drain", resolve10);
+        this._stdout.once("drain", resolve11);
       }
     });
   }
 };
 
 // connector/gravacao.ts
-import { writeFileSync as writeFileSync12 } from "node:fs";
+import { writeFileSync as writeFileSync13 } from "node:fs";
 
 // connector/webm.ts
 var ID = {
@@ -45906,7 +46101,7 @@ async function recordNavigation(conn, req) {
     const totalSlots = Math.max(1, Math.ceil(durationMs * RECORD_FPS / 1e3));
     const { frames, width, height } = await encode3(conn, slots, totalSlots);
     const webm = buildWebm({ width, height, durationMs: totalSlots * 1e3 / RECORD_FPS, frames });
-    writeFileSync12(req.out, webm, { mode: 384 });
+    writeFileSync13(req.out, webm, { mode: 384 });
     return { path: req.out, width, height, durationMs: Math.round(totalSlots * 1e3 / RECORD_FPS), bytes: webm.length, url: where2?.url ?? req.url, title: where2?.title ?? "", truncated };
   } finally {
     recording = false;
@@ -46267,7 +46462,7 @@ function posixLower(p) {
   return p.split(sep5).join("/").toLowerCase();
 }
 function isSensitivePath(fullPath) {
-  const home = posixLower(os11.homedir()).replace(/\/+$/, "");
+  const home = posixLower(os12.homedir()).replace(/\/+$/, "");
   const lower = posixLower(fullPath);
   const name = lower.split("/").pop() ?? "";
   if (SECRET_DIRS.some((d) => lower === `${home}/${d}` || lower.startsWith(`${home}/${d}/`))) return true;
@@ -46299,7 +46494,7 @@ function isImageData(head) {
 }
 function realOrNull(p) {
   try {
-    return realpathSync9.native(p);
+    return realpathSync11.native(p);
   } catch {
     return null;
   }
@@ -46310,7 +46505,7 @@ function isInsideFolder(root, target) {
   return t === r || t.startsWith(`${r}/`);
 }
 function resolveEvidenceFile(input2, opts) {
-  const abs = isAbsolute6(input2) ? input2 : resolve8(opts.cwd, input2);
+  const abs = isAbsolute7(input2) ? input2 : resolve9(opts.cwd, input2);
   const real2 = realOrNull(abs);
   if (!real2) throw new Error(`Arquivo n\xE3o encontrado: ${abs}`);
   const st = statSync15(real2);
@@ -46338,7 +46533,7 @@ function resolveEvidenceFile(input2, opts) {
   return { path: real2, upload: { name: basename5(real2), data: Buffer.from(opts.redact(text), "utf8"), type: guessMime(real2) } };
 }
 function resolveAttachmentFile(input2, opts) {
-  const abs = isAbsolute6(input2) ? input2 : resolve8(opts.cwd, input2.replace(/^~(?=$|\/)/, os11.homedir()));
+  const abs = isAbsolute7(input2) ? input2 : resolve9(opts.cwd, input2.replace(/^~(?=$|\/)/, os12.homedir()));
   const real2 = realOrNull(abs);
   if (!real2) throw new Error(`Arquivo n\xE3o encontrado: ${abs}`);
   const st = statSync15(real2);
@@ -46361,15 +46556,19 @@ function parseFolders(raw) {
   if (!raw) return [];
   try {
     const list = JSON.parse(raw);
-    return Array.isArray(list) ? list.filter((p) => typeof p === "string" && isAbsolute6(p)).slice(0, 20) : [];
+    return Array.isArray(list) ? list.filter((p) => typeof p === "string" && isAbsolute7(p)).slice(0, 20) : [];
   } catch {
     return [];
   }
 }
-function defaultEvidenceRoots(entry, cwd, extra = []) {
-  const home = realOrNull(os11.homedir()) ?? os11.homedir();
-  const roots = [...Object.values(entry.repos), os11.tmpdir()];
-  if (process.platform !== "win32") roots.push("/tmp");
+function defaultEvidenceRoots(entry, cwd, extra = [], workDir = null) {
+  const home = realOrNull(os12.homedir()) ?? os12.homedir();
+  const roots = [...Object.values(entry.repos)];
+  if (workDir) roots.push(workDir);
+  else {
+    roots.push(os12.tmpdir());
+    if (process.platform !== "win32") roots.push("/tmp");
+  }
   const realCwd = realOrNull(cwd);
   if (realCwd && !isInsideFolder(realCwd, home)) roots.push(realCwd);
   for (const e of extra) if (e) roots.push(e);
@@ -46404,6 +46603,8 @@ function createChamadosMcpServer(deps) {
   const personalVault = painelGuest ? null : entry.personalVault;
   const noPersonalVault = painelGuest ? "O cofre pessoal \xE9 do dono deste Claude e n\xE3o entra na conversa com um colega." : "Cofre pessoal n\xE3o configurado neste conector.";
   const painelFilesDir = painelMode ? benflowEnv(env, "PAINEL_ARQUIVOS") : null;
+  const rawWorkDir = jobMode || testMode || conversaMode || painelMode ? benflowEnv(env, "PASTA_TRABALHO") : null;
+  const workDir = rawWorkDir && isAbsolute7(rawWorkDir) && statSync15(rawWorkDir, { throwIfNoEntry: false })?.isDirectory() ? rawWorkDir : null;
   let downloadDir = deps.downloadDir ?? null;
   const redact = (text) => entry.token.length >= 8 ? text.split(entry.token).join("***") : text;
   const terminalMode = !jobMode && !testMode && !conversaMode && !painelMode;
@@ -46511,12 +46712,13 @@ ${text}` : text;
     };
   }
   function ensureDownloadDir() {
-    if (!downloadDir && painelFilesDir && statSync15(painelFilesDir, { throwIfNoEntry: false })?.isDirectory()) {
-      downloadDir = join19(painelFilesDir, "anexos");
+    const base = painelFilesDir && statSync15(painelFilesDir, { throwIfNoEntry: false })?.isDirectory() ? painelFilesDir : workDir;
+    if (!downloadDir && base) {
+      downloadDir = join20(base, "anexos");
       mkdirSync10(downloadDir, { recursive: true, mode: 448 });
     }
     if (!downloadDir) {
-      downloadDir = mkdtempSync7(join19(os11.tmpdir(), "benflow-anexos-"));
+      downloadDir = mkdtempSync7(join20(os12.tmpdir(), "benflow-anexos-"));
       const dir = downloadDir;
       process.once("exit", () => rmSync11(dir, { recursive: true, force: true }));
     }
@@ -46774,7 +46976,7 @@ ${text}` : text;
       let file2 = null;
       if (a.caminho_arquivo) {
         const here = cwd();
-        const roots = deps.evidenceRoots ? deps.evidenceRoots() : defaultEvidenceRoots(entry, here, [downloadDir, ...workFolders]);
+        const roots = deps.evidenceRoots ? deps.evidenceRoots() : defaultEvidenceRoots(entry, here, [downloadDir, captureDir, ...workFolders], workDir);
         file2 = resolveEvidenceFile(a.caminho_arquivo, { cwd: here, roots, tipo: a.tipo, redact });
       }
       if (a.tipo === "captura" && !file2) throw new Error("Para captura, informe caminho_arquivo com a imagem.");
@@ -47126,8 +47328,12 @@ ${wrapData("nota", note.content)}`;
   }
   const MSG_URL_SCREEN = qaProducao ? "Use o endere\xE7o de produ\xE7\xE3o (ou de homologa\xE7\xE3o) do projeto cadastrado em Ambientes, ou o servidor de desenvolvimento desta m\xE1quina. Outros sites ficam de fora." : "Use o servidor de desenvolvimento desta m\xE1quina (http://localhost:porta/caminho, 127.0.0.1 ou [::1]) ou o endere\xE7o de homologa\xE7\xE3o do projeto cadastrado em Ambientes. A produ\xE7\xE3o e outros sites ficam de fora.";
   function ensureCaptureDir() {
+    if (!captureDir && workDir) {
+      captureDir = join20(workDir, "capturas");
+      mkdirSync10(captureDir, { recursive: true, mode: 448 });
+    }
     if (!captureDir) {
-      captureDir = mkdtempSync7(join19(os11.tmpdir(), "benflow-capturas-"));
+      captureDir = mkdtempSync7(join20(os12.tmpdir(), "benflow-capturas-"));
       const dir = captureDir;
       process.once("exit", () => rmSync11(dir, { recursive: true, force: true }));
     }
@@ -47164,7 +47370,7 @@ ${wrapData("nota", note.content)}`;
       const problem = actionsProblem(acoes);
       if (problem) throw new Error(problem);
       const work = a.registrar === false ? null : await workFor(a.numero);
-      const out = join19(ensureCaptureDir(), captureFileName(a.titulo, ++captureSeq));
+      const out = join20(ensureCaptureDir(), captureFileName(a.titulo, ++captureSeq));
       const shot = await capture({ url: a.url, out, celular: a.celular, paginaInteira: a.pagina_inteira, esperarMs: a.esperar_ms, acoes, login: loginFor });
       const size = `${shot.width} x ${shot.height}${a.celular ? ", celular" : ""}`;
       const page = `A p\xE1gina ficou em ${plain(shot.url)}${shot.title ? `, com o t\xEDtulo ${inlineData("titulo", shot.title, 150)}` : ""}.`;
@@ -47217,7 +47423,7 @@ ${wrapData("nota", note.content)}`;
       const work = a.registrar === false ? null : await workFor(a.numero);
       const tell = (stage, reason) => work === null || testMode ? Promise.resolve() : client.videoProgress(work.id, { stage, reason: reason ?? null }).then(() => void 0, () => void 0);
       await tell("gravando");
-      const out = join19(ensureCaptureDir(), videoFileName(a.titulo, ++videoSeq));
+      const out = join20(ensureCaptureDir(), videoFileName(a.titulo, ++videoSeq));
       let video;
       try {
         video = await record2({ url: a.url, out, titulo: a.titulo, celular: a.celular, passos: a.passos, allowUrl, login: loginFor });
@@ -47482,7 +47688,7 @@ function parseRepoArgs(values) {
     const eq = raw.indexOf("=");
     if (eq <= 0) throw new Error(`Use --repo owner/nome=/caminho (recebido: ${raw}).`);
     const name = raw.slice(0, eq).trim();
-    const path2 = resolve9(expandHome(raw.slice(eq + 1).trim()));
+    const path2 = resolve10(expandHome(raw.slice(eq + 1).trim()));
     if (!REPO_RE2.test(name)) throw new Error(`Reposit\xF3rio inv\xE1lido: ${name}. Use owner/nome.`);
     if (!isDir2(path2)) throw new Error(`A pasta do reposit\xF3rio ${name} n\xE3o existe: ${path2}`);
     repos[name] = path2;
@@ -47513,12 +47719,12 @@ async function cmdConfigurar(args, deps, io) {
   const repos = parseRepoArgs(values.repo ?? []);
   let vault = null;
   if (values.cofre) {
-    vault = resolve9(expandHome(values.cofre.trim()));
+    vault = resolve10(expandHome(values.cofre.trim()));
     if (!isDir2(vault)) throw new Error(`A pasta do cofre pessoal n\xE3o existe: ${vault}`);
   }
   let projectVault = null;
   if (values["cofre-projeto"]) {
-    projectVault = resolve9(expandHome(values["cofre-projeto"].trim()));
+    projectVault = resolve10(expandHome(values["cofre-projeto"].trim()));
     if (!isDir2(projectVault)) throw new Error(`A pasta do cofre do projeto n\xE3o existe: ${projectVault}`);
   }
   const file2 = configPath(env);
@@ -47651,7 +47857,7 @@ function executorTarget(self, fs) {
   if (installed && (isOlderVersion(mine, installed.version) || !existsSync15(self))) return { script: installed.script, version: installed.version, managed: true };
   let real2 = self;
   try {
-    real2 = realpathSync10(self);
+    real2 = realpathSync12(self);
   } catch {
   }
   return { script: real2, version: mine, managed: true };
@@ -47661,8 +47867,8 @@ function refreshStableDir(deps) {
   const self = deps.selfScript ?? process.argv[1];
   if (!self || !isClaudeManaged(self, fs)) return null;
   const target = executorTarget(self, fs);
-  if (!refreshStablePluginDir(dirname11(dirname11(target.script)), { dir: deps.benflowDir, platform: deps.platform })) return null;
-  return join20(stablePluginDir(deps.benflowDir), "server", "benflow.mjs");
+  if (!refreshStablePluginDir(dirname12(dirname12(target.script)), { dir: deps.benflowDir, platform: deps.platform })) return null;
+  return join21(stablePluginDir(deps.benflowDir), "server", "benflow.mjs");
 }
 async function superviseExecutar(args, deps, io) {
   const env = deps.env ?? process.env;
@@ -47686,7 +47892,7 @@ async function superviseLoop(args, deps, io, ctx) {
   const { env, fs, spawnFn, platform, self, restarts } = ctx;
   for (; ; ) {
     const target = executorTarget(self, fs);
-    if (target.managed) refreshStablePluginDir(dirname11(dirname11(target.script)), { dir: deps.benflowDir, platform });
+    if (target.managed) refreshStablePluginDir(dirname12(dirname12(target.script)), { dir: deps.benflowDir, platform });
     const launch = nodeScriptLaunch(target.script, ["executar", "--filho", ...args]);
     let child;
     try {
@@ -47802,7 +48008,7 @@ async function cmdCofre(args, deps, io) {
   const file2 = readableConfigPath(configPath(env));
   const cfg = loadConfig(file2, io.err);
   const entry = pickServer(cfg, values.org ?? orgFromEnv(env), values.url ?? null);
-  const dir = values.pasta ? resolve9(expandHome(values.pasta.trim())) : entry.projectVault;
+  const dir = values.pasta ? resolve10(expandHome(values.pasta.trim())) : entry.projectVault;
   if (!dir) throw new Error('Informe a pasta do cofre: cofre enviar --pasta "/caminho/da/pasta/do/Obsidian/do/projeto".');
   if (!isDir2(dir)) throw new Error(`A pasta do cofre n\xE3o existe nesta m\xE1quina: ${dir}`);
   io.out(`Lendo as notas de ${dir}...`);
@@ -47918,7 +48124,7 @@ function isMain() {
   const arg = process.argv[1];
   if (!arg) return false;
   try {
-    return realpathSync10(arg) === realpathSync10(fileURLToPath3(import.meta.url));
+    return realpathSync12(arg) === realpathSync12(fileURLToPath3(import.meta.url));
   } catch {
     return false;
   }
