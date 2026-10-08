@@ -7766,7 +7766,11 @@ var CONNECTOR_CAPABILITIES = [
   "enviar-branch",
   // Ambiente local em verde ou vermelho (local.ts) e o Atualizar e o Subir o ambiente de Conexões (localUp.ts): o pedido
   // chega na resposta do batimento; o conector confere os endereços na hora e, no Subir, religa as receitas que caíram.
-  "ambiente-local"
+  "ambiente-local",
+  // Dar acesso a esta máquina (repoProvision.ts): sem acesso a um repositório, o conector cria a chave da máquina para
+  // ele e manda a pública no batimento (repoKeys); o Testar e continuar chega na resposta do batimento (repoChecks) e o
+  // conector prepara o repositório (clona ou usa a cópia) e responde no batimento seguinte (repoChecked).
+  "acesso-repo"
 ];
 var PROJECT_VAULT_CAPABILITY = "cofre-projeto";
 var JOB_REQUEST_CAPS = ["conversa-painel", "paralelo", "orquestrador", "sugestoes-arquivos"];
@@ -8306,7 +8310,7 @@ var AgentClient = class _AgentClient {
 
 // connector/executor.ts
 import { execFile as execFile2, execFileSync, spawn as spawn6 } from "node:child_process";
-import { existsSync as existsSync14, mkdirSync as mkdirSync9, mkdtempSync as mkdtempSync6, readFileSync as readFileSync13, realpathSync as realpathSync8, rmSync as rmSync9, statSync as statSync14, writeFileSync as writeFileSync11 } from "node:fs";
+import { existsSync as existsSync14, mkdirSync as mkdirSync9, mkdtempSync as mkdtempSync6, readFileSync as readFileSync14, realpathSync as realpathSync8, rmSync as rmSync10, statSync as statSync14, writeFileSync as writeFileSync11 } from "node:fs";
 import { createRequire } from "node:module";
 import os10 from "node:os";
 import { isAbsolute as isAbsolute5, join as join18, relative as relative3, resolve as resolve7 } from "node:path";
@@ -33343,8 +33347,8 @@ import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.42") {
-    cached2 = "0.1.42";
+  if ("0.1.43") {
+    cached2 = "0.1.43";
     return cached2;
   }
   let dir = dirname9(fileURLToPath(import.meta.url));
@@ -33496,7 +33500,7 @@ function toolChange(name, input2, path2) {
 }
 
 // connector/repoProvision.ts
-import { existsSync as existsSync13, mkdirSync as mkdirSync8 } from "node:fs";
+import { existsSync as existsSync13, mkdirSync as mkdirSync8, readdirSync as readdirSync4, readFileSync as readFileSync13, renameSync as renameSync4, rmSync as rmSync9 } from "node:fs";
 import os9 from "node:os";
 import { basename as basename4, dirname as dirname10, join as join17 } from "node:path";
 var REPO_RE = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
@@ -33504,7 +33508,46 @@ var CLONE_TIMEOUT_MS = 15 * 6e4;
 var MSG_NO_ACCESS_PREFIX = "Sem acesso ao reposit\xF3rio";
 function msgNoAccess(name, detail) {
   const why = detail ? ` (${detail})` : "";
-  return `${MSG_NO_ACCESS_PREFIX} ${name} pelo GitHub desta m\xE1quina${why}. Quem administra o reposit\xF3rio precisa dar acesso \xE0 conta do GitHub usada aqui; depois \xE9 s\xF3 reiniciar o trabalho.`;
+  return `${MSG_NO_ACCESS_PREFIX} ${name} pelo GitHub desta m\xE1quina${why}. Resolva em Ver o erro e resolver > Dar acesso a esta m\xE1quina.`;
+}
+function repoKeyPath(name, home = os9.homedir()) {
+  return join17(home, ".benflow", "ssh", `github-${name.toLowerCase().replace(/[^a-z0-9._-]+/g, "-")}`);
+}
+async function ensureRepoKey(name, exec, home = os9.homedir()) {
+  const path2 = repoKeyPath(name, home);
+  if (!existsSync13(`${path2}.pub`)) {
+    try {
+      mkdirSync8(dirname10(path2), { recursive: true, mode: 448 });
+    } catch {
+      return null;
+    }
+    const res = await exec("ssh-keygen", ["-q", "-t", "ed25519", "-N", "", "-C", `benflow ${os9.hostname()} ${name}`, "-f", path2]);
+    if (res.code !== 0) return null;
+  }
+  try {
+    return readFileSync13(`${path2}.pub`, "utf8").trim();
+  } catch {
+    return null;
+  }
+}
+function listRepoKeys(home = os9.homedir()) {
+  const dir = join17(home, ".benflow", "ssh");
+  let files = [];
+  try {
+    files = readdirSync4(dir).filter((f) => f.startsWith("github-") && f.endsWith(".pub"));
+  } catch {
+    return [];
+  }
+  const out = [];
+  for (const f of files.sort()) {
+    try {
+      const publicKey = readFileSync13(join17(dir, f), "utf8").trim();
+      const repo = publicKey.split(/\s+/).pop() ?? "";
+      if (REPO_RE.test(repo) && /^ssh-ed25519 \S+/.test(publicKey)) out.push({ repo, publicKey });
+    } catch {
+    }
+  }
+  return out.slice(0, 50);
 }
 function cloneBase(servers) {
   for (const s2 of servers) {
@@ -33530,25 +33573,70 @@ function gitReason(stderr) {
   const main = lines2.find((l) => /not found|denied|permission|authentication|could not read|403|404/i.test(l)) ?? lines2[0] ?? "";
   return main.replace(/^(remote|fatal):\s*/i, "").slice(0, 200);
 }
-async function provisionRepo(name, deps) {
+async function isUsableClone(path2, name, exec) {
+  if (!existsSync13(join17(path2, ".git"))) return false;
+  const head = await exec("git", ["-C", path2, "rev-parse", "--verify", "--quiet", "HEAD"]);
+  if (head.code !== 0) return false;
+  const origin = await exec("git", ["-C", path2, "remote", "get-url", "origin"]);
+  return origin.code === 0 && originMatches(origin.stdout, name);
+}
+var sshCommand = (key) => `ssh${key ? ` -i "${key}" -o IdentitiesOnly=yes` : ""} -o BatchMode=yes -o StrictHostKeyChecking=accept-new`;
+async function cloneInto(name, target, exec, home) {
+  const temp = `${target}.clonando-${process.pid}`;
+  const key = repoKeyPath(name, home);
+  const attempts = [
+    { url: `https://github.com/${name}.git`, env: { GIT_TERMINAL_PROMPT: "0", GCM_INTERACTIVE: "never" }, key: null },
+    { url: `git@github.com:${name}.git`, env: { GIT_SSH_COMMAND: sshCommand(null) }, key: null }
+  ];
+  if (existsSync13(key)) attempts.push({ url: `git@github.com:${name}.git`, env: { GIT_SSH_COMMAND: sshCommand(key) }, key });
+  let reason = "";
+  for (const a of attempts) {
+    rmSync9(temp, { recursive: true, force: true });
+    const res = await exec("git", ["clone", "--quiet", a.url, temp], { timeoutMs: CLONE_TIMEOUT_MS, env: a.env });
+    if (res.code === 0) {
+      if (a.key) await exec("git", ["-C", temp, "config", "core.sshCommand", `ssh -i "${a.key}" -o IdentitiesOnly=yes`]);
+      try {
+        renameSync4(temp, target);
+      } catch (err) {
+        rmSync9(temp, { recursive: true, force: true });
+        return { ok: false, reason: `n\xE3o consegui mover o clone para ${target}: ${err instanceof Error ? err.message : String(err)}` };
+      }
+      return { ok: true };
+    }
+    reason ||= gitReason(res.stderr);
+    if (a.key) reason = gitReason(res.stderr) || reason;
+  }
+  rmSync9(temp, { recursive: true, force: true });
+  return { ok: false, reason };
+}
+var inflight = /* @__PURE__ */ new Map();
+function provisionRepo(name, deps) {
+  const key = `${deps.configFile}|${name.toLowerCase()}`;
+  const running = inflight.get(key);
+  if (running) return running;
+  const job = doProvision(name, deps).finally(() => inflight.delete(key));
+  inflight.set(key, job);
+  return job;
+}
+async function doProvision(name, deps) {
   if (!REPO_RE.test(name)) return { ok: false, error: `Reposit\xF3rio inv\xE1lido: ${name}.` };
   const log = deps.log ?? (() => {
   });
+  const home = deps.home ?? os9.homedir();
   let servers = [];
   try {
     servers = loadConfig(deps.configFile).servers;
   } catch {
     servers = [];
   }
+  const mapped = deps.entry.repos?.[name];
+  if (mapped && await isUsableClone(mapped, name, deps.exec)) return { ok: true, path: mapped, how: "outra_entrada" };
   let path2 = findLocalRepos(servers, deps.entry, [name]).found[name] ?? null;
   let how = "outra_entrada";
   if (!path2) {
     const base = cloneBase([deps.entry, ...servers]);
     const manual = join17(base, basename4(name));
-    if (existsSync13(join17(manual, ".git"))) {
-      const origin = await deps.exec("git", ["-C", manual, "remote", "get-url", "origin"]);
-      if (origin.code === 0 && originMatches(origin.stdout, name)) path2 = manual;
-    }
+    if (await isUsableClone(manual, name, deps.exec)) path2 = manual;
   }
   if (!path2) {
     const base = cloneBase([deps.entry, ...servers]);
@@ -33559,8 +33647,12 @@ async function provisionRepo(name, deps) {
       return { ok: false, error: `N\xE3o consegui criar a pasta ${base} para clonar ${name}: ${err instanceof Error ? err.message : String(err)}` };
     }
     log(`Clonando ${name} em ${target}...`);
-    const res = await deps.exec("git", ["clone", "--quiet", `https://github.com/${name}.git`, target], { timeoutMs: CLONE_TIMEOUT_MS });
-    if (res.code !== 0) return { ok: false, error: msgNoAccess(name, gitReason(res.stderr)) };
+    const res = await cloneInto(name, target, deps.exec, home);
+    if (!res.ok) {
+      const pub = await ensureRepoKey(name, deps.exec, home);
+      if (pub) log(`Sem acesso a ${name}. Chave desta m\xE1quina para colar no GitHub: ${pub}`);
+      return { ok: false, error: msgNoAccess(name, res.reason) };
+    }
     path2 = target;
     how = "clonado";
   }
@@ -33583,7 +33675,14 @@ async function provisionRepo(name, deps) {
 
 // connector/executor.ts
 var defaultExec = (cmd, args, opts = {}) => new Promise((done) => {
-  const options = { cwd: opts.cwd, timeout: opts.timeoutMs ?? 15e3, maxBuffer: 4 * 1024 * 1024, windowsHide: true, windowsVerbatimArguments: opts.verbatim === true };
+  const options = {
+    cwd: opts.cwd,
+    timeout: opts.timeoutMs ?? 15e3,
+    maxBuffer: 4 * 1024 * 1024,
+    windowsHide: true,
+    windowsVerbatimArguments: opts.verbatim === true,
+    ...opts.env ? { env: { ...process.env, ...opts.env } } : {}
+  };
   execFile2(cmd, args, options, (err, stdout, stderr) => {
     const code = err ? typeof err.code === "number" ? err.code : -1 : 0;
     done({ code, stdout: String(stdout ?? ""), stderr: String(stderr ?? "") });
@@ -33663,7 +33762,7 @@ function claudeConfigOf(env = process.env, home = os10.homedir()) {
   let settings = {};
   try {
     const dir = env.CLAUDE_CONFIG_DIR?.trim() || join18(home, ".claude");
-    const parsed = JSON.parse(readFileSync13(join18(dir, "settings.json"), "utf8"));
+    const parsed = JSON.parse(readFileSync14(join18(dir, "settings.json"), "utf8"));
     if (parsed && typeof parsed === "object") settings = parsed;
   } catch {
     settings = {};
@@ -33706,7 +33805,9 @@ async function collectHeartbeat(entry, busyExecutionId, deps) {
     machineId: deps.machineId ?? null,
     platform: deps.platform ?? process.platform,
     headless: deps.headless ? deps.headless() : detectHeadless(deps.env ?? process.env, deps.platform ?? process.platform),
-    ...deps.quota ? { quota: deps.quota } : {}
+    ...deps.quota ? { quota: deps.quota } : {},
+    repoKeys: listRepoKeys(deps.home),
+    cloneDir: cloneBase([entry])
   };
 }
 var EFFORT_LEVELS = ["low", "medium", "high", "xhigh", "max"];
@@ -34116,6 +34217,10 @@ async function runJob(opts, job) {
   const repos = [];
   for (const name of names) {
     let path2 = entry.repos[name];
+    if (path2 && !(existsSync14(path2) && statSync14(path2).isDirectory())) {
+      log(`A pasta de ${name} (${path2}) n\xE3o existe mais: preparando o reposit\xF3rio de novo.`);
+      path2 = void 0;
+    }
     if (!path2) {
       const notify = (text) => sink.log([{ at: (/* @__PURE__ */ new Date()).toISOString(), kind: "texto", text }], {}).catch(() => {
       });
@@ -34402,7 +34507,7 @@ async function runInRepos(opts, job, w, h) {
     });
     return await close(await supervise(opts, fresh2, repos[0].path, retryArgs, fin, redact, extraEnv, launch, launch.shell ? retryPrompt : null, false, sink));
   } finally {
-    rmSync9(tmp, { recursive: true, force: true });
+    rmSync10(tmp, { recursive: true, force: true });
   }
 }
 async function runTesteJob(opts, job, h) {
@@ -34461,7 +34566,7 @@ async function runTesteJob(opts, job, h) {
     log(`Trabalho ${job.id}: testando o chamado #${job.taskNumber} em ${job.qaEnvironment === "producao" ? "produ\xE7\xE3o" : "homologa\xE7\xE3o"} (teste #${testId}).`);
     return await supervise(opts, job, work, args, h.finish, h.redact, pushBlockEnv([], opts.env ?? process.env), launch, launch.shell ? prompt : null, false, h.sink);
   } finally {
-    rmSync9(tmp, { recursive: true, force: true });
+    rmSync10(tmp, { recursive: true, force: true });
   }
 }
 async function runVideoEnvJob(opts, job, h) {
@@ -34518,7 +34623,7 @@ async function runVideoEnvJob(opts, job, h) {
     log(`Trabalho ${job.id}: gravando o v\xEDdeo de evid\xEAncia do chamado #${job.taskNumber} ${job.videoTarget === "producao" ? "na produ\xE7\xE3o" : "na homologa\xE7\xE3o"}.`);
     return await supervise(opts, job, work, args, h.finish, h.redact, pushBlockEnv([], opts.env ?? process.env), launch, launch.shell ? prompt : null, false, h.sink);
   } finally {
-    rmSync9(tmp, { recursive: true, force: true });
+    rmSync10(tmp, { recursive: true, force: true });
   }
 }
 var SUGGESTIONS_CANCEL_POLL_MS = 5e3;
@@ -34605,7 +34710,7 @@ Pastas do c\xF3digo nesta m\xE1quina: ${checked.map((r, i) => `${r} = ${i === 0 
       const got = files.filter((f) => f.path).length;
       if (got) log(`Trabalho ${job.id}: ${got === 1 ? "1 refer\xEAncia baixada" : `${got} refer\xEAncias baixadas`} para o Claude abrir.`);
       if (!got) {
-        rmSync9(filesDir, { recursive: true, force: true });
+        rmSync10(filesDir, { recursive: true, force: true });
         filesDir = null;
       }
     }
@@ -34651,8 +34756,8 @@ Pastas do c\xF3digo nesta m\xE1quina: ${checked.map((r, i) => `${r} = ${i === 0 
     clearInterval(poll);
     opts.signal?.removeEventListener("abort", onStop);
     for (const close of closers) await close().catch(() => void 0);
-    if (base) rmSync9(base, { recursive: true, force: true });
-    if (filesDir) rmSync9(filesDir, { recursive: true, force: true });
+    if (base) rmSync10(base, { recursive: true, force: true });
+    if (filesDir) rmSync10(filesDir, { recursive: true, force: true });
   }
 }
 async function runCofreJob(opts, job, finish2, redact) {
@@ -34745,7 +34850,13 @@ async function runConversa(opts, job, h) {
   for (const [fullName, path2] of list) {
     if (existsSync14(path2) && statSync14(path2).isDirectory()) repos.push({ fullName, path: path2 });
   }
-  if (!repos.length) return noRepo(`A pasta do reposit\xF3rio ${list[0][0]} n\xE3o existe: ${list[0][1]}`);
+  if (!repos.length) {
+    const [name, missing2] = list[0];
+    log(`A pasta de ${name} (${missing2}) n\xE3o existe mais: preparando o reposit\xF3rio de novo.`);
+    const got = await provisionRepo(name, { entry, configFile: opts.configFile, exec: opts.exec ?? defaultExec, log });
+    if (!got.ok) return noRepo(got.error);
+    repos.push({ fullName: name, path: got.path });
+  }
   const text = jobInstruction({ ...job, type: "continuar" }) ?? "";
   const tmp = mkdtempSync6(join18(os10.tmpdir(), "benflow-conversa-"));
   try {
@@ -34839,7 +34950,7 @@ async function runConversa(opts, job, h) {
     const retry = argsFor(null);
     return await supervise(opts, { ...job, sessionId: null }, repos[0].path, retry.args, h.finish, h.redact, extraEnv, launch, launch.shell ? retry.prompt : null, false, h.sink);
   } finally {
-    rmSync9(tmp, { recursive: true, force: true });
+    rmSync10(tmp, { recursive: true, force: true });
   }
 }
 async function supervise(opts, job, cwd, args, finish2, redact, extraEnv = {}, launch = { command: opts.entry.claude.bin, prefixArgs: [], shell: false }, stdinPrompt = null, resumed = false, sink = sinkFor(opts.client, job, redact)) {
@@ -35130,6 +35241,10 @@ var Executor = class {
   localCheckDone = null;
   localCheckRunning = false;
   localChecked = null;
+  // Testar e continuar: as respostas que vão no próximo batimento e os pedidos já atendidos (o servidor repete o id
+  // até receber a resposta).
+  repoChecked = [];
+  repoChecksSeen = /* @__PURE__ */ new Set();
   presence;
   // Pedidos de vínculo com outro projeto já tratados por este processo (o batimento seguinte não repete).
   linksDone = /* @__PURE__ */ new Set();
@@ -35243,8 +35358,11 @@ var Executor = class {
         });
         const checked = this.localChecked;
         if (checked) body.localChecked = checked;
+        const answered = this.repoChecked;
+        if (answered.length) body.repoChecked = answered;
         const res = await this.opts.client.heartbeat(body, { retries: 1 });
         if (checked && this.localChecked === checked) this.localChecked = null;
+        if (answered.length) this.repoChecked = this.repoChecked.filter((r) => !answered.includes(r));
         if (this.lastHeartbeatError) this.log("Conex\xE3o com o servidor restabelecida.");
         this.lastHeartbeatError = "";
         this.agent = res?.agent ?? this.agent;
@@ -35264,6 +35382,7 @@ var Executor = class {
         if (res?.keyFetches?.length) void this.runKeyFetches(res.keyFetches);
         if (res?.branchShares?.length) void this.runBranchShares(res.branchShares);
         if (res?.localCheck?.id) void this.runLocalCheck(res.localCheck);
+        if (res?.repoChecks?.length) void this.runRepoChecks(res.repoChecks);
         return this.agent;
       } catch (err) {
         const message = msgOf(err);
@@ -35280,6 +35399,22 @@ var Executor = class {
       }
     })();
     return this.beating;
+  }
+  // Testar e continuar (Dar acesso a esta máquina): prepara o repositório (clona com a chave que a pessoa colou no GitHub,
+  // ou usa a cópia que já está aqui) e responde num batimento novo, na hora. Um pedido por id.
+  async runRepoChecks(requests) {
+    for (const req of requests) {
+      if (this.repoChecksSeen.has(req.id)) continue;
+      this.repoChecksSeen.add(req.id);
+      this.log(`Testando o acesso a ${req.repo} (pedido do painel).`);
+      const got = await provisionRepo(req.repo, { entry: this.opts.entry, configFile: this.opts.configFile, exec: this.exec, log: (m) => this.log(m) }).catch(
+        (err) => ({ ok: false, error: msgOf(err) })
+      );
+      this.log(got.ok ? `Acesso a ${req.repo} conferido: ${got.path}.` : `Ainda sem acesso a ${req.repo}: ${got.error}`);
+      this.repoChecked.push(got.ok ? { id: req.id, ok: true, path: got.path } : { id: req.id, ok: false, error: got.error });
+      if (this.beating) await this.beating.catch(() => null);
+      await this.heartbeat();
+    }
   }
   // Atualizar ou Subir o ambiente em Conexões: no Subir, religa as receitas que caíram (até 90 s cada, em paralelo);
   // nos dois, manda um batimento novo na hora, com os endereços conferidos agora e o id do pedido.
@@ -35605,7 +35740,7 @@ var Executor = class {
 };
 
 // connector/mcp.ts
-import { closeSync as closeSync3, mkdirSync as mkdirSync10, mkdtempSync as mkdtempSync7, openSync as openSync3, readFileSync as readFileSync14, readSync, realpathSync as realpathSync9, rmSync as rmSync10, statSync as statSync15 } from "node:fs";
+import { closeSync as closeSync3, mkdirSync as mkdirSync10, mkdtempSync as mkdtempSync7, openSync as openSync3, readFileSync as readFileSync15, readSync, realpathSync as realpathSync9, rmSync as rmSync11, statSync as statSync15 } from "node:fs";
 import os11 from "node:os";
 import { basename as basename5, extname as extname3, isAbsolute as isAbsolute6, join as join19, resolve as resolve8, sep as sep5 } from "node:path";
 
@@ -46198,7 +46333,7 @@ function resolveEvidenceFile(input2, opts) {
     if (PRIVATE_KEY_RE.test(head.toString("latin1"))) throw new Error("Esse arquivo parece conter segredos e n\xE3o pode ser enviado como evid\xEAncia.");
     return { path: real2, upload: real2 };
   }
-  const text = readFileSync14(real2, "utf8");
+  const text = readFileSync15(real2, "utf8");
   if (PRIVATE_KEY_RE.test(text)) throw new Error("Esse arquivo parece conter segredos e n\xE3o pode ser enviado como evid\xEAncia.");
   return { path: real2, upload: { name: basename5(real2), data: Buffer.from(opts.redact(text), "utf8"), type: guessMime(real2) } };
 }
@@ -46218,7 +46353,7 @@ function resolveAttachmentFile(input2, opts) {
     if (PRIVATE_KEY_RE.test(head.toString("latin1"))) throw new Error(`${basename5(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
     return { path: real2, upload: real2 };
   }
-  const text = readFileSync14(real2, "utf8");
+  const text = readFileSync15(real2, "utf8");
   if (PRIVATE_KEY_RE.test(text)) throw new Error(`${basename5(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
   return { path: real2, upload: { name: basename5(real2), data: Buffer.from(opts.redact(text), "utf8"), type: guessMime(real2) } };
 }
@@ -46383,7 +46518,7 @@ ${text}` : text;
     if (!downloadDir) {
       downloadDir = mkdtempSync7(join19(os11.tmpdir(), "benflow-anexos-"));
       const dir = downloadDir;
-      process.once("exit", () => rmSync10(dir, { recursive: true, force: true }));
+      process.once("exit", () => rmSync11(dir, { recursive: true, force: true }));
     }
     return downloadDir;
   }
@@ -46994,7 +47129,7 @@ ${wrapData("nota", note.content)}`;
     if (!captureDir) {
       captureDir = mkdtempSync7(join19(os11.tmpdir(), "benflow-capturas-"));
       const dir = captureDir;
-      process.once("exit", () => rmSync10(dir, { recursive: true, force: true }));
+      process.once("exit", () => rmSync11(dir, { recursive: true, force: true }));
     }
     return captureDir;
   }
@@ -47104,7 +47239,7 @@ ${script}`, url: null, passed: null, total: null, failures: null }, video.path);
         await tell("erro", `O envio do v\xEDdeo falhou: ${errorMessage(err)}`);
         throw err;
       } finally {
-        rmSync10(video.path, { force: true });
+        rmSync11(video.path, { force: true });
       }
       return said(
         work,
