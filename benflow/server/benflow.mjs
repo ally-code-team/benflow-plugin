@@ -7794,6 +7794,9 @@ var CONNECTOR_CAPABILITIES = [
   // Ambiente local em verde ou vermelho (local.ts) e o Atualizar e o Subir o ambiente de Conexões (localUp.ts): o pedido
   // chega na resposta do batimento; o conector confere os endereços na hora e, no Subir, religa as receitas que caíram.
   "ambiente-local",
+  // Arrumar o ambiente local em Conexões (LocalTracker.tidy): o pedido vem com arrumar; o conector deixa uma entrada por
+  // parte (o front e a API), tira da lista as repetidas e as fora do ar e sobe de novo pela receita o que caiu.
+  "ambiente-local-arrumar",
   // Dar acesso a esta máquina (repoProvision.ts): sem acesso a um repositório, o conector cria a chave da máquina para
   // ele e manda a pública no batimento (repoKeys); o Testar e continuar chega na resposta do batimento (repoChecks) e o
   // conector prepara o repositório (clona ou usa a cópia) e responde no batimento seguinte (repoChecked).
@@ -9552,7 +9555,8 @@ function reportLocal(path2, input2, now = /* @__PURE__ */ new Date()) {
     reportedAt: now.toISOString(),
     ...previous?.recipe ? { recipe: previous.recipe } : {}
   };
-  writeReportedLocal(path2, [...list.filter((e) => e.url !== url2), entry]);
+  const part = localPartKey(input2.repo, input2.label);
+  writeReportedLocal(path2, [...list.filter((e) => e.url !== url2 && !(e.downSince && !e.recipe && localPartKey(e.repo, e.label) === part)), entry]);
   return entry;
 }
 function localLabelRank(label) {
@@ -9560,6 +9564,10 @@ function localLabelRank(label) {
   if (l === "front" || l === "frontend" || l === "web" || l === "site") return 0;
   if (l === "api" || l === "backend" || l === "back") return 1;
   return 2;
+}
+function localPartKey(repo, label) {
+  const rank = localLabelRank(label);
+  return `${repo}|${rank === 0 ? "front" : rank === 1 ? "api" : label.trim().toLowerCase()}`;
 }
 function compareLocal(a, b) {
   return localLabelRank(a.label) - localLabelRank(b.label) || a.repo.localeCompare(b.repo) || a.url.localeCompare(b.url);
@@ -9574,15 +9582,95 @@ function portOf(url2) {
     return "";
   }
 }
+function hiddenLocalPath(statePath) {
+  return statePath.replace(/\.json$/, "") + "-escondidos.json";
+}
+function readHiddenLocal(path2) {
+  try {
+    const data = JSON.parse(readFileSync5(path2, "utf8"));
+    return Array.isArray(data.urls) ? data.urls.filter((u) => typeof u === "string" && isLocalUrl(u)).slice(0, 50) : [];
+  } catch {
+    return [];
+  }
+}
 var LocalTracker = class {
   constructor(opts) {
     this.opts = opts;
+    this.hidden = new Set(opts.statePath ? readHiddenLocal(hiddenLocalPath(opts.statePath)) : []);
   }
   opts;
   since = /* @__PURE__ */ new Map();
   // Endereços que já responderam neste executor: a folga de quem acabou de ser informado (subindo) não vale para eles,
   // e quem cai fica vermelho na hora.
   seenUp = /* @__PURE__ */ new Set();
+  // Detectados que o Arrumar tirou: ficam fora da lista enquanto a porta estiver aberta (o processo não é parado: pode
+  // ser o servidor de um trabalho em andamento).
+  hidden;
+  saveHidden() {
+    if (!this.opts.statePath) return;
+    const path2 = hiddenLocalPath(this.opts.statePath);
+    try {
+      if (this.hidden.size) writeJsonAtomic2(path2, { urls: [...this.hidden] });
+      else rmSync3(path2, { force: true });
+    } catch {
+    }
+  }
+  // Arrumar pedido em Conexões: uma entrada por parte (o repositório e o front, a API ou o rótulo). Fica a que está no ar
+  // (a informada pelo Claude antes da detectada, a com receita antes da sem, a mais recente); sem nenhuma no ar, a com
+  // receita (o executor sobe de novo) ou a mais recente. As outras informadas saem do arquivo; as detectadas que sobram
+  // ficam escondidas enquanto a porta estiver aberta.
+  async tidy() {
+    const probe = this.opts.probe ?? ((u) => probeHttp(u));
+    const reported = this.opts.statePath ? readReportedLocal(this.opts.statePath) : [];
+    const statuses = await Promise.all(reported.map((e) => probe(e.url)));
+    let detected = [];
+    try {
+      detected = this.opts.detect ? await this.opts.detect(this.opts.repos()) : [];
+    } catch {
+      detected = [];
+    }
+    const ports = new Set(reported.map((e) => portOf(e.url)));
+    const candidates = [
+      ...reported.map((e, i) => ({
+        url: e.url,
+        label: e.label,
+        repo: e.repo,
+        up: statuses[i] !== null && statuses[i] < 500,
+        reported: true,
+        restart: !!e.recipe,
+        at: Date.parse(e.reportedAt) || 0
+      })),
+      ...detected.filter((d) => !ports.has(String(d.port))).map((d) => ({ url: d.url, label: d.label, repo: d.repo, up: true, reported: false, restart: false, at: 0 }))
+    ];
+    const rank = (c) => [c.up ? 1 : 0, c.reported ? 1 : 0, c.restart ? 1 : 0, c.at];
+    const better = (a, b) => {
+      const ra = rank(a);
+      const rb = rank(b);
+      for (let i = 0; i < ra.length; i++) if (ra[i] !== rb[i]) return ra[i] > rb[i];
+      return false;
+    };
+    const best = /* @__PURE__ */ new Map();
+    for (const c of candidates) {
+      const key = localPartKey(c.repo, c.label);
+      const current = best.get(key);
+      if (!current || better(c, current)) best.set(key, c);
+    }
+    const winners = new Set(best.values());
+    const losers = candidates.filter((c) => !winners.has(c));
+    const gone = new Set(losers.filter((c) => c.reported).map((c) => c.url));
+    if (gone.size && this.opts.statePath) {
+      writeReportedLocal(this.opts.statePath, readReportedLocal(this.opts.statePath).filter((e) => !gone.has(e.url)));
+    }
+    const hide2 = losers.filter((c) => !c.reported);
+    if (hide2.length) {
+      for (const c of hide2) this.hidden.add(c.url);
+      this.saveHidden();
+    }
+    return {
+      removed: losers.map((c) => ({ url: c.url, label: c.label })),
+      down: [...winners].filter((c) => !c.up).sort(compareLocal).map((c) => ({ url: c.url, label: c.label, restart: c.restart }))
+    };
+  }
   async collect() {
     const now = this.opts.now?.() ?? /* @__PURE__ */ new Date();
     const probe = this.opts.probe ?? ((u) => probeHttp(u));
@@ -9594,9 +9682,11 @@ var LocalTracker = class {
       const kept = [];
       let dirty = false;
       const statuses = await Promise.all(reported.map((e) => probe(e.url)));
+      const isUp2 = (i) => statuses[i] !== null && statuses[i] < 500;
+      const upParts = new Set(reported.filter((_, i) => isUp2(i)).map((e) => localPartKey(e.repo, e.label)));
       reported.forEach((e, i) => {
         const status = statuses[i];
-        const up = status !== null && status < 500;
+        const up = isUp2(i);
         if (up) this.seenUp.add(e.url);
         const fresh2 = !this.seenUp.has(e.url) && now.getTime() - Date.parse(e.reportedAt) < grace;
         let entry = e;
@@ -9604,6 +9694,10 @@ var LocalTracker = class {
         else if (!up && !fresh2 && !e.downSince) entry = { ...e, downSince: now.toISOString() };
         const keepFor = e.recipe ? LOCAL_KEEP_DOWN_RECIPE_MS : LOCAL_KEEP_DOWN_MS;
         if (entry.downSince && now.getTime() - Date.parse(entry.downSince) > keepFor) {
+          dirty = true;
+          return;
+        }
+        if (!up && !fresh2 && !e.recipe && upParts.has(localPartKey(e.repo, e.label))) {
           dirty = true;
           return;
         }
@@ -9620,14 +9714,21 @@ var LocalTracker = class {
       }
     }
     let detected = [];
+    let detectedOk = false;
     try {
       detected = this.opts.detect ? await this.opts.detect(this.opts.repos()) : [];
+      detectedOk = true;
     } catch {
       detected = [];
     }
+    const open2 = new Set(detected.map((d) => d.url));
+    if (detectedOk && [...this.hidden].some((u) => !open2.has(u))) {
+      for (const u of [...this.hidden]) if (!open2.has(u)) this.hidden.delete(u);
+      this.saveHidden();
+    }
     const seen = /* @__PURE__ */ new Set();
     for (const d of detected) {
-      if (ports.has(String(d.port))) continue;
+      if (ports.has(String(d.port)) || this.hidden.has(d.url)) continue;
       const key = `${d.repo}|${d.url}`;
       seen.add(key);
       if (!this.since.has(key)) this.since.set(key, now.toISOString());
@@ -9864,7 +9965,8 @@ function saveRecipeEntry(statePath, input2, now = /* @__PURE__ */ new Date()) {
     recipe: input2.recipe,
     ...input2.up ? {} : { downSince: at }
   };
-  const keep = list.filter((e) => e.url !== url2 && !(e.repo === input2.repo && e.label.toLowerCase() === input2.label.toLowerCase() && e.downSince));
+  const part = localPartKey(input2.repo, input2.label);
+  const keep = list.filter((e) => e.url !== url2 && !(e.downSince && localPartKey(e.repo, e.label) === part));
   writeReportedLocal(statePath, [...keep, entry]);
   return entry;
 }
@@ -33524,8 +33626,8 @@ import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.45") {
-    cached2 = "0.1.45";
+  if ("0.1.46") {
+    cached2 = "0.1.46";
     return cached2;
   }
   let dir = dirname10(fileURLToPath(import.meta.url));
@@ -35747,15 +35849,29 @@ var Executor = class {
       await this.heartbeat();
     }
   }
-  // Atualizar ou Subir o ambiente em Conexões: no Subir, religa as receitas que caíram (até 90 s cada, em paralelo);
-  // nos dois, manda um batimento novo na hora, com os endereços conferidos agora e o id do pedido.
+  // Atualizar, Subir o ambiente ou Arrumar em Conexões: no Arrumar, deixa uma entrada por parte (as repetidas e as fora
+  // do ar saem da lista); no Subir e no Arrumar, religa as receitas que caíram (até 90 s cada, em paralelo); nos três,
+  // manda um batimento novo na hora, com os endereços conferidos agora e o id do pedido.
   async runLocalCheck(req) {
     if (this.localCheckDone === req.id || this.localCheckRunning) return;
     this.localCheckDone = req.id;
     this.localCheckRunning = true;
     try {
+      let removidos = 0;
+      let semReceita = [];
+      if (req.arrumar) {
+        try {
+          const tidy = await (this.opts.tidyLocal ?? (() => this.local.tidy()))();
+          removidos = tidy.removed.length;
+          for (const r of tidy.removed) this.log(`Ambiente local arrumado: ${r.label} ${r.url} saiu da lista (repetido ou fora do ar).`);
+          if (!removidos) this.log("Ambiente local arrumado: nada repetido.");
+          semReceita = tidy.down.filter((d) => !d.restart).map((d) => d.url);
+        } catch (err) {
+          this.log(`N\xE3o deu para arrumar o ambiente local: ${msgOf(err)}`);
+        }
+      }
       let outcomes = [];
-      if (req.religar) {
+      if (req.religar || req.arrumar) {
         try {
           outcomes = await (this.opts.relaunchLocal ?? ((path2) => relaunchDown(path2, { env: this.opts.env })))(this.localState);
         } catch (err) {
@@ -35763,7 +35879,12 @@ var Executor = class {
         }
         for (const o of outcomes) this.log(o.ok ? `Ambiente local de volta: ${o.label} ${o.url}.` : `O ambiente local ${o.label} ${o.url} n\xE3o voltou: ${(o.error ?? "").split("\n")[0]}`);
       }
-      this.localChecked = { id: req.id, religados: outcomes.filter((o) => o.ok).length, falhas: outcomes.filter((o) => !o.ok).map((o) => o.url).slice(0, 10) };
+      this.localChecked = {
+        id: req.id,
+        religados: outcomes.filter((o) => o.ok).length,
+        falhas: [...outcomes.filter((o) => !o.ok).map((o) => o.url), ...semReceita].slice(0, 10),
+        ...req.arrumar ? { removidos } : {}
+      };
       if (this.beating) await this.beating.catch(() => null);
       await this.heartbeat();
     } finally {
