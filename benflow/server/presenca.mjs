@@ -431,7 +431,8 @@ var AgentClient = class _AgentClient {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/comment`, { json: body });
   }
   // Análise do pedido com a base de conhecimento (analisar_chamado): o servidor ajusta a descrição, grava no histórico
-  // o que mudou, o motivo e as notas usadas e, no conflito, comenta no card e para o trabalho.
+  // o que mudou, o motivo e as notas usadas e, no conflito, comenta no card e para o trabalho (goAhead: o automático
+  // liberado deixou seguir; servidor antigo: ausente).
   analysis(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/analysis`, { json: body });
   }
@@ -885,8 +886,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.46") {
-    cached = "0.1.46";
+  if ("0.1.47") {
+    cached = "0.1.47";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
