@@ -7203,7 +7203,7 @@ var require_dist = __commonJS({
 });
 
 // connector/cli.ts
-import { spawn as spawn7 } from "node:child_process";
+import { spawn as spawn8 } from "node:child_process";
 import { existsSync as existsSync16, realpathSync as realpathSync12, statSync as statSync17 } from "node:fs";
 import { dirname as dirname13, join as join22, resolve as resolve11 } from "node:path";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
@@ -8044,6 +8044,7 @@ var AgentClient = class _AgentClient {
     return res?.job ?? null;
   }
   // published: só na publicação, quantos deploys o informar_publicacao já registrou (servidor antigo não manda).
+  // stopped: o Claude parou a publicação de propósito, com o parar_publicacao (servidor antigo não manda).
   getJob(id, opts = {}) {
     return this.requestJson("GET", `/api/agent/jobs/${id}`, opts);
   }
@@ -8228,6 +8229,10 @@ var AgentClient = class _AgentClient {
   }
   localDone(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/local-done`, { json: body });
+  }
+  // parar_publicacao: a publicação não segue (sem push), com o motivo e os cards de que a mudança depende.
+  publishStopped(executionId, body) {
+    return this.requestJson("POST", `/api/agent/executions/${executionId}/publish-stopped`, { json: body });
   }
   published(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/published`, { json: body });
@@ -10217,6 +10222,9 @@ function analisarPrompt(input2) {
 }
 var PUBLISH_FOREGROUND = "Rode cada comando em primeiro plano e espere terminar. N\xE3o rode o build de produ\xE7\xE3o nem o pr\xE9-render (a Action de deploy faz isso depois do push) e n\xE3o deixe nada em segundo plano para retomar depois: quando voc\xEA termina a resposta, a publica\xE7\xE3o acaba.";
 var PUBLISH_NUDGES = 2;
+function stopPublish(n2, environment) {
+  return `chame parar_publicacao com numero ${n2}, ambiente "${environment}" e o motivo em uma ou duas frases, e pare`;
+}
 function buildPublishNudge(job, tag, attempt) {
   const n2 = job.taskNumber;
   const prod = job.environment === "producao";
@@ -10225,7 +10233,7 @@ function buildPublishNudge(job, tag, attempt) {
     `A publica\xE7\xE3o do chamado #${n2} ainda n\xE3o terminou: voc\xEA encerrou a resposta sem chamar informar_publicacao, e o Benflow s\xF3 d\xE1 a publica\xE7\xE3o por feita com ele. Continue de onde parou (o conector chamou de novo, vez ${attempt} de ${PUBLISH_NUDGES}).`,
     "1. Se deixou algum comando em segundo plano (testes, build), ele n\xE3o vai avisar: confira se ainda roda e, se precisar do resultado, rode de novo em primeiro plano e espere terminar. O build com pr\xE9-render n\xE3o \xE9 necess\xE1rio: a Action de deploy faz.",
     `2. Confira se o push j\xE1 aconteceu: git fetch origin e git log origin/${branch} procurando a etiqueta [${tag}]. Se j\xE1 aconteceu, chame informar_publicacao agora, com numero ${n2}, ambiente "${prod ? "producao" : "homologacao"}", o reposit\xF3rio e o sha publicado, sem fazer push de novo.`,
-    "3. Se n\xE3o aconteceu, termine o passo a passo da publica\xE7\xE3o: testes em primeiro plano, registrar_evidencia, o push e o informar_publicacao. Se algo impede de publicar (teste que falha, conflito que voc\xEA n\xE3o resolve com seguran\xE7a), explique com comentar e pare."
+    `3. Se n\xE3o aconteceu, termine o passo a passo da publica\xE7\xE3o: testes em primeiro plano, registrar_evidencia, o push e o informar_publicacao. Se algo impede de publicar (teste que falha, conflito que voc\xEA n\xE3o resolve com seguran\xE7a, c\xF3digo de outro card que ainda n\xE3o est\xE1 na ${branch}), ${stopPublish(n2, prod ? "producao" : "homologacao")}: assim o Benflow n\xE3o pede de novo.`
   ].join("\n");
 }
 function homologacaoPrompt(input2) {
@@ -10238,11 +10246,11 @@ function homologacaoPrompt(input2) {
     ...header(input2, `Publique em homologa\xE7\xE3o a mudan\xE7a do chamado #${n2}${orgPart(input2.orgName)}, integrando a branch ${branch} na ${h}.`),
     "",
     "Passo a passo:",
-    `1. Chame ver_chamado com numero ${n2}. Confira nas permiss\xF5es que o dono do agente pode subir para ${h}; se n\xE3o puder, explique com comentar e pare.`,
+    `1. Chame ver_chamado com numero ${n2}. Confira nas permiss\xF5es que o dono do agente pode subir para ${h}; se n\xE3o puder, ${stopPublish(n2, "homologacao")}.`,
     input2.copy ? `2. Cada reposit\xF3rio j\xE1 est\xE1 pronto para esta publica\xE7\xE3o, solto (HEAD destacado) na ${h} atualizada de origin. Confira com git status que est\xE1 limpo. N\xE3o rode git checkout ${h}: a ${h} pode estar aberta em outra pasta.` : `2. Em cada reposit\xF3rio: confira com git status que est\xE1 limpo. Rode git fetch origin, git checkout ${h} e git pull --ff-only origin ${h}.`,
     `3. Integre a branch do chamado: git merge --no-ff ${branch} -m "[${tag}] Integra ${branch} na ${h}".`,
-    `4. Se houver conflito, resolva com cuidado: preserve o que j\xE1 est\xE1 na ${h} e a mudan\xE7a do chamado, e nunca descarte mudan\xE7as de outras pessoas. Se n\xE3o tiver certeza, rode git merge --abort, explique com comentar e pare.`,
-    `5. Rode os testes de novo e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: explique com comentar e pare. ${PUBLISH_FOREGROUND}`,
+    `4. Se houver conflito, resolva com cuidado: preserve o que j\xE1 est\xE1 na ${h} e a mudan\xE7a do chamado, e nunca descarte mudan\xE7as de outras pessoas. Se n\xE3o tiver certeza, rode git merge --abort e ${stopPublish(n2, "homologacao")}.`,
+    `5. Rode os testes de novo e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: ${stopPublish(n2, "homologacao")}. ${PUBLISH_FOREGROUND}`,
     input2.copy ? `6. Publique rodando exatamente: git push origin HEAD:${h} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push). Se o push for recusado porque a ${h} andou, rode git fetch origin e git merge origin/${h}, rode os testes de novo e tente outra vez.` : `6. Publique rodando exatamente: git push origin ${h} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push).`,
     `7. Chame informar_publicacao com numero ${n2}, ambiente "homologacao", repositorio (owner/nome) e sha (git rev-parse HEAD) de cada reposit\xF3rio publicado. O servidor acompanha a Action a partir desse SHA.`,
     `8. N\xE3o fa\xE7a push em nenhuma outra branch e nunca mexa na ${p}.`
@@ -10259,12 +10267,12 @@ function producaoPrompt(input2) {
     ...header(input2, `Publique em produ\xE7\xE3o a corre\xE7\xE3o do chamado #${n2}${orgPart(input2.orgName)} por hotfix na ${p}.`),
     "",
     "Passo a passo:",
-    `1. Chame ver_chamado com numero ${n2}. Confira nas permiss\xF5es que o dono do agente pode subir para ${p}; se n\xE3o puder, explique com comentar e pare.`,
+    `1. Chame ver_chamado com numero ${n2}. Confira nas permiss\xF5es que o dono do agente pode subir para ${p}; se n\xE3o puder, ${stopPublish(n2, "producao")}.`,
     `2. Entenda a mudan\xE7a do chamado: commits com a etiqueta [${tag}] (git log --all --grep "${tag}") e a branch ${branch}.`,
     input2.copy ? `3. Cada reposit\xF3rio j\xE1 est\xE1 pronto para esta publica\xE7\xE3o, solto na ${p} atualizada. Confira com git status que est\xE1 limpo e crie a branch ${hotfix} a partir de origin/${p} (git checkout -B ${hotfix} origin/${p}). N\xE3o rode git checkout ${p} nem git checkout ${h}.` : `3. Em cada reposit\xF3rio: confira com git status que est\xE1 limpo, rode git fetch origin e crie a branch ${hotfix} a partir de origin/${p} (git checkout -B ${hotfix} origin/${p}).`,
-    `4. Refa\xE7a S\xD3 a mudan\xE7a do chamado, adaptando ao c\xF3digo da ${p}. Nunca fa\xE7a merge da ${h} nem da branch do chamado: a ${h} tem outras mudan\xE7as que n\xE3o podem ir para produ\xE7\xE3o. Se usar git cherry-pick de commits do chamado, confira que eles n\xE3o trazem nada al\xE9m da mudan\xE7a.`,
+    `4. Refa\xE7a S\xD3 a mudan\xE7a do chamado, adaptando ao c\xF3digo da ${p}. Nunca fa\xE7a merge da ${h} nem da branch do chamado: a ${h} tem outras mudan\xE7as que n\xE3o podem ir para produ\xE7\xE3o. Se usar git cherry-pick de commits do chamado, confira que eles n\xE3o trazem nada al\xE9m da mudan\xE7a. Se a mudan\xE7a mexe em arquivos ou usa c\xF3digo que s\xF3 existe na ${h} (de outros cards que ainda n\xE3o subiram para produ\xE7\xE3o; as etiquetas deles aparecem em git log origin/${p}..${branch}), n\xE3o traga a ${h} nem reescreva o que falta: chame parar_publicacao com numero ${n2}, ambiente "producao", o motivo e depende_de com os n\xFAmeros desses cards, e pare. O Benflow deixa o card esperando esses cards chegarem \xE0 produ\xE7\xE3o e ele sobe junto com eles.`,
     `5. Fa\xE7a commits com a etiqueta: "[${tag}] ...".`,
-    `6. Rode os testes e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: explique com comentar e pare. ${PUBLISH_FOREGROUND}`,
+    `6. Rode os testes e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: ${stopPublish(n2, "producao")}. ${PUBLISH_FOREGROUND}`,
     `7. Publique rodando exatamente: git push origin ${hotfix}:${p} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push). Se a ${p} andou, atualize a hotfix com git rebase origin/${p}, rode os testes de novo e tente outra vez.`,
     `8. Chame informar_publicacao com numero ${n2}, ambiente "producao", repositorio (owner/nome) e sha de cada reposit\xF3rio publicado.`,
     `9. N\xE3o fa\xE7a push na ${h}.`
@@ -33649,8 +33657,8 @@ import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.48") {
-    cached2 = "0.1.48";
+  if ("0.1.49") {
+    cached2 = "0.1.49";
     return cached2;
   }
   let dir = dirname10(fileURLToPath(import.meta.url));
@@ -34487,7 +34495,7 @@ function killTree(child, signal) {
 function publishNudgeDecision(input2) {
   const { status, sessionId, state } = input2;
   if (status !== "ok" || !sessionId || !isSafeSessionId(sessionId)) return "encerrar";
-  if (!state || state.cancelled || typeof state.published !== "number") return "encerrar";
+  if (!state || state.cancelled || state.stopped || typeof state.published !== "number") return "encerrar";
   return state.published > 0 ? "encerrar" : "continuar";
 }
 function isVanishedSession(result, stderr) {
@@ -35714,6 +35722,8 @@ var Executor = class {
   fetchTried = /* @__PURE__ */ new Map();
   lastUpdateCheck = 0;
   installedNoticed = null;
+  // Mac em repouso: o aviso sai uma vez por repouso.
+  asleepNoticed = false;
   agent = null;
   // Versão do plugin instalada pelo Claude Code em que o executor vai subir de novo (o cli.ts devolve EXIT_RESTART).
   restartTo = null;
@@ -36129,6 +36139,7 @@ var Executor = class {
     const copies = card && this.parallelCap() > 1;
     const item = { job, executionId: card ? job.executionId : null, paths: new Set(copies ? [] : mainPaths), done: Promise.resolve() };
     this.running.set(job.id, item);
+    this.opts.keepAwake?.hold();
     this.logJobStart(job);
     item.done = (async () => {
       try {
@@ -36157,6 +36168,7 @@ var Executor = class {
         }
       } finally {
         this.running.delete(job.id);
+        if (!this.running.size) this.opts.keepAwake?.release();
         this.freeSlot();
         void this.heartbeat();
       }
@@ -36182,6 +36194,14 @@ var Executor = class {
         await this.waitSlot(signal);
         continue;
       }
+      if (this.opts.asleep && await this.opts.asleep()) {
+        if (!this.asleepNoticed) this.log("O Mac est\xE1 em repouso (acordou sozinho por instantes, sem tela): n\xE3o pego trabalho novo at\xE9 ele acordar de verdade.");
+        this.asleepNoticed = true;
+        await sleepAbortable(this.opts.errorDelayMs ?? 15e3, signal);
+        continue;
+      }
+      if (this.asleepNoticed) this.log("O Mac acordou: volto a pegar trabalho.");
+      this.asleepNoticed = false;
       const startedAt = Date.now();
       let job;
       try {
@@ -36212,6 +36232,62 @@ var Executor = class {
     this.ctrl.abort();
     this.freeSlot();
     if (this.loop) await this.loop;
+    this.opts.keepAwake?.release();
+  }
+};
+
+// connector/repouso.ts
+import { execFile as execFile3, spawn as spawn7 } from "node:child_process";
+function isDarkWake(systemState) {
+  const m = /Current System Capabilities are:([^\n]*)/i.exec(systemState);
+  if (!m) return false;
+  return !/\bGraphics\b/i.test(m[1]);
+}
+var runFile = (cmd, args) => new Promise((resolve12, reject) => {
+  execFile3(cmd, args, { timeout: 5e3, windowsHide: true }, (err, stdout) => err ? reject(err) : resolve12(String(stdout)));
+});
+async function machineAsleep(platform = process.platform, run = runFile) {
+  if (platform !== "darwin") return false;
+  try {
+    return isDarkWake(await run("pmset", ["-g", "systemstate"]));
+  } catch {
+    return false;
+  }
+}
+var KeepAwake = class {
+  constructor(platform = process.platform, spawnFn = spawn7) {
+    this.platform = platform;
+    this.spawnFn = spawnFn;
+  }
+  platform;
+  spawnFn;
+  child = null;
+  hold() {
+    if (this.platform !== "darwin" || this.child) return;
+    try {
+      const child = this.spawnFn("caffeinate", ["-i", "-s", "-w", String(process.pid)], { stdio: "ignore" });
+      child.on("error", () => {
+        if (this.child === child) this.child = null;
+      });
+      child.on("exit", () => {
+        if (this.child === child) this.child = null;
+      });
+      this.child = child;
+    } catch {
+      this.child = null;
+    }
+  }
+  release() {
+    const child = this.child;
+    this.child = null;
+    if (!child) return;
+    try {
+      child.kill();
+    } catch {
+    }
+  }
+  get holding() {
+    return this.child !== null;
   }
 };
 
@@ -46412,6 +46488,7 @@ var TOOL_NAMES = [
   "analisar_chamado",
   "concluir_local",
   "informar_publicacao",
+  "parar_publicacao",
   "buscar_conhecimento",
   "ler_nota",
   "ambientes",
@@ -47376,6 +47453,24 @@ ${text}` : text;
       return `Publica\xE7\xE3o em ${ambiente === "producao" ? "produ\xE7\xE3o" : "homologa\xE7\xE3o"} informada: ${repositorio} ${sha.slice(0, 7)}.`;
     }
   );
+  if (!painelMode && !testMode) register(
+    "parar_publicacao",
+    {
+      title: "Parar publica\xE7\xE3o",
+      description: "Para a publica\xE7\xE3o deste trabalho sem push, com o motivo, quando ela n\xE3o pode seguir: a mudan\xE7a depende de c\xF3digo que ainda n\xE3o est\xE1 na branch do ambiente, teste que falha, conflito que voc\xEA n\xE3o resolve com seguran\xE7a, programa que falta nesta m\xE1quina. Em depende_de v\xE3o os n\xFAmeros dos cards de que a mudan\xE7a depende e que ainda n\xE3o est\xE3o no ambiente (as etiquetas dos commits que faltam na branch dele): o card fica pronto na fila, esperando esses cards, e sobe junto com eles. Depois de chamar, termine a resposta. S\xF3 vale dentro de um trabalho de publica\xE7\xE3o.",
+      inputSchema: {
+        numero,
+        ambiente: external_exports.enum(["homologacao", "producao"]),
+        motivo: external_exports.string().min(10).max(1e3).describe("Por que a publica\xE7\xE3o n\xE3o pode seguir, em uma ou duas frases"),
+        depende_de: external_exports.array(external_exports.number().int().positive()).max(30).optional().describe("N\xFAmeros dos cards de que a mudan\xE7a depende e que ainda n\xE3o est\xE3o no ambiente")
+      }
+    },
+    async ({ numero: n2, ambiente, motivo, depende_de }) => {
+      const { id } = await workFor(n2, "publicacao");
+      const out = await client.publishStopped(id, { environment: ambiente, reason: redact(motivo), ...depende_de?.length ? { dependsOn: depende_de } : {} });
+      return out.text;
+    }
+  );
   register(
     "buscar_conhecimento",
     {
@@ -48169,7 +48264,7 @@ function refreshStableDir(deps) {
 async function superviseExecutar(args, deps, io) {
   const env = deps.env ?? process.env;
   const fs = { env, ...deps.claudeFs };
-  const spawnFn = deps.spawn ?? ((cmd, a, o) => spawn7(cmd, a, o));
+  const spawnFn = deps.spawn ?? ((cmd, a, o) => spawn8(cmd, a, o));
   const platform = deps.platform ?? process.platform;
   const self = deps.selfScript ?? process.argv[1];
   const restarts = [];
@@ -48246,7 +48341,9 @@ async function cmdExecutar(args, deps, io) {
     log: (m) => io.out(`[${stamp()}] ${m}`),
     restartOnUpdate: values.filho === true,
     selfScript: deps.selfScript,
-    claudeFs: { env, ...deps.claudeFs }
+    claudeFs: { env, ...deps.claudeFs },
+    asleep: deps.asleep ?? (() => machineAsleep()),
+    keepAwake: deps.keepAwake ?? new KeepAwake()
   });
   const other = executor.otherInstancePid();
   if (other !== null) {

@@ -1,7 +1,7 @@
 {
   "name": "benflow",
   "displayName": "Benflow",
-  "version": "0.1.48",
+  "version": "0.1.49",
   "description": "Chamados do Benflow dentro do Claude Code: lista as tarefas da organização, mostra o card, abre cards novos e anexa arquivos (por exemplo a partir de um documento técnico), trabalha no código e vai atualizando etapa, evidências e ambiente local no painel. Nada vai para o repositório remoto sem a pessoa pedir.",
   "author": {
     "name": "Ally Code",

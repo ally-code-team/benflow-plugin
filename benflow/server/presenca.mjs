@@ -254,6 +254,7 @@ var AgentClient = class _AgentClient {
     return res?.job ?? null;
   }
   // published: só na publicação, quantos deploys o informar_publicacao já registrou (servidor antigo não manda).
+  // stopped: o Claude parou a publicação de propósito, com o parar_publicacao (servidor antigo não manda).
   getJob(id, opts = {}) {
     return this.requestJson("GET", `/api/agent/jobs/${id}`, opts);
   }
@@ -438,6 +439,10 @@ var AgentClient = class _AgentClient {
   }
   localDone(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/local-done`, { json: body });
+  }
+  // parar_publicacao: a publicação não segue (sem push), com o motivo e os cards de que a mudança depende.
+  publishStopped(executionId, body) {
+    return this.requestJson("POST", `/api/agent/executions/${executionId}/publish-stopped`, { json: body });
   }
   published(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/published`, { json: body });
@@ -886,8 +891,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.48") {
-    cached = "0.1.48";
+  if ("0.1.49") {
+    cached = "0.1.49";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));

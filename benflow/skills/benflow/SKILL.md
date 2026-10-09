@@ -10,8 +10,8 @@ allowed-tools: mcp__plugin_benflow_benflow__listar_chamados mcp__plugin_benflow_
 
 As ferramentas vêm do servidor MCP "benflow" deste plugin: listar_chamados, ver_chamado, baixar_anexo,
 criar_chamado, anexar_arquivo, iniciar_execucao, atualizar_progresso, registrar_evidencia, capturar_tela, gravar_tela, comentar,
-analisar_chamado, concluir_local, informar_publicacao, buscar_conhecimento, ler_nota, ambientes, informar_ambiente_local e
-registrar_dependencia.
+analisar_chamado, concluir_local, informar_publicacao, parar_publicacao, buscar_conhecimento, ler_nota, ambientes,
+informar_ambiente_local e registrar_dependencia.
 
 Pedido da pessoa: $ARGUMENTS
 
