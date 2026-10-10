@@ -11,7 +11,7 @@ allowed-tools: mcp__plugin_benflow_benflow__listar_chamados mcp__plugin_benflow_
 As ferramentas vêm do servidor MCP "benflow" deste plugin: listar_chamados, ver_chamado, baixar_anexo,
 criar_chamado, anexar_arquivo, iniciar_execucao, atualizar_progresso, registrar_evidencia, capturar_tela, gravar_tela, comentar,
 analisar_chamado, concluir_local, informar_publicacao, parar_publicacao, buscar_conhecimento, ler_nota, ambientes,
-informar_ambiente_local e registrar_dependencia.
+configurar_ambientes, informar_ambiente_local, subir_ambiente_local e registrar_dependencia.
 
 Pedido da pessoa: $ARGUMENTS
 
@@ -35,6 +35,15 @@ do repositório") sem citar um card, o trabalho também aparece no quadro: antes
 texto cru). O Benflow cria o card, já começa o trabalho nele, e o card fica com a cor e o ícone de terminal enquanto o
 terminal trabalha. Pedidos seguintes da mesma tarefa continuam no mesmo card; tarefa diferente ganha card novo. Pergunta,
 explicação ou conversa não viram card, e se a pessoa disser que não quer card, siga sem.
+
+## Conexões do projeto (prompt de conexões)
+
+Quando a pessoa colar o prompt de conexões do painel (Conexões ou Primeiros passos) ou pedir para ligar o projeto ao
+Benflow, siga os passos dele em ordem. O que você conferir no repositório desta máquina (repositórios, arquivo do
+workflow de deploy, branch de cada ambiente, endereço do sistema e URL de saúde) vai para o painel com
+`configurar_ambientes`, depois de mostrar os valores e a pessoa confirmar. Programas que faltaram na máquina vão com
+`registrar_dependencia`, e o ambiente local sobe com `subir_ambiente_local`. Token do GitHub, bot do Telegram, widget,
+link do cliente e senhas ficam com a pessoa, na tela que o prompt indica.
 
 ## Fluxo
 

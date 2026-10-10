@@ -548,6 +548,11 @@ var AgentClient = class _AgentClient {
   environments() {
     return this.requestJson("GET", "/api/agent/environments");
   }
+  // configurar_ambientes (prompt de conexões): repositórios e, de cada ambiente, branch, endereço e URL de saúde. Só o
+  // administrador do projeto; o servidor nunca tira um repositório por aqui.
+  saveEnvironments(body) {
+    return this.requestJson("PUT", "/api/agent/environments", { json: body });
+  }
   // Usuário de teste do ambiente (Ambientes), para o passo entrar: só dentro do trabalho que abre aquele ambiente
   // (X-Benflow-Trabalho). null: o projeto não tem usuário de teste nele. Nunca vai para o Claude.
   async environmentLogin(key) {
@@ -891,8 +896,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.50") {
-    cached = "0.1.50";
+  if ("0.1.51") {
+    cached = "0.1.51";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
