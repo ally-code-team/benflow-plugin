@@ -214,6 +214,10 @@ var AgentClient = class _AgentClient {
       }
     });
   }
+  // Conta do Claude testada nesta máquina: o servidor grava neste agente e nos da mesma máquina (todos os projetos).
+  claudeAccount(body) {
+    return this.requestJson("POST", "/api/agent/conta-claude", { json: body, retries: 1 });
+  }
   heartbeat(body, opts = {}) {
     return this.requestJson("POST", "/api/agent/heartbeat", {
       json: body,
@@ -896,8 +900,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.51") {
-    cached = "0.1.51";
+  if ("0.1.52") {
+    cached = "0.1.52";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));

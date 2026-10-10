@@ -124,3 +124,16 @@ Se as ferramentas responderem que o Benflow não está configurado, oriente a pe
 3. Quem prefere o terminal pode rodar `node "${CLAUDE_PLUGIN_ROOT}/server/benflow.mjs" configurar --url <endereço>` (o
    token é pedido sem aparecer na tela). O mesmo arquivo liga o executor do botão "Com IA" do painel:
    `node "${CLAUDE_PLUGIN_ROOT}/server/benflow.mjs" executar`.
+
+## Trocar a conta do Claude
+
+Quando a pessoa disser que entrou com outra conta do Claude nesta máquina (por exemplo, porque o limite da conta acabou)
+ou pedir para atualizar os limites do Claude no Benflow:
+
+1. Rode `claude auth status --text` e mostre o e-mail e o plano. Sem login, peça que ela digite `/login` no Claude Code
+   (comando de barra: só ela roda) e espere.
+2. Rode `node "${CLAUDE_PLUGIN_ROOT}/server/benflow.mjs" conta-claude`. Ele testa a conta com uma pergunta curta e
+   atualiza a conta, o plano, o modelo e o uso do plano em todos os projetos do Benflow desta máquina. Saída 2: a conta
+   também está no limite (diga até quando).
+3. Não gere nem peça token novo: o token do Benflow não muda com a conta do Claude. Os executores que estão rodando usam
+   a conta nova a partir do próximo trabalho, sem reiniciar.
