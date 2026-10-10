@@ -398,6 +398,9 @@ var AgentClient = class _AgentClient {
   terminalPresence(body, timeoutMs = 4e3) {
     return this.requestJson("POST", "/api/agent/terminal/presence", { json: body, retries: 0, timeoutMs });
   }
+  terminalMirror(body, timeoutMs = 4e3) {
+    return this.requestJson("POST", "/api/agent/terminal/espelho", { json: body, retries: 0, timeoutMs });
+  }
   // Situação da gravação do vídeo de evidência (o card mostra ao vivo): gravando, enviando ou o erro da tentativa.
   videoProgress(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/video`, { json: body, retries: 0 });
@@ -908,8 +911,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.54") {
-    cached = "0.1.54";
+  if ("0.1.55") {
+    cached = "0.1.55";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
@@ -1122,6 +1125,225 @@ async function presenceHook(deps) {
   return "enviado";
 }
 
+// connector/terminalMirror.ts
+import { closeSync, mkdirSync as mkdirSync4, openSync, readFileSync as readFileSync5, readSync, rmSync as rmSync3, statSync as statSync5, writeFileSync as writeFileSync4 } from "node:fs";
+import os3 from "node:os";
+import { basename as basename3, dirname as dirname4, join as join5 } from "node:path";
+var MIRROR_TEXT_MAX = 8e3;
+var MIRROR_ANSWER_MAX = 6e4;
+var MIRROR_LINES_MAX = 60;
+var LINE_MAX = 1e3;
+var TRANSCRIPT_TAIL_BYTES = 4 * 1024 * 1024;
+var MIRROR_TIMEOUT_MS = 3500;
+function parseInput2(text) {
+  const empty = { sessionId: null, cwd: null, event: null, prompt: null, transcriptPath: null, lastMessage: null };
+  if (!text) return empty;
+  try {
+    const d = JSON.parse(text);
+    const s = (v) => typeof v === "string" && v ? v : null;
+    return { sessionId: s(d.session_id), cwd: s(d.cwd), event: s(d.hook_event_name), prompt: s(d.prompt), transcriptPath: s(d.transcript_path), lastMessage: s(d.last_assistant_message) };
+  } catch {
+    return empty;
+  }
+}
+function cut(text, max) {
+  return text.length > max ? `${text.slice(0, max - 3)}...` : text;
+}
+function oneLine(text, max) {
+  return cut(text.replace(/\s+/g, " ").trim(), max);
+}
+function mirrorFile(env, key) {
+  return join5(stateDir(env), `${key}.espelho.json`);
+}
+function readMirror(file) {
+  try {
+    const d = JSON.parse(readFileSync5(file, "utf8"));
+    if (typeof d.seq !== "number" || !Number.isSafeInteger(d.seq) || d.seq < 1) return null;
+    const targets = Array.isArray(d.targets) ? d.targets.filter((t) => t && typeof t.url === "string").map((t) => ({ url: t.url, org: typeof t.org === "string" ? t.org : null })) : [];
+    return { seq: d.seq, prompt: typeof d.prompt === "string" ? d.prompt : "", targets };
+  } catch {
+    return null;
+  }
+}
+function writeMirror(file, state) {
+  try {
+    mkdirSync4(dirname4(file), { recursive: true, mode: 448 });
+    writeFileSync4(file, JSON.stringify(state), { mode: 384 });
+  } catch {
+  }
+}
+function toolStep(name, input) {
+  const s = (v) => typeof v === "string" && v.trim() ? v.trim() : null;
+  const file = (v) => s(v) ? basename3(s(v)) : null;
+  const benflow = /^mcp__(?:plugin_[\w-]+_)?benflow__(.+)$/.exec(name);
+  if (benflow) return `Benflow: ${benflow[1]}`;
+  const mcp = /^mcp__[\w-]+__(.+)$/.exec(name);
+  if (mcp) return mcp[1];
+  switch (name) {
+    case "Bash":
+      return s(input.description) ? `Comando: ${s(input.description)}` : "Rodou um comando no terminal";
+    case "Read":
+      return file(input.file_path) ? `Leu ${file(input.file_path)}` : "Leu um arquivo";
+    case "Edit":
+    case "MultiEdit":
+      return file(input.file_path) ? `Editou ${file(input.file_path)}` : "Editou um arquivo";
+    case "Write":
+      return file(input.file_path) ? `Escreveu ${file(input.file_path)}` : "Escreveu um arquivo";
+    case "NotebookEdit":
+      return file(input.notebook_path) ? `Editou ${file(input.notebook_path)}` : "Editou um notebook";
+    case "Grep":
+      return "Procurou no c\xF3digo";
+    case "Glob":
+      return "Procurou arquivos";
+    case "WebSearch":
+      return "Pesquisou na web";
+    case "WebFetch": {
+      try {
+        return `Abriu ${new URL(s(input.url) ?? "").host}`;
+      } catch {
+        return "Abriu uma p\xE1gina";
+      }
+    }
+    case "Task":
+    case "Agent":
+      return s(input.description) ? `Subagente: ${s(input.description)}` : "Chamou um subagente";
+    case "TodoWrite":
+    case "TaskCreate":
+    case "TaskUpdate":
+      return "Atualizou a lista de tarefas";
+    default:
+      return name;
+  }
+}
+function promptOf(e) {
+  if (e.type !== "user" || e.isMeta === true || e.isSidechain === true) return null;
+  const c = e.message?.content;
+  if (typeof c === "string") return c.trim() && !/^<(local-)?command-/.test(c.trim()) ? c.trim() : null;
+  if (!Array.isArray(c) || c.some((b) => b?.type === "tool_result")) return null;
+  const text = c.filter((b) => b?.type === "text").map((b) => String(b.text ?? "")).join("\n").trim();
+  return text || null;
+}
+function readTranscriptTurn(path, maxBytes = TRANSCRIPT_TAIL_BYTES) {
+  const none = { prompt: null, promptAt: null, answer: null, lines: [] };
+  if (!path || !path.endsWith(".jsonl")) return none;
+  let text;
+  try {
+    const size = statSync5(path).size;
+    const start = Math.max(0, size - maxBytes);
+    const fd = openSync(path, "r");
+    try {
+      const buf = Buffer.alloc(size - start);
+      readSync(fd, buf, 0, buf.length, start);
+      text = buf.toString("utf8");
+    } finally {
+      closeSync(fd);
+    }
+    if (start > 0) text = text.slice(text.indexOf("\n") + 1);
+  } catch {
+    return none;
+  }
+  const entries = [];
+  for (const raw of text.split("\n")) {
+    if (!raw.trim()) continue;
+    try {
+      entries.push(JSON.parse(raw));
+    } catch {
+    }
+  }
+  let from = -1;
+  for (let i = entries.length - 1; i >= 0; i--) {
+    if (promptOf(entries[i])) {
+      from = i;
+      break;
+    }
+  }
+  const prompt = from >= 0 ? promptOf(entries[from]) : null;
+  const promptAt = from >= 0 && typeof entries[from].timestamp === "string" ? entries[from].timestamp : null;
+  const lines = [];
+  let answer = null;
+  for (const e of entries.slice(from + 1)) {
+    if (e.type !== "assistant" || e.isSidechain === true || !Array.isArray(e.message?.content)) continue;
+    const at = typeof e.timestamp === "string" ? e.timestamp : null;
+    for (const b of e.message.content) {
+      if (b?.type === "text" && typeof b.text === "string" && b.text.trim()) {
+        lines.push({ at, kind: "texto", text: oneLine(b.text, LINE_MAX) });
+        answer = b.text.trim();
+      } else if (b?.type === "tool_use" && typeof b.name === "string") {
+        lines.push({ at, kind: "ferramenta", text: oneLine(toolStep(b.name, b.input ?? {}), LINE_MAX) });
+      }
+    }
+  }
+  if (answer && lines.at(-1)?.kind === "texto") lines.pop();
+  return { prompt, promptAt, answer, lines: lines.slice(-MIRROR_LINES_MAX) };
+}
+async function mirrorHook(deps) {
+  const env = deps.env ?? process.env;
+  if (benflowEnv(env, "EXECUTOR") === "1" || benflowEnv(env, "EXECUTION_ID")) return "executor";
+  for (const name of ["PRESENCA", "ESPELHO"]) {
+    const v = benflowEnv(env, name);
+    if (v && OFF_VALUES.has(v.trim().toLowerCase())) return "desligado";
+  }
+  const input = parseInput2(deps.stdinText);
+  if (!input.sessionId || input.event !== "UserPromptSubmit" && input.event !== "Stop" && input.event !== "SessionEnd") return "ignorado";
+  const key = presenceSessionKey(input.sessionId);
+  const presence = readState(join5(stateDir(env), `${key}.json`));
+  const file = mirrorFile(env, key);
+  if (input.event === "SessionEnd" && !presence) {
+  } else if (!presence || presence.off || !presence.targets.length) {
+    return "fora";
+  }
+  let cfg;
+  let resolved = null;
+  try {
+    cfg = loadConfig(readableConfigPath(configPath(env)));
+    resolved = resolveServer(cfg, env);
+  } catch {
+    return "sem-config";
+  }
+  const mine = readMirror(file);
+  const targets = storedTargets(cfg, resolved, presence?.targets.length ? presence.targets : mine?.targets ?? []);
+  if (!targets.length) return "fora";
+  const cwd = input.cwd || deps.cwd || process.cwd();
+  const git = await gitInfo(deps.exec, cwd);
+  let repo = git.repo;
+  if (!repo) for (const s of [...resolved ? [resolved] : [], ...cfg.servers]) repo ??= repoForPath(cwd, s.repos);
+  if (!repo && input.event !== "SessionEnd") return "fora";
+  const now = (deps.now ?? Date.now)();
+  const place = { repo, branch: git.branch, folder: git.folder, machineName: machineNameOf((deps.hostname ?? os3.hostname)()) };
+  let body;
+  if (input.event === "UserPromptSubmit") {
+    const prompt = cut((input.prompt ?? "").trim(), MIRROR_TEXT_MAX);
+    if (!prompt) return "ignorado";
+    const seq = Math.max(now, (mine?.seq ?? 0) + 1);
+    writeMirror(file, { seq, prompt, targets: targets.map((e) => ({ url: e.url, org: e.orgSlug ?? null })) });
+    body = { session: key, event: "pedido", seq, text: prompt, ...place };
+  } else if (input.event === "Stop") {
+    const turn = readTranscriptTurn(input.transcriptPath);
+    const seq = mine?.seq ?? (turn.promptAt && Number.isFinite(Date.parse(turn.promptAt)) ? Date.parse(turn.promptAt) : now);
+    const answer = (input.lastMessage ?? turn.answer ?? "").trim();
+    body = { session: key, event: "resposta", seq, text: cut(mine?.prompt || turn.prompt || "", MIRROR_TEXT_MAX), answer: cut(answer, MIRROR_ANSWER_MAX), lines: turn.lines, ...place };
+  } else {
+    if (!mine) return "ignorado";
+    body = { session: key, event: "fechada", seq: mine.seq, ...place };
+  }
+  const version = deps.version ?? connectorVersion();
+  await Promise.allSettled(
+    targets.map(
+      (e) => new AgentClient({ url: e.url, token: e.token, fetch: deps.fetch, retries: 0, timeoutMs: deps.timeoutMs ?? MIRROR_TIMEOUT_MS, userAgent: `benflow-conector/${version} espelho` }).terminalMirror(
+        body,
+        deps.timeoutMs ?? MIRROR_TIMEOUT_MS
+      )
+    )
+  );
+  if (input.event === "SessionEnd") {
+    try {
+      rmSync3(file, { force: true });
+    } catch {
+    }
+  }
+  return "enviado";
+}
+
 // connector/presenca.ts
 var exec = (cmd, args, opts = {}) => new Promise((done) => {
   execFile(cmd, args, { cwd: opts.cwd, timeout: opts.timeoutMs ?? 3e3, windowsHide: true, encoding: "utf8" }, (err, stdout, stderr) => {
@@ -1145,8 +1367,23 @@ function readStdin(ms) {
     process.stdin.once("error", finish);
   });
 }
-var guard = setTimeout(() => process.exit(0), 8e3);
-readStdin(1500).then((stdinText) => presenceHook({ exec, stdinText })).catch(() => null).finally(() => {
+function eventOf(text) {
+  try {
+    const e = JSON.parse(text).hook_event_name;
+    return typeof e === "string" ? e : null;
+  } catch {
+    return null;
+  }
+}
+var guard = setTimeout(() => process.exit(0), 9500);
+readStdin(1500).then(async (stdinText) => {
+  if (eventOf(stdinText) === "SessionEnd") {
+    await Promise.allSettled([presenceHook({ exec, stdinText }), mirrorHook({ exec, stdinText })]);
+    return;
+  }
+  await presenceHook({ exec, stdinText }).catch(() => null);
+  await mirrorHook({ exec, stdinText }).catch(() => null);
+}).catch(() => null).finally(() => {
   clearTimeout(guard);
   process.exit(0);
 });
