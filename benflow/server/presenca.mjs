@@ -218,6 +218,14 @@ var AgentClient = class _AgentClient {
   claudeAccount(body) {
     return this.requestJson("POST", "/api/agent/conta-claude", { json: body, retries: 1 });
   }
+  // Começar, projeto do zero: a pasta e o repositório criados (ou o motivo de não dar).
+  repoCreated(body) {
+    return this.requestJson("POST", "/api/agent/repo-criado", { json: body, retries: 1, timeoutMs: 3e4 });
+  }
+  // Começar: a leitura dos projetos desta máquina, com o id do pedido.
+  machineScanReport(body) {
+    return this.requestJson("POST", "/api/agent/projetos-da-maquina", { json: body, retries: 1, timeoutMs: 3e4 });
+  }
   heartbeat(body, opts = {}) {
     return this.requestJson("POST", "/api/agent/heartbeat", {
       json: body,
@@ -900,8 +908,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.53") {
-    cached = "0.1.53";
+  if ("0.1.54") {
+    cached = "0.1.54";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
