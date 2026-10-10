@@ -7808,6 +7808,7 @@ var CONNECTOR_CAPABILITIES = [
   // curta ao Claude na hora, de onde vêm o modelo e o uso do plano (claudeAccount.ts).
   "conta-claude"
 ];
+var PLUGIN_UPDATE_CAPABILITY = "atualizar-plugin";
 var PROJECT_VAULT_CAPABILITY = "cofre-projeto";
 var JOB_REQUEST_CAPS = ["conversa-painel", "paralelo", "orquestrador", "sugestoes-arquivos"];
 var JOB_HEADER = "x-benflow-job";
@@ -33799,8 +33800,8 @@ import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.52") {
-    cached2 = "0.1.52";
+  if ("0.1.53") {
+    cached2 = "0.1.53";
     return cached2;
   }
   let dir = dirname10(fileURLToPath(import.meta.url));
@@ -34235,6 +34236,42 @@ function limitText(limit) {
   const m = usageLimitMessage(limit, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
   return `${m.title}. ${m.detail}`;
 }
+var UPDATE_LOCK_MS = 10 * 6e4;
+function takeUpdateLock(dir = join21(os12.homedir(), ".benflow"), now = Date.now()) {
+  const file2 = join21(dir, "atualizando-plugin.json");
+  try {
+    const cur = JSON.parse(readFileSync14(file2, "utf8"));
+    const pid = typeof cur.pid === "number" ? cur.pid : 0;
+    const at = typeof cur.at === "number" ? cur.at : 0;
+    let alive = false;
+    try {
+      if (pid && pid !== process.pid) {
+        process.kill(pid, 0);
+        alive = true;
+      }
+    } catch {
+      alive = false;
+    }
+    if (alive && now - at < UPDATE_LOCK_MS) return null;
+  } catch {
+  }
+  try {
+    mkdirSync10(dir, { recursive: true });
+    writeFileSync12(file2, JSON.stringify({ pid: process.pid, at: now }), { mode: 384 });
+  } catch {
+    return { release: () => {
+    } };
+  }
+  return {
+    release: () => {
+      try {
+        const cur = JSON.parse(readFileSync14(file2, "utf8"));
+        if (cur.pid === process.pid) rmSync11(file2, { force: true });
+      } catch {
+      }
+    }
+  };
+}
 var MSG_NO_CLAUDE_LOGIN = "Nenhuma conta do Claude logada nesta m\xE1quina: no Claude Code, digite /login (ou rode claude auth login no terminal).";
 var defaultExec = (cmd, args, opts = {}) => new Promise((done) => {
   const options = {
@@ -34359,7 +34396,13 @@ async function collectHeartbeat(entry, busyExecutionId, deps) {
     claudeVersion: await (deps.claudeVersion ?? (() => claudeVersionOf(deps.exec, entry.claude.bin)))(),
     local: deps.local ? await deps.local().catch(() => []) : [],
     // cofre-projeto: a pasta do cofre do projeto existe aqui (o servidor escolhe quem atualiza o cofre por ela).
-    capabilities: [...CONNECTOR_CAPABILITIES, ...entry.projectVault && isDirectory(entry.projectVault) ? [PROJECT_VAULT_CAPABILITY] : []],
+    // atualizar-plugin: este executor se atualiza a pedido do painel (roda da pasta de plugins do Claude Code, com o
+    // supervisor); a cópia do plugin fora do Claude Code não troca de versão sozinha e não anuncia.
+    capabilities: [
+      ...CONNECTOR_CAPABILITIES,
+      ...entry.projectVault && isDirectory(entry.projectVault) ? [PROJECT_VAULT_CAPABILITY] : [],
+      ...deps.canSelfUpdate?.() ? [PLUGIN_UPDATE_CAPABILITY] : []
+    ],
     busyJobId: deps.busyJobId ?? null,
     ...deps.busyJobIds ? { busyJobIds: deps.busyJobIds, busyExecutionIds: deps.busyExecutionIds ?? [] } : {},
     claudeConfig: (deps.claudeConfig ?? claudeConfigOf)(),
@@ -35846,6 +35889,9 @@ var Executor = class {
   // Conta do Claude logada nesta máquina, relida a cada batimento, e o Atualizar limites já atendido.
   accountCache = null;
   accountReading = null;
+  // Atualizar agora pedido no painel: o último atendido e a resposta que vai no próximo batimento.
+  pluginUpdateDone = null;
+  pluginUpdateAck = null;
   accountCheckDone = null;
   accountCheckRunning = false;
   // Versão publicada do plugin já avisada neste terminal (um aviso por versão).
@@ -35977,14 +36023,18 @@ var Executor = class {
           env: this.opts.env,
           // Lida antes do uso do plano: a troca de conta zera a leitura da conta antiga.
           claudeAccount: () => this.claudeAccount(),
+          canSelfUpdate: () => !!this.opts.restartOnUpdate && isClaudeManaged(this.selfScript, this.opts.claudeFs),
           quota: this.quota
         });
+        const pluginAck = this.pluginUpdateAck;
+        if (pluginAck) body.pluginUpdateAck = pluginAck;
         const checked = this.localChecked;
         if (checked) body.localChecked = checked;
         const answered = this.repoChecked;
         if (answered.length) body.repoChecked = answered;
         const res = await this.opts.client.heartbeat(body, { retries: 1 });
         if (checked && this.localChecked === checked) this.localChecked = null;
+        if (pluginAck && this.pluginUpdateAck === pluginAck) this.pluginUpdateAck = null;
         if (answered.length) this.repoChecked = this.repoChecked.filter((r) => !answered.includes(r));
         if (this.lastHeartbeatError) this.log("Conex\xE3o com o servidor restabelecida.");
         this.lastHeartbeatError = "";
@@ -36007,6 +36057,7 @@ var Executor = class {
         if (res?.localCheck?.id) void this.runLocalCheck(res.localCheck);
         if (res?.repoChecks?.length) void this.runRepoChecks(res.repoChecks);
         if (res?.accountCheck?.id) void this.runAccountCheck(res.accountCheck.id);
+        if (res?.pluginUpdate?.id) this.onPluginUpdateRequest(res.pluginUpdate.id, res.pluginUpdate.latest ?? res.plugin?.latest ?? null);
         if (Array.isArray(res?.projectRepos)) void this.repoKeeper.update(res.projectRepos);
         return this.agent;
       } catch (err) {
@@ -36047,6 +36098,28 @@ var Executor = class {
       this.log(`A conta do Claude desta m\xE1quina mudou: agora \xE9 ${accountLine(value)}. O Benflow atualiza o cart\xE3o deste Claude em todos os projetos desta m\xE1quina.`);
     }
     return value;
+  }
+  // Atualizar agora (painel): liga a atualização automática do plugin (se ainda não estava) e manda buscar a versão nova
+  // já, sem esperar a hora entre uma tentativa e outra. A busca e a troca acontecem no laço, entre um trabalho e outro;
+  // com trabalho rodando, o executor não pega trabalho novo até os de agora terminarem. Um pedido por id.
+  onPluginUpdateRequest(id, latest) {
+    if (this.pluginUpdateDone === id) return;
+    this.pluginUpdateDone = id;
+    let error62 = null;
+    if (!this.autoUpdateOn()) {
+      const changed = setAutoUpdate(true, this.opts.claudeFs);
+      if (!changed.ok) error62 = changed.error;
+      else this.log("Atualiza\xE7\xE3o autom\xE1tica do plugin do Benflow ligada a pedido do painel.");
+    }
+    if (!error62 && latest) {
+      this.wantedVersion = latest;
+      this.fetchTried.delete(latest);
+    }
+    this.lastUpdateCheck = 0;
+    this.pendingCache = null;
+    if (!error62) this.log(`Atualizar agora pedido no painel: ${latest ? `buscando a vers\xE3o ${latest} do plugin` : "conferindo a vers\xE3o do plugin"}${this.running.size ? " assim que os trabalhos de agora terminarem" : ""}.`);
+    this.pluginUpdateAck = { id, autoUpdate: error62 ? null : this.autoUpdateOn(), error: error62 };
+    void this.heartbeat();
   }
   // Atualizar limites (painel): lê a conta agora, faz a pergunta curta ao Claude e manda a conta, o modelo e o uso do
   // plano. Um pedido por id (o servidor repete o pedido até a resposta chegar).
@@ -36236,15 +36309,24 @@ var Executor = class {
   // Pede ao Claude Code a versão nova do plugin (o mesmo que ele faz sozinho ao abrir, com a atualização automática
   // ligada). Só roda entre um trabalho e outro. Falha fica no log: na próxima hora ele tenta de novo.
   async fetchPluginUpdate(installed, wanted) {
-    const launch = resolveClaudeLaunch(this.opts.entry.claude.bin);
-    this.log(`Buscando a vers\xE3o ${wanted} do plugin do Benflow pelo Claude Code (atualiza\xE7\xE3o autom\xE1tica ligada).`);
-    for (const args of pluginUpdateCommands(installed)) {
-      const run = launchCommand(launch, args);
-      const res = await this.exec(run.command, run.args, { timeoutMs: 18e4, verbatim: run.verbatim });
-      if (res.code !== 0) {
-        this.log(`O Claude Code n\xE3o conseguiu atualizar o plugin (claude ${args.slice(0, 3).join(" ")}): ${oneLine(res.stderr || res.stdout, 300) || `c\xF3digo ${res.code}`}. Tento de novo daqui a uma hora.`);
-        return;
+    const lock = takeUpdateLock(this.opts.lockDir);
+    if (!lock) {
+      this.log(`Outro executor desta m\xE1quina j\xE1 est\xE1 buscando a vers\xE3o ${wanted} do plugin do Benflow; troco quando ela for instalada.`);
+      return;
+    }
+    try {
+      const launch = resolveClaudeLaunch(this.opts.entry.claude.bin);
+      this.log(`Buscando a vers\xE3o ${wanted} do plugin do Benflow pelo Claude Code (atualiza\xE7\xE3o autom\xE1tica ligada).`);
+      for (const args of pluginUpdateCommands(installed)) {
+        const run = launchCommand(launch, args);
+        const res = await this.exec(run.command, run.args, { timeoutMs: 18e4, verbatim: run.verbatim });
+        if (res.code !== 0) {
+          this.log(`O Claude Code n\xE3o conseguiu atualizar o plugin (claude ${args.slice(0, 3).join(" ")}): ${oneLine(res.stderr || res.stdout, 300) || `c\xF3digo ${res.code}`}. Tento de novo daqui a uma hora.`);
+          return;
+        }
       }
+    } finally {
+      lock.release();
     }
   }
   // Entre um trabalho e outro: com a atualização automática ligada, busca a versão que o servidor informou; com versão
