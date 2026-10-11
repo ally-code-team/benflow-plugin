@@ -459,6 +459,10 @@ var AgentClient = class _AgentClient {
   publishStopped(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/publish-stopped`, { json: body });
   }
+  // parar_trabalho: o trabalho do card termina sem concluir_local, com o motivo (nada a mudar ou precisa da equipe).
+  workStopped(executionId, body) {
+    return this.requestJson("POST", `/api/agent/executions/${executionId}/work-stopped`, { json: body });
+  }
   published(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/published`, { json: body });
   }
@@ -524,6 +528,23 @@ var AgentClient = class _AgentClient {
       return fd;
     };
     return this.requestJson("POST", `/api/agent/jobs/${jobId}/cofre-estrutura`, { form, timeoutMs: 5 * 6e4 });
+  }
+  // Atualizar a base no cofre enviado: baixa a produção (pacote em gzip).
+  downloadVaultProduction(jobId) {
+    return this.send("GET", `/api/agent/jobs/${jobId}/cofre-producao`, { timeoutMs: 5 * 6e4 }, async (res) => Buffer.from(await res.arrayBuffer()));
+  }
+  vaultOrganizeProgress(jobId, stage, progress) {
+    return this.requestJson("POST", `/api/agent/jobs/${jobId}/cofre-organizar/progresso`, { json: { stage, progress }, retries: 0 });
+  }
+  // Fim do Atualizar a base: o resultado (vai antes do arquivo) e, no cofre enviado, as notas mudadas.
+  vaultOrganizeResult(jobId, result, pkg) {
+    const form = async () => {
+      const fd = new FormData();
+      fd.append("resultado", JSON.stringify(result));
+      if (pkg) fd.append("cofre", new Blob([new Uint8Array(pkg)], { type: "application/gzip" }), "base.json.gz");
+      return fd;
+    };
+    return this.requestJson("POST", `/api/agent/jobs/${jobId}/cofre-organizar`, { form, timeoutMs: 5 * 6e4 });
   }
   // Resposta final da conversa do modo Claude (o servidor entrega no Telegram).
   jobResult(jobId, body) {
@@ -911,8 +932,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.55") {
-    cached = "0.1.55";
+  if ("0.1.57") {
+    cached = "0.1.57";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
