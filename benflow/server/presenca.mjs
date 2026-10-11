@@ -546,6 +546,17 @@ var AgentClient = class _AgentClient {
     };
     return this.requestJson("POST", `/api/agent/jobs/${jobId}/cofre-organizar`, { form, timeoutMs: 5 * 6e4 });
   }
+  // Fim da atualização depois da produção no cofre enviado: o resumo, as notas e o hash do conteúdo recebido de cada uma
+  // (vai antes do arquivo) e o pacote das notas mudadas.
+  vaultEnvioResult(jobId, result, pkg) {
+    const form = async () => {
+      const fd = new FormData();
+      fd.append("resultado", JSON.stringify(result));
+      if (pkg) fd.append("cofre", new Blob([new Uint8Array(pkg)], { type: "application/gzip" }), "notas.json.gz");
+      return fd;
+    };
+    return this.requestJson("POST", `/api/agent/jobs/${jobId}/cofre-notas`, { form, timeoutMs: 5 * 6e4 });
+  }
   // Resposta final da conversa do modo Claude (o servidor entrega no Telegram).
   jobResult(jobId, body) {
     return this.requestJson("POST", `/api/agent/jobs/${jobId}/result`, { json: body });
@@ -932,8 +943,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.57") {
-    cached = "0.1.57";
+  if ("0.1.58") {
+    cached = "0.1.58";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));

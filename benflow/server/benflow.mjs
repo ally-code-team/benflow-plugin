@@ -2987,7 +2987,7 @@ var require_compile = __commonJS({
       const schOrFunc = root.refs[ref];
       if (schOrFunc)
         return schOrFunc;
-      let _sch = resolve13.call(this, root, ref);
+      let _sch = resolve14.call(this, root, ref);
       if (_sch === void 0) {
         const schema = (_a3 = root.localRefs) === null || _a3 === void 0 ? void 0 : _a3[ref];
         const { schemaId } = this.opts;
@@ -3014,7 +3014,7 @@ var require_compile = __commonJS({
     function sameSchemaEnv(s1, s2) {
       return s1.schema === s2.schema && s1.root === s2.root && s1.baseId === s2.baseId;
     }
-    function resolve13(root, ref) {
+    function resolve14(root, ref) {
       let sch;
       while (typeof (sch = this.refs[ref]) == "string")
         ref = sch;
@@ -3844,7 +3844,7 @@ var require_fast_uri = __commonJS({
       }
       return uri;
     }
-    function resolve13(baseURI, relativeURI, options) {
+    function resolve14(baseURI, relativeURI, options) {
       const schemelessOptions = options ? Object.assign({ scheme: "null" }, options) : { scheme: "null" };
       const {
         parsed: baseParsed,
@@ -4213,7 +4213,7 @@ var require_fast_uri = __commonJS({
     var fastUri = {
       SCHEMES,
       normalize,
-      resolve: resolve13,
+      resolve: resolve14,
       resolveComponent,
       equal,
       serialize,
@@ -7205,7 +7205,7 @@ var require_dist = __commonJS({
 // connector/cli.ts
 import { spawn as spawn9 } from "node:child_process";
 import { existsSync as existsSync19, realpathSync as realpathSync12, statSync as statSync18 } from "node:fs";
-import { dirname as dirname15, join as join27, resolve as resolve12 } from "node:path";
+import { dirname as dirname15, join as join29, resolve as resolve13 } from "node:path";
 import { fileURLToPath as fileURLToPath3 } from "node:url";
 import { parseArgs } from "node:util";
 
@@ -7816,7 +7816,13 @@ var CONNECTOR_CAPABILITIES = [
   "ler-projetos",
   // Projeto do zero (repoCreate.ts): cria a pasta e o repositório privado no GitHub pelo gh logado (repoCreates na
   // resposta do batimento, resposta em POST /api/agent/repo-criado).
-  "criar-repo"
+  "criar-repo",
+  // Atualização do cofre depois da produção no cofre enviado ao Benflow (vaultUpdateEnvio.ts): baixa a produção do cofre,
+  // o Claude trabalha numa cópia e as notas voltam para o Benflow, sem a pasta do cofre nesta máquina.
+  "atualizar-cofre-enviado",
+  // Achar a pasta do cofre do projeto (vaultFind.ts): o batimento traz caminhos de notas do cofre do servidor (vaultFind)
+  // e o executor procura nas pastas do Google Drive desta máquina a que tem as mesmas notas; achou, grava no config.
+  "achar-cofre"
 ];
 var PLUGIN_UPDATE_CAPABILITY = "atualizar-plugin";
 var PROJECT_VAULT_CAPABILITY = "cofre-projeto";
@@ -8350,6 +8356,17 @@ var AgentClient = class _AgentClient {
     };
     return this.requestJson("POST", `/api/agent/jobs/${jobId}/cofre-organizar`, { form, timeoutMs: 5 * 6e4 });
   }
+  // Fim da atualização depois da produção no cofre enviado: o resumo, as notas e o hash do conteúdo recebido de cada uma
+  // (vai antes do arquivo) e o pacote das notas mudadas.
+  vaultEnvioResult(jobId, result, pkg) {
+    const form = async () => {
+      const fd = new FormData();
+      fd.append("resultado", JSON.stringify(result));
+      if (pkg) fd.append("cofre", new Blob([new Uint8Array(pkg)], { type: "application/gzip" }), "notas.json.gz");
+      return fd;
+    };
+    return this.requestJson("POST", `/api/agent/jobs/${jobId}/cofre-notas`, { form, timeoutMs: 5 * 6e4 });
+  }
   // Resposta final da conversa do modo Claude (o servidor entrega no Telegram).
   jobResult(jobId, body) {
     return this.requestJson("POST", `/api/agent/jobs/${jobId}/result`, { json: body });
@@ -8404,10 +8421,10 @@ var AgentClient = class _AgentClient {
 
 // connector/executor.ts
 import { execFile as execFile4, execFileSync, spawn as spawn7 } from "node:child_process";
-import { existsSync as existsSync18, mkdirSync as mkdirSync11, mkdtempSync as mkdtempSync8, readFileSync as readFileSync16, realpathSync as realpathSync10, rmSync as rmSync12, statSync as statSync16, writeFileSync as writeFileSync13 } from "node:fs";
+import { existsSync as existsSync18, mkdirSync as mkdirSync12, mkdtempSync as mkdtempSync9, readFileSync as readFileSync17, realpathSync as realpathSync10, rmSync as rmSync13, statSync as statSync16, writeFileSync as writeFileSync13 } from "node:fs";
 import { createRequire } from "node:module";
-import os15 from "node:os";
-import { isAbsolute as isAbsolute6, join as join25, relative as relative6, resolve as resolve10 } from "node:path";
+import os16 from "node:os";
+import { isAbsolute as isAbsolute6, join as join27, relative as relative6, resolve as resolve11 } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath as fileURLToPath2, pathToFileURL } from "node:url";
 
@@ -8493,10 +8510,10 @@ async function identity(p) {
   }
 }
 function defaultRun(cmd, args, timeoutMs) {
-  return new Promise((resolve13) => {
+  return new Promise((resolve14) => {
     execFile(cmd, args, { timeout: timeoutMs, windowsHide: true, env: { ...process.env, GH_PROMPT_DISABLED: "1", GIT_TERMINAL_PROMPT: "0" } }, (err, stdout, stderr) => {
       const code = err ? typeof err.code === "number" ? err.code : 1 : 0;
-      resolve13({ code, out: `${stdout ?? ""}
+      resolve14({ code, out: `${stdout ?? ""}
 ${stderr ?? ""}` });
     });
   });
@@ -8829,10 +8846,10 @@ import { mkdir, readdir as readdir2, writeFile } from "node:fs/promises";
 import os4 from "node:os";
 import { join as join5, relative as relative2, sep as sep3 } from "node:path";
 function defaultRun2(cmd, args, opts) {
-  return new Promise((resolve13) => {
+  return new Promise((resolve14) => {
     execFile2(cmd, args, { cwd: opts.cwd, timeout: opts.timeoutMs, windowsHide: true, env: { ...process.env, GH_PROMPT_DISABLED: "1", GIT_TERMINAL_PROMPT: "0" } }, (err, stdout, stderr) => {
       const code = err ? typeof err.code === "number" ? err.code : 1 : 0;
-      resolve13({ code, out: `${stdout ?? ""}
+      resolve14({ code, out: `${stdout ?? ""}
 ${stderr ?? ""}`.trim() });
     });
   });
@@ -8958,8 +8975,8 @@ async function missing(exec, path2, head, ref, exclude = null) {
   const total = await git(exec, path2, ["rev-list", "--count", ...range]);
   const n2 = total.code === 0 ? Number(total.stdout.trim()) || 0 : 0;
   if (!n2) return { total: 0, shown: 0 };
-  const real2 = await git(exec, path2, ["rev-list", "--count", "--no-merges", ...range]);
-  const m = real2.code === 0 ? Number(real2.stdout.trim()) || 0 : 0;
+  const real3 = await git(exec, path2, ["rev-list", "--count", "--no-merges", ...range]);
+  const m = real3.code === 0 ? Number(real3.stdout.trim()) || 0 : 0;
   return { total: n2, shown: m || n2 };
 }
 async function subjects(exec, path2, head, ref, exclude) {
@@ -11571,10 +11588,10 @@ var CHROME_PATHS = {
     "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
   ]
 };
-function findChrome(env = process.env, platform = process.platform, exists = existsSync9) {
+function findChrome(env = process.env, platform = process.platform, exists2 = existsSync9) {
   const custom2 = env.CHROME_BIN?.trim();
   const perUser = platform === "win32" && env.LOCALAPPDATA ? [`${env.LOCALAPPDATA}\\Google\\Chrome\\Application\\chrome.exe`] : [];
-  return [...custom2 ? [custom2] : [], ...perUser, ...CHROME_PATHS[platform] ?? []].find((p) => exists(p)) ?? null;
+  return [...custom2 ? [custom2] : [], ...perUser, ...CHROME_PATHS[platform] ?? []].find((p) => exists2(p)) ?? null;
 }
 function chromeArgs(profile) {
   return [
@@ -11697,7 +11714,7 @@ function captureFileName(titulo, seq) {
   const slug = titulo.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60).replace(/-+$/, "");
   return `captura-${String(seq).padStart(2, "0")}${slug ? `-${slug}` : ""}.png`;
 }
-var sleep = (ms) => new Promise((resolve13) => setTimeout(resolve13, ms));
+var sleep = (ms) => new Promise((resolve14) => setTimeout(resolve14, ms));
 var clampWait = (ms, fallback) => Math.min(Math.max(0, ms ?? fallback), CAPTURE_WAIT_MAX);
 function connect(child) {
   const out = child.stdio[3];
@@ -11736,10 +11753,10 @@ function connect(child) {
     pending.clear();
   });
   return {
-    send: (method, params = {}, sessionId) => new Promise((resolve13, reject) => {
+    send: (method, params = {}, sessionId) => new Promise((resolve14, reject) => {
       if (input2.destroyed) return reject(new Error("O Chrome sem tela j\xE1 fechou."));
       const id = ++seq;
-      pending.set(id, { resolve: resolve13, reject, method });
+      pending.set(id, { resolve: resolve14, reject, method });
       out.write(`${JSON.stringify({ id, method, params, ...sessionId ? { sessionId } : {} })}\0`);
     }),
     on: (fn) => {
@@ -11754,7 +11771,7 @@ async function openTab(conn) {
   if (!targetId || !sessionId) throw new Error("O Chrome sem tela n\xE3o abriu a aba.");
   return {
     send: (method, params) => conn.send(method, params, sessionId),
-    once: (event, timeoutMs) => new Promise((resolve13) => {
+    once: (event, timeoutMs) => new Promise((resolve14) => {
       const off = conn.on((m) => {
         if (m.sessionId === sessionId && m.method === event) done(true);
       });
@@ -11762,7 +11779,7 @@ async function openTab(conn) {
       function done(ok) {
         clearTimeout(timer);
         off();
-        resolve13(ok);
+        resolve14(ok);
       }
     }),
     on: (event, fn) => conn.on((m) => {
@@ -17666,7 +17683,7 @@ var recursive = /* @__PURE__ */ new WeakMap();
 var NONE = 0;
 var ASSUMED = 1;
 var PROVEN = 2;
-function isRecursive(inst, stack, resolve13) {
+function isRecursive(inst, stack, resolve14) {
   const cached3 = recursive.get(inst);
   if (cached3 !== void 0)
     return cached3 ? PROVEN : NONE;
@@ -17676,7 +17693,7 @@ function isRecursive(inst, stack, resolve13) {
   let result = NONE;
   const check2 = (child) => {
     if (result !== PROVEN && child?._zod) {
-      const answer = isRecursive(child, stack, resolve13);
+      const answer = isRecursive(child, stack, resolve14);
       if (answer > result)
         result = answer;
     }
@@ -17687,7 +17704,7 @@ function isRecursive(inst, stack, resolve13) {
       const desc = Object.getOwnPropertyDescriptor(sh, key);
       if (spread && !desc.enumerable)
         continue;
-      const child = desc.get ? ASSUMED : desc.value?._zod ? isRecursive(desc.value, stack, resolve13) : NONE;
+      const child = desc.get ? ASSUMED : desc.value?._zod ? isRecursive(desc.value, stack, resolve14) : NONE;
       if (child > answer)
         answer = child;
     }
@@ -17751,7 +17768,7 @@ function isRecursive(inst, stack, resolve13) {
       break;
     // `$ZodLazy` caches its inner on the def, so a resolved edge is followed exactly
     case "lazy": {
-      const inner = def._cachedInner ?? (resolve13 ? inst._zod.innerType : void 0);
+      const inner = def._cachedInner ?? (resolve14 ? inst._zod.innerType : void 0);
       merge2(inner ? isRecursive(inner, stack, false) : ASSUMED);
       break;
     }
@@ -33569,7 +33586,7 @@ ${JSON.stringify(req.schema)}`, { mode: 384 });
     const spawnFn = opts.spawnFn ?? ((c, a, o) => spawn4(c, a, o));
     const timeoutMs = Math.min(Math.max(req.timeoutMs || 3e5, 3e4), MAX_TIMEOUT_MS);
     const cwd = req.code?.dirs[0] ?? (req.files?.dir || tmp);
-    const stdout = await new Promise((resolve13, reject) => {
+    const stdout = await new Promise((resolve14, reject) => {
       const child = spawnFn(run.command, run.args, { cwd, env: opts.env, stdio: ["pipe", "pipe", "pipe"], windowsHide: true, windowsVerbatimArguments: run.verbatim });
       let out = "";
       let err = "";
@@ -33604,7 +33621,7 @@ ${JSON.stringify(req.schema)}`, { mode: 384 });
       });
       child.on("error", (e) => done(() => reject(e)));
       child.on("close", (code) => {
-        if (code === 0 || out.trim()) done(() => resolve13(out));
+        if (code === 0 || out.trim()) done(() => resolve14(out));
         else done(() => reject(new Error(`o claude saiu com c\xF3digo ${code}: ${err.trim().slice(0, 300)}`)));
       });
       child.stdin?.end(req.prompt);
@@ -33748,7 +33765,7 @@ function buildVaultRules(job, protectedDirs, today) {
   const hoje = dateBr(today);
   const folders = protectedDirs.length ? protectedDirs.join(", ") : ".obsidian, .trash";
   return [
-    `Voc\xEA \xE9 o Claude do projeto ${dataText(job.orgName || job.orgSlug)} atualizando o cofre do Obsidian do projeto depois de uma publica\xE7\xE3o em produ\xE7\xE3o. A pasta de trabalho \xE9 a raiz desse cofre, compartilhado com a equipe pelo Google Drive.`,
+    `Voc\xEA \xE9 o Claude do projeto ${dataText(job.orgName || job.orgSlug)} atualizando o cofre do Obsidian do projeto depois de uma publica\xE7\xE3o em produ\xE7\xE3o. ${job.target === "envio" ? "A pasta de trabalho \xE9 uma c\xF3pia do cofre do projeto guardado no Benflow: as notas que voc\xEA criar ou mudar voltam para ele." : "A pasta de trabalho \xE9 a raiz desse cofre, compartilhado com a equipe pelo Google Drive."}`,
     "",
     "Regras:",
     "- Trabalhe s\xF3 com as notas .md desta pasta, usando Glob, Grep, Read, Edit e Write. N\xE3o saia da pasta e n\xE3o crie outros tipos de arquivo.",
@@ -33869,7 +33886,7 @@ ${JSON.stringify(schema)}`, { mode: 384 });
     const spawnFn = opts.spawnFn ?? ((c, a, o2) => spawn5(c, a, o2));
     const timeoutMs = Math.min(Math.max(input2.timeoutMs || DEFAULT_TIMEOUT_MS, 6e4), MAX_TIMEOUT_MS2);
     const before = snapshotNotes(vaultDir);
-    const stdout = await new Promise((resolve13, reject) => {
+    const stdout = await new Promise((resolve14, reject) => {
       const child = spawnFn(run.command, run.args, { cwd: vaultDir, env: opts.env, stdio: ["pipe", "pipe", "pipe"], windowsHide: true, windowsVerbatimArguments: run.verbatim });
       let out = "";
       let err = "";
@@ -33911,7 +33928,7 @@ ${JSON.stringify(schema)}`, { mode: 384 });
       child.on("error", (e) => done(() => reject(e)));
       child.on("close", (code) => {
         if (code !== 0 && /unknown option.*restricted|restricted.*(unknown|not recognized)/i.test(err)) return done(() => reject(new Error(MSG_CLAUDE_TOO_OLD)));
-        if (code === 0 || out.trim()) done(() => resolve13(out));
+        if (code === 0 || out.trim()) done(() => resolve14(out));
         else done(() => reject(new Error(`o claude saiu com c\xF3digo ${code}: ${err.trim().slice(0, 300)}`)));
       });
       child.stdin?.end(prompt);
@@ -34093,14 +34110,14 @@ async function searchVault(root, query, limit = 8) {
       const rel = batch[k];
       const normPath = normalizeText(rel);
       let matched = 0;
-      let score = 0;
+      let score2 = 0;
       for (const t of terms) {
         const inPath = normPath.includes(t);
         const count = countOccurrences(note.norm, t, 20);
         if (inPath || count > 0) matched++;
-        score += Math.min(count, 10) + (inPath ? 5 : 0);
+        score2 += Math.min(count, 10) + (inPath ? 5 : 0);
       }
-      if (matched) scored.push({ rel, full: join17(base, rel), title: note.title, score: matched * 100 + score });
+      if (matched) scored.push({ rel, full: join17(base, rel), title: note.title, score: matched * 100 + score2 });
     });
   }
   scored.sort((a, b) => b.score - a.score || a.rel.localeCompare(b.rel));
@@ -34129,19 +34146,19 @@ function readVaultNote(root, relPath) {
   } catch {
     throw new VaultPathError("A pasta do cofre pessoal n\xE3o foi encontrada.");
   }
-  let real2;
+  let real3;
   try {
-    real2 = realpathSync8(resolve8(base, rel));
+    real3 = realpathSync8(resolve8(base, rel));
   } catch {
     throw new VaultPathError(`Nota n\xE3o encontrada no cofre pessoal: ${rel}`);
   }
-  if (real2 !== base && !real2.startsWith(base + sep5)) throw new VaultPathError("Caminho fora do cofre pessoal n\xE3o \xE9 permitido.");
-  if (!real2.toLowerCase().endsWith(".md")) throw new VaultPathError("S\xF3 notas .md podem ser lidas.");
-  const st = statSync11(real2);
+  if (real3 !== base && !real3.startsWith(base + sep5)) throw new VaultPathError("Caminho fora do cofre pessoal n\xE3o \xE9 permitido.");
+  if (!real3.toLowerCase().endsWith(".md")) throw new VaultPathError("S\xF3 notas .md podem ser lidas.");
+  const st = statSync11(real3);
   if (!st.isFile()) throw new VaultPathError(`Nota n\xE3o encontrada no cofre pessoal: ${rel}`);
   if (st.size > MAX_NOTE_BYTES) throw new VaultPathError("A nota \xE9 grande demais para ler de uma vez.");
-  const content = readFileSync9(real2, "utf8");
-  const path2 = relative4(base, real2);
+  const content = readFileSync9(real3, "utf8");
+  const path2 = relative4(base, real3);
   return { path: path2, title: noteTitle(path2, content), content };
 }
 
@@ -34695,11 +34712,180 @@ async function runVaultOrganize(job, opts) {
   }
 }
 
+// connector/vaultFind.ts
+import { access, readdir as readdir4, realpath as realpath2, stat as stat3 } from "node:fs/promises";
+import { basename as basename5, join as join20, resolve as resolve9 } from "node:path";
+var FIND_SAMPLE_MAX = 40;
+var FIND_MATCH_MIN = 0.8;
+var CANDIDATES_MAX = 600;
+var LISTINGS_MAX = 200;
+var DRIVE_DEPTH = 3;
+var DRIVE_FOLDERS = ["Meu Drive", "My Drive", "Drives compartilhados", "Shared drives"];
+async function isDir2(p) {
+  try {
+    return (await stat3(p)).isDirectory();
+  } catch {
+    return false;
+  }
+}
+async function exists(p) {
+  try {
+    await access(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
+async function subdirs2(dir) {
+  try {
+    const entries2 = await readdir4(dir, { withFileTypes: true });
+    const out = [];
+    for (const e of entries2) {
+      if (e.name.startsWith(".")) continue;
+      const p = join20(dir, e.name);
+      if (e.isDirectory() || e.isSymbolicLink() && await isDir2(p)) out.push(p);
+    }
+    return out.sort((a, b) => a.localeCompare(b));
+  } catch {
+    return [];
+  }
+}
+async function driveRoots(home, platform = process.platform) {
+  const out = [];
+  const add = async (p) => {
+    if (!out.includes(p) && await isDir2(p)) out.push(p);
+  };
+  for (const account of await subdirs2(join20(home, "Library", "CloudStorage"))) {
+    if (/^GoogleDrive/i.test(basename5(account))) for (const d of await subdirs2(account)) await add(d);
+  }
+  for (const name of ["Google Drive", "GoogleDrive", "Meu Drive", "My Drive"]) {
+    const p = join20(home, name);
+    if (!await isDir2(p)) continue;
+    const inner = (await subdirs2(p)).filter((d) => DRIVE_FOLDERS.some((f) => f.toLowerCase() === basename5(d).toLowerCase()));
+    if (inner.length) for (const d of inner) await add(d);
+    else await add(p);
+  }
+  if (platform === "win32") {
+    for (const letter of "DEFGHIJKLMNOPQRSTUVWXYZ") for (const name of DRIVE_FOLDERS) await add(`${letter}:\\${name}`);
+  }
+  return out;
+}
+function findSample(paths, max = FIND_SAMPLE_MAX) {
+  const clean = [
+    ...new Set(paths.filter((p) => typeof p === "string" && /\.md$/i.test(p) && !p.split("/").some((x) => !x || x === "." || x === ".." || x.includes("\\") || x.includes("\0"))))
+  ].sort((a, b) => a.localeCompare(b));
+  if (clean.length <= max) return clean;
+  return Array.from({ length: max }, (_, i) => clean[Math.floor(i * clean.length / max)]);
+}
+async function real2(p) {
+  try {
+    return await realpath2(p);
+  } catch {
+    return resolve9(p);
+  }
+}
+async function score(dir, sample) {
+  let hit = 0;
+  for (const p of sample) if (await exists(join20(dir, ...p.split("/")))) hit++;
+  return sample.length ? hit / sample.length : 0;
+}
+async function findVaultFolder(input2) {
+  const sample = findSample(input2.paths);
+  if (!sample.length) return null;
+  const probe = [.../* @__PURE__ */ new Set([sample[0], sample[Math.floor(sample.length / 2)], sample[sample.length - 1]])];
+  const need = probe.length >= 3 ? probe.length - 1 : probe.length;
+  const others = /* @__PURE__ */ new Set();
+  for (const v of input2.otherVaults) others.add(await real2(v));
+  const seen = /* @__PURE__ */ new Set();
+  const candidates = [];
+  const push = async (p, rank2) => {
+    const r = await real2(p);
+    if (seen.has(r) || others.has(r) || candidates.length >= CANDIDATES_MAX) return;
+    seen.add(r);
+    candidates.push({ dir: r, rank: rank2 });
+  };
+  for (const v of input2.otherVaults) for (const d of await subdirs2(resolve9(v, ".."))) await push(d, 0);
+  let level = input2.drives.map((dir, i) => ({ dir, rank: i + 1 }));
+  let listings = 0;
+  for (let depth = 1; depth <= DRIVE_DEPTH && level.length; depth++) {
+    const next = [];
+    for (const { dir, rank: rank2 } of level) {
+      if (listings >= LISTINGS_MAX) break;
+      listings++;
+      for (const d of await subdirs2(dir)) {
+        await push(d, rank2);
+        next.push({ dir: d, rank: rank2 });
+      }
+    }
+    level = next;
+  }
+  let best = -1;
+  let top = [];
+  for (const c of candidates) {
+    let quick = 0;
+    for (const p of probe) if (await exists(join20(c.dir, ...p.split("/")))) quick++;
+    if (quick < need) continue;
+    const s2 = await score(c.dir, sample);
+    if (s2 < FIND_MATCH_MIN) continue;
+    if (s2 > best) {
+      best = s2;
+      top = [c];
+    } else if (s2 === best) top.push(c);
+  }
+  if (!top.length) return null;
+  const rank = Math.min(...top.map((c) => c.rank));
+  const first = top.filter((c) => c.rank === rank);
+  return first.length === 1 ? first[0].dir : null;
+}
+
+// connector/vaultUpdateEnvio.ts
+import { createHash as createHash5 } from "node:crypto";
+import { mkdirSync as mkdirSync9, mkdtempSync as mkdtempSync8, readFileSync as readFileSync12, rmSync as rmSync11 } from "node:fs";
+import os14 from "node:os";
+import { join as join21 } from "node:path";
+import { gunzipSync as gunzipSync3 } from "node:zlib";
+var sha2562 = (text2) => createHash5("sha256").update(text2, "utf8").digest("hex");
+async function runVaultUpdateEnvio(job, opts) {
+  const base = mkdtempSync8(join21(os14.tmpdir(), "benflow-cofre-enviado-"));
+  try {
+    const dir = join21(base, "cofre");
+    mkdirSync9(dir);
+    const pkg = await opts.client.downloadVaultProduction(opts.jobId);
+    unpackVault(pkg, dir);
+    const original = /* @__PURE__ */ new Map();
+    for (const f of JSON.parse(gunzipSync3(pkg).toString("utf8")).files ?? []) {
+      if (typeof f.path === "string" && typeof f.content === "string") original.set(f.path.normalize("NFC"), f.content);
+    }
+    const result = await runVaultUpdate(job, dir, opts);
+    const files = [];
+    const bases = {};
+    for (const raw of result.notes) {
+      const path2 = raw.normalize("NFC");
+      let content;
+      try {
+        content = readFileSync12(join21(dir, ...raw.split("/")), "utf8");
+      } catch {
+        continue;
+      }
+      if (original.get(path2) === content) continue;
+      files.push({ path: path2, content });
+      bases[path2] = original.has(path2) ? sha2562(original.get(path2)) : null;
+    }
+    const summary = opts.redact ? opts.redact(result.summary) : result.summary;
+    const res = await opts.client.vaultEnvioResult(opts.jobId, { summary, notes: files.map((f) => f.path), bases }, files.length ? packVault(files) : null);
+    const local = opts.localVault;
+    const mirrored = files.length && local && isDirectory(local) && sameVault(original, local) ? mirrorToLocal(local, original, files, []) : 0;
+    return { summary, notes: files.map((f) => f.path), skipped: res?.skipped ?? 0, mirrored };
+  } finally {
+    rmSync11(base, { recursive: true, force: true });
+  }
+}
+
 // connector/links.ts
 import { spawn as spawn6 } from "node:child_process";
-import { closeSync as closeSync3, existsSync as existsSync13, openSync as openSync3, readFileSync as readFileSync12, statSync as statSync13, writeFileSync as writeFileSync12 } from "node:fs";
-import { dirname as dirname11, join as join20 } from "node:path";
-var isDir2 = (p) => {
+import { closeSync as closeSync3, existsSync as existsSync13, openSync as openSync3, readFileSync as readFileSync13, statSync as statSync13, writeFileSync as writeFileSync12 } from "node:fs";
+import { dirname as dirname11, join as join22 } from "node:path";
+var isDir3 = (p) => {
   try {
     return existsSync13(p) && statSync13(p).isDirectory();
   } catch {
@@ -34709,7 +34895,7 @@ var isDir2 = (p) => {
 function executorFiles(configFile, url2, orgSlug) {
   const host = url2.replace(/^https?:\/\//i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   const dir = dirname11(configFile);
-  return { pid: join20(dir, `executor-${host}-${orgSlug}.pid`), log: join20(dir, `executor-${host}-${orgSlug}.log`) };
+  return { pid: join22(dir, `executor-${host}-${orgSlug}.pid`), log: join22(dir, `executor-${host}-${orgSlug}.log`) };
 }
 function findLocalRepos(servers, current, wanted) {
   const ordered = [current, ...servers.filter((s2) => s2 !== current)];
@@ -34717,7 +34903,7 @@ function findLocalRepos(servers, current, wanted) {
   for (const s2 of ordered) {
     for (const [name, path2] of Object.entries(s2.repos ?? {})) {
       const key = name.toLowerCase();
-      if (!index.has(key) && isDir2(path2)) index.set(key, path2);
+      if (!index.has(key) && isDir3(path2)) index.set(key, path2);
     }
   }
   const found = {};
@@ -34759,10 +34945,10 @@ function applyLinkOffer(offer, deps) {
     const cfg = loadConfig(deps.configFile);
     const url2 = normalizeUrl(deps.current.url);
     const local = findLocalRepos(cfg.servers, deps.current, offer.repos ?? []);
-    const chosen = Object.fromEntries(Object.entries(offer.paths ?? {}).filter(([name, path2]) => (offer.repos ?? []).some((r) => r.toLowerCase() === name.toLowerCase()) && !!path2 && isDir2(join20(path2, ".git"))));
+    const chosen = Object.fromEntries(Object.entries(offer.paths ?? {}).filter(([name, path2]) => (offer.repos ?? []).some((r) => r.toLowerCase() === name.toLowerCase()) && !!path2 && isDir3(join22(path2, ".git"))));
     const found = { ...local.found, ...chosen };
     const missing2 = local.missing.filter((name) => !Object.keys(chosen).some((c) => c.toLowerCase() === name.toLowerCase()));
-    const projectVault = offer.projectVault && isDir2(offer.projectVault) ? offer.projectVault : null;
+    const projectVault = offer.projectVault && isDir3(offer.projectVault) ? offer.projectVault : null;
     const { config: config2, entry, created } = upsertServer(cfg, { url: url2, token: offer.token, orgSlug: offer.orgSlug, repos: found, ...projectVault ? { projectVault } : {} });
     if (created) entry.claude = { ...deps.current.claude, allowedTools: [...deps.current.claude.allowedTools] };
     saveConfig(config2, deps.configFile);
@@ -34770,7 +34956,7 @@ function applyLinkOffer(offer, deps) {
     const files = executorFiles(deps.configFile, url2, offer.orgSlug);
     const isAlive = deps.isAlive ?? defaultIsAlive;
     if (existsSync13(files.pid)) {
-      const old = Number(readFileSync12(files.pid, "utf8").trim());
+      const old = Number(readFileSync13(files.pid, "utf8").trim());
       if (old && old !== process.pid && isAlive(old)) {
         try {
           ;
@@ -34788,9 +34974,9 @@ function applyLinkOffer(offer, deps) {
 }
 
 // connector/keyFetch.ts
-import { existsSync as existsSync14, readFileSync as readFileSync13, realpathSync as realpathSync9, statSync as statSync14 } from "node:fs";
+import { existsSync as existsSync14, readFileSync as readFileSync14, realpathSync as realpathSync9, statSync as statSync14 } from "node:fs";
 import { homedir } from "node:os";
-import { join as join21, relative as relative5, sep as sep6 } from "node:path";
+import { join as join23, relative as relative5, sep as sep6 } from "node:path";
 
 // server/services/keySources.ts
 var KEY_SOURCE_PATH_MAX = 200;
@@ -34891,17 +35077,17 @@ function readRepoFile(repos, path2) {
   const dirs = Object.values(repos).filter((d) => d && existsSync14(d));
   if (!dirs.length) return { error: "Esta m\xE1quina n\xE3o tem a pasta do reposit\xF3rio do projeto." };
   for (const dir of dirs) {
-    const file2 = join21(dir, path2);
+    const file2 = join23(dir, path2);
     if (!existsSync14(file2)) continue;
     try {
       const realDir2 = realpathSync9(dir);
-      const real2 = realpathSync9(file2);
-      const rel = relative5(realDir2, real2);
+      const real3 = realpathSync9(file2);
+      const rel = relative5(realDir2, real3);
       if (!rel || rel.startsWith("..") || rel.startsWith(sep6)) return { error: `${path2} aponta para fora da pasta do reposit\xF3rio.` };
-      const st = statSync14(real2);
+      const st = statSync14(real3);
       if (!st.isFile()) return { error: `${path2} n\xE3o \xE9 um arquivo.` };
       if (st.size > KEY_SOURCE_FILE_MAX) return { error: `${path2} \xE9 grande demais para ser um arquivo de ambiente.` };
-      return { text: readFileSync13(real2, "utf8") };
+      return { text: readFileSync14(real3, "utf8") };
     } catch (err) {
       return { error: `N\xE3o deu para ler ${path2}: ${err instanceof Error ? err.message : String(err)}` };
     }
@@ -35075,22 +35261,22 @@ async function runBranchShare(exec, repos, req) {
 }
 
 // connector/version.ts
-import { existsSync as existsSync15, readFileSync as readFileSync14 } from "node:fs";
-import { dirname as dirname12, join as join22 } from "node:path";
+import { existsSync as existsSync15, readFileSync as readFileSync15 } from "node:fs";
+import { dirname as dirname12, join as join24 } from "node:path";
 import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.57") {
-    cached2 = "0.1.57";
+  if ("0.1.58") {
+    cached2 = "0.1.58";
     return cached2;
   }
   let dir = dirname12(fileURLToPath(import.meta.url));
   for (let i = 0; i < 5; i++) {
-    const file2 = join22(dir, "package.json");
+    const file2 = join24(dir, "package.json");
     if (existsSync15(file2)) {
       try {
-        const pkg = JSON.parse(readFileSync14(file2, "utf8"));
+        const pkg = JSON.parse(readFileSync15(file2, "utf8"));
         if (pkg.version) {
           cached2 = pkg.version;
           return cached2;
@@ -35234,9 +35420,9 @@ function toolChange(name, input2, path2) {
 }
 
 // connector/repoProvision.ts
-import { existsSync as existsSync16, mkdirSync as mkdirSync9, readdirSync as readdirSync7, readFileSync as readFileSync15, renameSync as renameSync5, rmSync as rmSync11 } from "node:fs";
-import os14 from "node:os";
-import { basename as basename5, dirname as dirname13, join as join23 } from "node:path";
+import { existsSync as existsSync16, mkdirSync as mkdirSync10, readdirSync as readdirSync7, readFileSync as readFileSync16, renameSync as renameSync5, rmSync as rmSync12 } from "node:fs";
+import os15 from "node:os";
+import { basename as basename6, dirname as dirname13, join as join25 } from "node:path";
 var REPO_RE = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 var CLONE_TIMEOUT_MS = 15 * 6e4;
 var MSG_NO_ACCESS_PREFIX = "Sem acesso ao reposit\xF3rio";
@@ -35245,36 +35431,36 @@ function msgNoAccess(name, detail) {
   const why = detail ? ` (${detail})` : "";
   return `${MSG_NO_ACCESS_PREFIX} ${name} pelo GitHub desta m\xE1quina${why}. ${MSG_NO_ACCESS_FIX}`;
 }
-function repoKeyPath(name, home = os14.homedir()) {
-  return join23(home, ".benflow", "ssh", `github-${name.toLowerCase().replace(/[^a-z0-9._-]+/g, "-")}`);
+function repoKeyPath(name, home = os15.homedir()) {
+  return join25(home, ".benflow", "ssh", `github-${name.toLowerCase().replace(/[^a-z0-9._-]+/g, "-")}`);
 }
-async function ensureRepoKey(name, exec, home = os14.homedir()) {
+async function ensureRepoKey(name, exec, home = os15.homedir()) {
   const path2 = repoKeyPath(name, home);
   if (!existsSync16(`${path2}.pub`)) {
     try {
-      mkdirSync9(dirname13(path2), { recursive: true, mode: 448 });
+      mkdirSync10(dirname13(path2), { recursive: true, mode: 448 });
     } catch {
       return null;
     }
-    const res = await exec("ssh-keygen", ["-q", "-t", "ed25519", "-N", "", "-C", `benflow ${os14.hostname()} ${name}`, "-f", path2]);
+    const res = await exec("ssh-keygen", ["-q", "-t", "ed25519", "-N", "", "-C", `benflow ${os15.hostname()} ${name}`, "-f", path2]);
     if (res.code !== 0) return null;
   }
   try {
-    return readFileSync15(`${path2}.pub`, "utf8").trim();
+    return readFileSync16(`${path2}.pub`, "utf8").trim();
   } catch {
     return null;
   }
 }
-function repoPublicKey(name, home = os14.homedir()) {
+function repoPublicKey(name, home = os15.homedir()) {
   try {
-    const key = readFileSync15(`${repoKeyPath(name, home)}.pub`, "utf8").trim();
+    const key = readFileSync16(`${repoKeyPath(name, home)}.pub`, "utf8").trim();
     return /^ssh-ed25519 \S+/.test(key) ? key : null;
   } catch {
     return null;
   }
 }
-function listRepoKeys(home = os14.homedir()) {
-  const dir = join23(home, ".benflow", "ssh");
+function listRepoKeys(home = os15.homedir()) {
+  const dir = join25(home, ".benflow", "ssh");
   let files = [];
   try {
     files = readdirSync7(dir).filter((f) => f.startsWith("github-") && f.endsWith(".pub"));
@@ -35284,7 +35470,7 @@ function listRepoKeys(home = os14.homedir()) {
   const out = [];
   for (const f of files.sort()) {
     try {
-      const publicKey = readFileSync15(join23(dir, f), "utf8").trim();
+      const publicKey = readFileSync16(join25(dir, f), "utf8").trim();
       const repo = publicKey.split(/\s+/).pop() ?? "";
       if (REPO_RE.test(repo) && /^ssh-ed25519 \S+/.test(publicKey)) out.push({ repo, publicKey });
     } catch {
@@ -35298,12 +35484,12 @@ function cloneBase(servers) {
       if (path2 && existsSync16(path2)) return dirname13(path2);
     }
   }
-  return join23(os14.homedir(), "Developer", "benflow-ia");
+  return join25(os15.homedir(), "Developer", "benflow-ia");
 }
 function freeTarget(base, name) {
-  const repo = basename5(name);
-  let target = join23(base, repo);
-  for (let i = 2; existsSync16(target); i++) target = join23(base, `${repo}-${i}`);
+  const repo = basename6(name);
+  let target = join25(base, repo);
+  for (let i = 2; existsSync16(target); i++) target = join25(base, `${repo}-${i}`);
   return target;
 }
 function originMatches(url2, name) {
@@ -35317,7 +35503,7 @@ function gitReason(stderr) {
   return main.replace(/^(remote|fatal):\s*/i, "").slice(0, 200);
 }
 async function isUsableClone(path2, name, exec) {
-  if (!existsSync16(join23(path2, ".git"))) return false;
+  if (!existsSync16(join25(path2, ".git"))) return false;
   const head = await exec("git", ["-C", path2, "rev-parse", "--verify", "--quiet", "HEAD"]);
   if (head.code !== 0) return false;
   const origin = await exec("git", ["-C", path2, "remote", "get-url", "origin"]);
@@ -35334,14 +35520,14 @@ async function cloneInto(name, target, exec, home) {
   if (existsSync16(key)) attempts.push({ url: `git@github.com:${name}.git`, env: { GIT_SSH_COMMAND: sshCommand(key) }, key });
   let reason = "";
   for (const a of attempts) {
-    rmSync11(temp, { recursive: true, force: true });
+    rmSync12(temp, { recursive: true, force: true });
     const res = await exec("git", ["clone", "--quiet", a.url, temp], { timeoutMs: CLONE_TIMEOUT_MS, env: a.env });
     if (res.code === 0) {
       if (a.key) await exec("git", ["-C", temp, "config", "core.sshCommand", `ssh -i "${a.key}" -o IdentitiesOnly=yes`]);
       try {
         renameSync5(temp, target);
       } catch (err) {
-        rmSync11(temp, { recursive: true, force: true });
+        rmSync12(temp, { recursive: true, force: true });
         return { ok: false, reason: `n\xE3o consegui mover o clone para ${target}: ${err instanceof Error ? err.message : String(err)}` };
       }
       return { ok: true };
@@ -35349,7 +35535,7 @@ async function cloneInto(name, target, exec, home) {
     reason ||= gitReason(res.stderr);
     if (a.key) reason = gitReason(res.stderr) || reason;
   }
-  rmSync11(temp, { recursive: true, force: true });
+  rmSync12(temp, { recursive: true, force: true });
   return { ok: false, reason };
 }
 var inflight = /* @__PURE__ */ new Map();
@@ -35365,7 +35551,7 @@ async function doProvision(name, deps) {
   if (!REPO_RE.test(name)) return { ok: false, error: `Reposit\xF3rio inv\xE1lido: ${name}.` };
   const log = deps.log ?? (() => {
   });
-  const home = deps.home ?? os14.homedir();
+  const home = deps.home ?? os15.homedir();
   let servers = [];
   try {
     servers = loadConfig(deps.configFile).servers;
@@ -35378,7 +35564,7 @@ async function doProvision(name, deps) {
   let how = "outra_entrada";
   if (!path2) {
     const base = cloneBase([deps.entry, ...servers]);
-    const manual = join23(base, basename5(name));
+    const manual = join25(base, basename6(name));
     if (await isUsableClone(manual, name, deps.exec)) path2 = manual;
   }
   if (!path2 && deps.clone === false) return { ok: false, error: `O reposit\xF3rio ${name} ainda n\xE3o est\xE1 nesta m\xE1quina.` };
@@ -35386,7 +35572,7 @@ async function doProvision(name, deps) {
     const base = cloneBase([deps.entry, ...servers]);
     const target = freeTarget(base, name);
     try {
-      mkdirSync9(base, { recursive: true });
+      mkdirSync10(base, { recursive: true });
     } catch (err) {
       return { ok: false, error: `N\xE3o consegui criar a pasta ${base} para clonar ${name}: ${err instanceof Error ? err.message : String(err)}` };
     }
@@ -35418,8 +35604,8 @@ async function doProvision(name, deps) {
 }
 
 // connector/projectRepos.ts
-import { existsSync as existsSync17, mkdirSync as mkdirSync10, statSync as statSync15 } from "node:fs";
-import { dirname as dirname14, join as join24, resolve as resolve9 } from "node:path";
+import { existsSync as existsSync17, mkdirSync as mkdirSync11, statSync as statSync15 } from "node:fs";
+import { dirname as dirname14, join as join26, resolve as resolve10 } from "node:path";
 var RETRY_AFTER_MS = [2 * 6e4, 5 * 6e4, 15 * 6e4, 30 * 6e4];
 function hasFolder(path2) {
   if (!path2) return false;
@@ -35443,8 +35629,8 @@ function missingRepos(entry, names) {
 function noRepoFolder(configFile, entry) {
   const host = entry.url.replace(/^https?:\/\//i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   const slug = (entry.orgSlug ?? "projeto").toLowerCase().replace(/[^a-z0-9-]+/g, "-");
-  const dir = join24(dirname14(resolve9(configFile)), "conversas", `${host}-${slug}`);
-  mkdirSync10(dir, { recursive: true, mode: 448 });
+  const dir = join26(dirname14(resolve10(configFile)), "conversas", `${host}-${slug}`);
+  mkdirSync11(dir, { recursive: true, mode: 448 });
   return dir;
 }
 var ProjectRepoKeeper = class {
@@ -35518,10 +35704,10 @@ function limitText(limit) {
   return `${m.title}. ${m.detail}`;
 }
 var UPDATE_LOCK_MS = 10 * 6e4;
-function takeUpdateLock(dir = join25(os15.homedir(), ".benflow"), now = Date.now()) {
-  const file2 = join25(dir, "atualizando-plugin.json");
+function takeUpdateLock(dir = join27(os16.homedir(), ".benflow"), now = Date.now()) {
+  const file2 = join27(dir, "atualizando-plugin.json");
   try {
-    const cur = JSON.parse(readFileSync16(file2, "utf8"));
+    const cur = JSON.parse(readFileSync17(file2, "utf8"));
     const pid = typeof cur.pid === "number" ? cur.pid : 0;
     const at = typeof cur.at === "number" ? cur.at : 0;
     let alive = false;
@@ -35537,7 +35723,7 @@ function takeUpdateLock(dir = join25(os15.homedir(), ".benflow"), now = Date.now
   } catch {
   }
   try {
-    mkdirSync11(dir, { recursive: true });
+    mkdirSync12(dir, { recursive: true });
     writeFileSync13(file2, JSON.stringify({ pid: process.pid, at: now }), { mode: 384 });
   } catch {
     return { release: () => {
@@ -35546,8 +35732,8 @@ function takeUpdateLock(dir = join25(os15.homedir(), ".benflow"), now = Date.now
   return {
     release: () => {
       try {
-        const cur = JSON.parse(readFileSync16(file2, "utf8"));
-        if (cur.pid === process.pid) rmSync12(file2, { force: true });
+        const cur = JSON.parse(readFileSync17(file2, "utf8"));
+        if (cur.pid === process.pid) rmSync13(file2, { force: true });
       } catch {
       }
     }
@@ -35571,7 +35757,7 @@ var defaultExec = (cmd, args, opts = {}) => new Promise((done) => {
 var LOADER_FLAGS = /* @__PURE__ */ new Set(["--import", "--loader", "--experimental-loader", "--require", "-r"]);
 function resolveLoaderValue(flag, value) {
   const isRequire = flag === "--require" || flag === "-r";
-  if (value.startsWith("./") || value.startsWith("../")) return isRequire ? resolve10(value) : pathToFileURL(resolve10(value)).href;
+  if (value.startsWith("./") || value.startsWith("../")) return isRequire ? resolve11(value) : pathToFileURL(resolve11(value)).href;
   if (isAbsolute6(value) || /^(file|node|data):/.test(value)) return value;
   try {
     return isRequire ? createRequire(import.meta.url).resolve(value) : import.meta.resolve(value);
@@ -35603,7 +35789,7 @@ function nodeScriptLaunch(script, scriptArgs, execArgv = process.execArgv) {
   return { command: process.execPath, args: [...args, script, ...scriptArgs] };
 }
 function selfMcpLaunch(argv = process.argv, execArgv = process.execArgv) {
-  const script = argv[1] ? resolve10(argv[1]) : fileURLToPath2(new URL("./cli.js", import.meta.url));
+  const script = argv[1] ? resolve11(argv[1]) : fileURLToPath2(new URL("./cli.js", import.meta.url));
   return nodeScriptLaunch(script, ["mcp"], execArgv);
 }
 async function gitRepoState(exec, path2) {
@@ -35638,11 +35824,11 @@ async function claudeVersionOf(exec, bin, launch = resolveClaudeLaunch(bin)) {
   if (res.code !== 0) return null;
   return res.stdout.trim().split(/\r?\n/)[0]?.trim() || null;
 }
-function claudeConfigOf(env = process.env, home = os15.homedir()) {
+function claudeConfigOf(env = process.env, home = os16.homedir()) {
   let settings = {};
   try {
-    const dir = env.CLAUDE_CONFIG_DIR?.trim() || join25(home, ".claude");
-    const parsed = JSON.parse(readFileSync16(join25(dir, "settings.json"), "utf8"));
+    const dir = env.CLAUDE_CONFIG_DIR?.trim() || join27(home, ".claude");
+    const parsed = JSON.parse(readFileSync17(join27(dir, "settings.json"), "utf8"));
     if (parsed && typeof parsed === "object") settings = parsed;
   } catch {
     settings = {};
@@ -35670,7 +35856,7 @@ async function collectHeartbeat(entry, busyExecutionId, deps) {
   const vault = entry.personalVault;
   return {
     version: deps.version ?? connectorVersion(),
-    machine: (deps.hostname ?? os15.hostname)(),
+    machine: (deps.hostname ?? os16.hostname)(),
     repos,
     personalVault: vault ? { path: vault, notes: await (deps.vaultNotes ?? countNotes)(vault) } : null,
     busyExecutionId,
@@ -35746,8 +35932,8 @@ function shortPath(p, cwd) {
 }
 function cwdVariants(cwd) {
   try {
-    const real2 = realpathSync10(cwd);
-    return real2 === cwd ? [cwd] : [cwd, real2];
+    const real3 = realpathSync10(cwd);
+    return real3 === cwd ? [cwd] : [cwd, real3];
   } catch {
     return [cwd];
   }
@@ -35986,7 +36172,7 @@ function isolationSettingsFor(opts, tmp, workDirs) {
     }))(`N\xE3o consegui ler o config para o isolamento entre projetos (${msgOf(err)}); seguem negadas as vagas e as conversas dos outros projetos.`);
   }
   const dirs = blockedDirsFor({ servers, entry: opts.entry, workDirs, workspaceRoot: workspaceRoot(opts.configFile), home: opts.home });
-  return writeIsolationSettings(join25(tmp, "isolamento.json"), dirs);
+  return writeIsolationSettings(join27(tmp, "isolamento.json"), dirs);
 }
 function msgOf(err) {
   return err instanceof Error ? err.message : String(err);
@@ -36272,12 +36458,12 @@ async function runInRepos(opts, job, w, h) {
   const { tag, instructions, sessionId, repos } = w;
   const { finish: finish2, redact, sink } = h;
   const input2 = { job, tag, repos, instructions, copy: w.copy, sync: w.sync ?? [], preparo: w.preparo ?? [] };
-  const tmp = mkdtempSync8(join25(os15.tmpdir(), "benflow-job-"));
-  const scratch = join25(tmp, "arquivos");
-  mkdirSync11(scratch, { mode: 448 });
+  const tmp = mkdtempSync9(join27(os16.tmpdir(), "benflow-job-"));
+  const scratch = join27(tmp, "arquivos");
+  mkdirSync12(scratch, { mode: 448 });
   const addDirs = [...repos.slice(1).map((r) => r.path), scratch];
   const isolationSettings = isolationSettingsFor(opts, tmp, [...repos.map((r) => r.path), scratch]);
-  const mcpConfigPath = join25(tmp, "mcp.json");
+  const mcpConfigPath = join27(tmp, "mcp.json");
   const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
   const mcpConfig = {
     mcpServers: {
@@ -36316,7 +36502,7 @@ async function runInRepos(opts, job, w, h) {
   const systemRules = buildSystemRules(input2);
   let systemRulesFile = null;
   if (launch.shell) {
-    systemRulesFile = join25(tmp, "regras.txt");
+    systemRulesFile = join27(tmp, "regras.txt");
     writeFileSync13(systemRulesFile, systemRules, { mode: 384 });
   }
   const args = buildClaudeArgs({
@@ -36419,7 +36605,7 @@ async function runInRepos(opts, job, w, h) {
     });
     return await close(await supervise(opts, fresh2, repos[0].path, retryArgs, fin, redact, extraEnv, launch, launch.shell ? retryPrompt : null, false, sink));
   } finally {
-    rmSync12(tmp, { recursive: true, force: true });
+    rmSync13(tmp, { recursive: true, force: true });
   }
 }
 async function runTesteJob(opts, job, h) {
@@ -36436,11 +36622,11 @@ async function runTesteJob(opts, job, h) {
   } catch (err) {
     log(`N\xE3o foi poss\xEDvel ler o chamado #${job.taskNumber} antes do teste: ${msgOf(err)}`);
   }
-  const tmp = mkdtempSync8(join25(os15.tmpdir(), "benflow-teste-"));
+  const tmp = mkdtempSync9(join27(os16.tmpdir(), "benflow-teste-"));
   try {
-    const work = join25(tmp, "teste");
-    mkdirSync11(work, { mode: 448 });
-    const mcpConfigPath = join25(tmp, "mcp.json");
+    const work = join27(tmp, "teste");
+    mkdirSync12(work, { mode: 448 });
+    const mcpConfigPath = join27(tmp, "mcp.json");
     const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
     const mcpEnv = {
       CHAMADOS_CONFIG: opts.configFile,
@@ -36463,7 +36649,7 @@ async function runTesteJob(opts, job, h) {
     const systemRules = buildTesteRules({ instructions });
     let systemRulesFile = null;
     if (launch.shell) {
-      systemRulesFile = join25(tmp, "regras.txt");
+      systemRulesFile = join27(tmp, "regras.txt");
       writeFileSync13(systemRulesFile, systemRules, { mode: 384 });
     }
     const args = buildClaudeArgs({
@@ -36482,7 +36668,7 @@ async function runTesteJob(opts, job, h) {
     log(`Trabalho ${job.id}: testando o chamado #${job.taskNumber} em ${job.qaEnvironment === "producao" ? "produ\xE7\xE3o" : "homologa\xE7\xE3o"} (teste #${testId}).`);
     return await supervise(opts, job, work, args, h.finish, h.redact, pushBlockEnv([], opts.env ?? process.env), launch, launch.shell ? prompt : null, false, h.sink);
   } finally {
-    rmSync12(tmp, { recursive: true, force: true });
+    rmSync13(tmp, { recursive: true, force: true });
   }
 }
 async function runVideoEnvJob(opts, job, h) {
@@ -36497,11 +36683,11 @@ async function runVideoEnvJob(opts, job, h) {
   } catch (err) {
     log(`N\xE3o foi poss\xEDvel ler o chamado #${job.taskNumber} antes da grava\xE7\xE3o: ${msgOf(err)}`);
   }
-  const tmp = mkdtempSync8(join25(os15.tmpdir(), "benflow-video-"));
+  const tmp = mkdtempSync9(join27(os16.tmpdir(), "benflow-video-"));
   try {
-    const work = join25(tmp, "video");
-    mkdirSync11(work, { mode: 448 });
-    const mcpConfigPath = join25(tmp, "mcp.json");
+    const work = join27(tmp, "video");
+    mkdirSync12(work, { mode: 448 });
+    const mcpConfigPath = join27(tmp, "mcp.json");
     const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
     const mcpEnv = {
       CHAMADOS_CONFIG: opts.configFile,
@@ -36524,7 +36710,7 @@ async function runVideoEnvJob(opts, job, h) {
     const systemRules = buildVideoEnvRules({ instructions });
     let systemRulesFile = null;
     if (launch.shell) {
-      systemRulesFile = join25(tmp, "regras.txt");
+      systemRulesFile = join27(tmp, "regras.txt");
       writeFileSync13(systemRulesFile, systemRules, { mode: 384 });
     }
     const args = buildClaudeArgs({
@@ -36543,7 +36729,7 @@ async function runVideoEnvJob(opts, job, h) {
     log(`Trabalho ${job.id}: gravando o v\xEDdeo de evid\xEAncia do chamado #${job.taskNumber} ${job.videoTarget === "producao" ? "na produ\xE7\xE3o" : "na homologa\xE7\xE3o"}.`);
     return await supervise(opts, job, work, args, h.finish, h.redact, pushBlockEnv([], opts.env ?? process.env), launch, launch.shell ? prompt : null, false, h.sink);
   } finally {
-    rmSync12(tmp, { recursive: true, force: true });
+    rmSync13(tmp, { recursive: true, force: true });
   }
 }
 var SUGGESTIONS_CANCEL_POLL_MS = 5e3;
@@ -36588,7 +36774,7 @@ async function runSugestoesJob(opts, job, finish2, redact) {
   let prompt = req.prompt;
   try {
     if (req.analyzeCode && req.codeRepos?.length) {
-      base = mkdtempSync8(join25(os15.tmpdir(), "benflow-codigo-"));
+      base = mkdtempSync9(join27(os16.tmpdir(), "benflow-codigo-"));
       for (const fullName of req.codeRepos) {
         if (ctrl.signal.aborted) break;
         const path2 = opts.entry.repos[fullName];
@@ -36610,7 +36796,7 @@ Pastas do c\xF3digo nesta m\xE1quina: ${checked.map((r, i) => `${r} = ${i === 0 
     }
     const wanted = (Array.isArray(req.files) ? req.files : []).filter((f) => f && Number.isSafeInteger(f.id) && f.id > 0).slice(0, MAX_SUGGESTION_FILES);
     if (wanted.length && !ctrl.signal.aborted) {
-      filesDir = mkdtempSync8(join25(os15.tmpdir(), "benflow-referencias-"));
+      filesDir = mkdtempSync9(join27(os16.tmpdir(), "benflow-referencias-"));
       const files = [];
       for (const f of wanted) {
         const name = typeof f.name === "string" ? f.name : "";
@@ -36630,7 +36816,7 @@ Pastas do c\xF3digo nesta m\xE1quina: ${checked.map((r, i) => `${r} = ${i === 0 
       const got = files.filter((f) => f.path).length;
       if (got) log(`Trabalho ${job.id}: ${got === 1 ? "1 refer\xEAncia baixada" : `${got} refer\xEAncias baixadas`} para o Claude abrir.`);
       if (!got) {
-        rmSync12(filesDir, { recursive: true, force: true });
+        rmSync13(filesDir, { recursive: true, force: true });
         filesDir = null;
       }
     }
@@ -36676,8 +36862,8 @@ Pastas do c\xF3digo nesta m\xE1quina: ${checked.map((r, i) => `${r} = ${i === 0 
     clearInterval(poll);
     opts.signal?.removeEventListener("abort", onStop);
     for (const close of closers) await close().catch(() => void 0);
-    if (base) rmSync12(base, { recursive: true, force: true });
-    if (filesDir) rmSync12(filesDir, { recursive: true, force: true });
+    if (base) rmSync13(base, { recursive: true, force: true });
+    if (filesDir) rmSync13(filesDir, { recursive: true, force: true });
   }
 }
 async function runCofreJob(opts, job, finish2, redact) {
@@ -36692,6 +36878,7 @@ async function runCofreJob(opts, job, finish2, redact) {
   if (req?.modo === "estruturar") return runLeituraJob(opts, job, req, fail, finish2, redact);
   if (req?.modo === "organizar") return runOrganizarJob(opts, job, req, fail, finish2, redact);
   if (!req?.repo || !req.sha) return fail("O pedido de atualiza\xE7\xE3o do cofre veio vazio.");
+  if (req.target === "envio") return runCofreEnvioJob(opts, job, req, fail, finish2, redact);
   const vault = opts.entry.projectVault;
   if (!vault) return fail(MSG_NO_PROJECT_VAULT);
   if (!isDirectory(vault)) return fail(msgVaultMissing(vault));
@@ -36710,6 +36897,43 @@ async function runCofreJob(opts, job, finish2, redact) {
     });
     await opts.client.vaultResult(job.id, { summary: redact(result.summary), notes: result.notes });
     log(`Trabalho ${job.id}: cofre atualizado em ${Math.round((Date.now() - started) / 1e3)} s (${result.notes.length === 1 ? "1 nota" : `${result.notes.length} notas`}).`);
+    return { status: "ok" };
+  } catch (err) {
+    if (err instanceof VaultJobCancelled) {
+      log(`Trabalho ${job.id}: atualiza\xE7\xE3o do cofre cancelada.`);
+      await finish2("cancelado", err.message);
+      return { status: "cancelado", error: err.message };
+    }
+    return fail(redact(`N\xE3o consegui atualizar o cofre: ${msgOf(err)}`));
+  }
+}
+async function runCofreEnvioJob(opts, job, req, fail, finish2, redact) {
+  const log = opts.log ?? (() => {
+  });
+  const started = Date.now();
+  log(`Trabalho ${job.id}: atualizando o cofre guardado no Benflow com a produ\xE7\xE3o ${req.repo} ${req.sha.slice(0, 7)} (${req.commits.length} commits).`);
+  try {
+    const result = await runVaultUpdateEnvio(
+      req,
+      {
+        client: opts.client,
+        jobId: job.id,
+        localVault: opts.entry.projectVault && isDirectory(opts.entry.projectVault) ? opts.entry.projectVault : null,
+        launch: opts.claudeLaunch ?? resolveClaudeLaunch(opts.entry.claude.bin),
+        env: sanitizeChildEnv(opts.env ?? process.env, opts.entry.token),
+        spawnFn: opts.spawnFn,
+        launchCommand,
+        model: req.model ?? opts.entry.claude.model,
+        isCancelled: async () => (await opts.client.getJob(job.id, { retries: 0 })).cancelled === true,
+        cancelPollMs: opts.cancelPollMs,
+        signal: opts.signal,
+        redact
+      }
+    );
+    const n2 = result.notes.length;
+    log(
+      `Trabalho ${job.id}: cofre atualizado em ${Math.round((Date.now() - started) / 1e3)} s (${n2 === 1 ? "1 nota" : `${n2} notas`}${result.skipped ? `, ${result.skipped} sem mudar porque mudaram no Benflow` : ""}${result.mirrored ? `, ${result.mirrored} na pasta do cofre desta m\xE1quina` : ""}).`
+    );
     return { status: "ok" };
   } catch (err) {
     if (err instanceof VaultJobCancelled) {
@@ -36756,7 +36980,7 @@ async function runOrganizarJob(opts, job, req, fail, finish2, redact) {
   const log = opts.log ?? (() => {
   });
   const started = Date.now();
-  const base = mkdtempSync8(join25(os15.tmpdir(), "benflow-base-codigo-"));
+  const base = mkdtempSync9(join27(os16.tmpdir(), "benflow-base-codigo-"));
   const closers = [];
   try {
     const code = [];
@@ -36800,7 +37024,7 @@ async function runOrganizarJob(opts, job, req, fail, finish2, redact) {
     return fail(redact(`N\xE3o consegui atualizar a base: ${msgOf(err)}`));
   } finally {
     for (const close of closers) await close().catch(() => void 0);
-    rmSync12(base, { recursive: true, force: true });
+    rmSync13(base, { recursive: true, force: true });
   }
 }
 async function runConversa(opts, job, h) {
@@ -36835,10 +37059,10 @@ async function runConversa(opts, job, h) {
   }
   const cwd = repos.length ? repos[0].path : noRepoFolder(opts.configFile, entry);
   const text2 = jobInstruction({ ...job, type: "continuar" }) ?? "";
-  const tmp = mkdtempSync8(join25(os15.tmpdir(), "benflow-conversa-"));
+  const tmp = mkdtempSync9(join27(os16.tmpdir(), "benflow-conversa-"));
   try {
-    const filesDir = join25(tmp, "arquivos");
-    mkdirSync11(filesDir, { mode: 448 });
+    const filesDir = join27(tmp, "arquivos");
+    mkdirSync12(filesDir, { mode: 448 });
     const files = [];
     for (const a of job.attachments ?? []) {
       try {
@@ -36850,7 +37074,7 @@ async function runConversa(opts, job, h) {
       }
     }
     if (!text2 && !files.length) return h.fail("A mensagem veio vazia. Nada foi mandado para o Claude.");
-    const mcpConfigPath = join25(tmp, "mcp.json");
+    const mcpConfigPath = join27(tmp, "mcp.json");
     const mcpLaunch = opts.mcpLaunch ?? selfMcpLaunch();
     writeFileSync13(
       mcpConfigPath,
@@ -36896,7 +37120,7 @@ async function runConversa(opts, job, h) {
     const systemRules = panel ? (orchestrating ? buildOrquestradorRules : buildPainelRules)({ orgName: job.orgName ?? null, ownerName: job.ownerName ?? null, panel, instructions: job.instructions ?? null }) : buildConversaRules({ orgName: job.orgName ?? null, ownerName: job.ownerName ?? null, instructions: job.instructions ?? null });
     let systemRulesFile = null;
     if (launch.shell) {
-      systemRulesFile = join25(tmp, "regras.txt");
+      systemRulesFile = join27(tmp, "regras.txt");
       writeFileSync13(systemRulesFile, systemRules, { mode: 384 });
     }
     const exec = opts.exec ?? defaultExec;
@@ -36933,7 +37157,7 @@ async function runConversa(opts, job, h) {
     const retry = argsFor(null);
     return await supervise(opts, { ...job, sessionId: null }, cwd, retry.args, h.finish, h.redact, extraEnv, launch, launch.shell ? retry.prompt : null, false, h.sink);
   } finally {
-    rmSync12(tmp, { recursive: true, force: true });
+    rmSync13(tmp, { recursive: true, force: true });
   }
 }
 async function supervise(opts, job, cwd, args, finish2, redact, extraEnv = {}, launch = { command: opts.entry.claude.bin, prefixArgs: [], shell: false }, stdinPrompt = null, resumed = false, sink = sinkFor(opts.client, job, redact)) {
@@ -37254,6 +37478,9 @@ var Executor = class {
   repoPathsDone = /* @__PURE__ */ new Set();
   repoCreatesDone = /* @__PURE__ */ new Set();
   repoPathsAck = [];
+  // Achar a pasta do cofre do projeto no Google Drive (vaultFind.ts): uma busca por vez e no máximo a cada 25 min.
+  vaultFinding = false;
+  vaultFindAt = 0;
   pulseTimer = null;
   repoChecksSeen = /* @__PURE__ */ new Set();
   // Repositórios do projeto que a máquina ainda não tem: preparados em segundo plano a cada batimento (projectRepos.ts).
@@ -37413,6 +37640,7 @@ var Executor = class {
         if (Array.isArray(res?.projectRepos)) void this.repoKeeper.update(res.projectRepos);
         if (res?.machineScan?.id) void this.runMachineScan(res.machineScan.id);
         if (Array.isArray(res?.repoCreates) && res.repoCreates.length) void this.runRepoCreates(res.repoCreates);
+        if (Array.isArray(res?.vaultFind?.paths) && res.vaultFind.paths.length) void this.findProjectVault(res.vaultFind.paths);
         if (typeof res?.pulseMs === "number" && res.pulseMs >= 1e3) this.pulse(Math.min(res.pulseMs, 3e4));
         return this.agent;
       } catch (err) {
@@ -37541,6 +37769,39 @@ var Executor = class {
     }
     this.pulse(500);
   }
+  // Pasta do cofre do projeto que o batimento pediu para achar (o projeto lê o cofre de uma pasta copiada do Google
+  // Drive): procura nas pastas do Drive desta máquina a que tem as notas do cofre e grava no config, como o
+  // --cofre-projeto. O batimento seguinte já anuncia cofre-projeto e a atualização depois da produção pode vir para cá.
+  async findProjectVault(paths) {
+    const current = this.opts.entry.projectVault;
+    if (this.vaultFinding || Date.now() - this.vaultFindAt < 25 * 6e4 || current && isDirectory(current)) return;
+    this.vaultFinding = true;
+    this.vaultFindAt = Date.now();
+    try {
+      let servers = [];
+      try {
+        servers = loadConfig(this.opts.configFile).servers;
+      } catch {
+        servers = [];
+      }
+      const otherVaults = servers.filter((s2) => !(s2.url === this.opts.entry.url && s2.orgSlug === this.opts.entry.orgSlug)).map((s2) => s2.projectVault).filter((p) => !!p && isDirectory(p));
+      const found = await findVaultFolder({ paths, otherVaults, drives: await driveRoots(this.opts.home ?? os16.homedir()) });
+      if (!found || this.opts.entry.projectVault && isDirectory(this.opts.entry.projectVault)) return;
+      this.opts.entry.projectVault = found;
+      const cfg = loadConfig(this.opts.configFile);
+      const entry = cfg.servers.find((s2) => s2.url === this.opts.entry.url && s2.orgSlug === this.opts.entry.orgSlug);
+      if (entry) {
+        entry.projectVault = found;
+        saveConfig(cfg, this.opts.configFile);
+      }
+      this.log(`Pasta do cofre do projeto achada no Google Drive desta m\xE1quina: ${found}. A base de conhecimento passa a ser atualizada por aqui depois de cada produ\xE7\xE3o.`);
+      this.pulse(500);
+    } catch (err) {
+      this.log(`N\xE3o consegui procurar a pasta do cofre do projeto: ${msgOf(err)}`);
+    } finally {
+      this.vaultFinding = false;
+    }
+  }
   // Pastas locais escolhidas no Começar para este projeto: entram na entrada dele (e no config), para o executor usar a
   // pasta da pessoa em vez de baixar outra cópia. Só vale pasta que existe e tem Git; o cofre, só pasta que existe.
   applyRepoPaths(requests) {
@@ -37548,21 +37809,21 @@ var Executor = class {
     for (const req of requests) {
       if (this.repoPathsDone.has(req.id)) continue;
       this.repoPathsDone.add(req.id);
-      const isDir4 = (p) => {
+      const isDir5 = (p) => {
         try {
           return statSync16(p).isDirectory();
         } catch {
           return false;
         }
       };
-      const bad = Object.entries(req.repos ?? {}).filter(([name, path2]) => !/^[\w.-]+\/[\w.-]+$/.test(name) || !path2 || !isDir4(join25(path2, ".git")));
+      const bad = Object.entries(req.repos ?? {}).filter(([name, path2]) => !/^[\w.-]+\/[\w.-]+$/.test(name) || !path2 || !isDir5(join27(path2, ".git")));
       if (bad.length) {
         this.repoPathsAck.push({ id: req.id, ok: false, error: `A pasta ${bad.map(([, p]) => p).join(", ")} n\xE3o existe mais nesta m\xE1quina ou n\xE3o tem Git.` });
         answered = true;
         continue;
       }
       try {
-        const vault = req.projectVault && isDir4(req.projectVault) ? req.projectVault : null;
+        const vault = req.projectVault && isDir5(req.projectVault) ? req.projectVault : null;
         this.opts.entry.repos = { ...this.opts.entry.repos, ...req.repos };
         if (vault) this.opts.entry.projectVault = vault;
         const cfg = loadConfig(this.opts.configFile);
@@ -38046,8 +38307,8 @@ function isDarkWake(systemState) {
   if (!m) return false;
   return !/\bGraphics\b/i.test(m[1]);
 }
-var runFile = (cmd, args) => new Promise((resolve13, reject) => {
-  execFile5(cmd, args, { timeout: 5e3, windowsHide: true }, (err, stdout) => err ? reject(err) : resolve13(String(stdout)));
+var runFile = (cmd, args) => new Promise((resolve14, reject) => {
+  execFile5(cmd, args, { timeout: 5e3, windowsHide: true }, (err, stdout) => err ? reject(err) : resolve14(String(stdout)));
 });
 async function machineAsleep(platform = process.platform, run = runFile) {
   if (platform !== "darwin") return false;
@@ -38095,9 +38356,9 @@ var KeepAwake = class {
 };
 
 // connector/mcp.ts
-import { closeSync as closeSync4, mkdirSync as mkdirSync12, mkdtempSync as mkdtempSync9, openSync as openSync4, readFileSync as readFileSync17, readSync as readSync2, realpathSync as realpathSync11, rmSync as rmSync13, statSync as statSync17 } from "node:fs";
-import os16 from "node:os";
-import { basename as basename6, extname as extname3, isAbsolute as isAbsolute7, join as join26, resolve as resolve11, sep as sep7 } from "node:path";
+import { closeSync as closeSync4, mkdirSync as mkdirSync13, mkdtempSync as mkdtempSync10, openSync as openSync4, readFileSync as readFileSync18, readSync as readSync2, realpathSync as realpathSync11, rmSync as rmSync14, statSync as statSync17 } from "node:fs";
+import os17 from "node:os";
+import { basename as basename7, extname as extname3, isAbsolute as isAbsolute7, join as join28, resolve as resolve12, sep as sep7 } from "node:path";
 
 // ../benflow/node_modules/zod/v3/helpers/util.js
 var util;
@@ -45582,7 +45843,7 @@ var Protocol = class {
           return;
         }
         const pollInterval = task2.pollInterval ?? this._options?.defaultTaskPollInterval ?? 1e3;
-        await new Promise((resolve13) => setTimeout(resolve13, pollInterval));
+        await new Promise((resolve14) => setTimeout(resolve14, pollInterval));
         options?.signal?.throwIfAborted();
       }
     } catch (error62) {
@@ -45599,7 +45860,7 @@ var Protocol = class {
    */
   request(request, resultSchema, options) {
     const { relatedRequestId, resumptionToken, onresumptiontoken, task, relatedTask } = options ?? {};
-    return new Promise((resolve13, reject) => {
+    return new Promise((resolve14, reject) => {
       const earlyReject = (error62) => {
         reject(error62);
       };
@@ -45677,7 +45938,7 @@ var Protocol = class {
           if (!parseResult.success) {
             reject(parseResult.error);
           } else {
-            resolve13(parseResult.data);
+            resolve14(parseResult.data);
           }
         } catch (error62) {
           reject(error62);
@@ -45938,12 +46199,12 @@ var Protocol = class {
       }
     } catch {
     }
-    return new Promise((resolve13, reject) => {
+    return new Promise((resolve14, reject) => {
       if (signal.aborted) {
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
         return;
       }
-      const timeoutId = setTimeout(resolve13, interval);
+      const timeoutId = setTimeout(resolve14, interval);
       signal.addEventListener("abort", () => {
         clearTimeout(timeoutId);
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
@@ -47034,7 +47295,7 @@ var McpServer = class {
     let task = createTaskResult.task;
     const pollInterval = task.pollInterval ?? 5e3;
     while (task.status !== "completed" && task.status !== "failed" && task.status !== "cancelled") {
-      await new Promise((resolve13) => setTimeout(resolve13, pollInterval));
+      await new Promise((resolve14) => setTimeout(resolve14, pollInterval));
       const updatedTask = await extra.taskStore.getTask(taskId);
       if (!updatedTask) {
         throw new McpError(ErrorCode.InternalError, `Task ${taskId} not found during polling`);
@@ -47698,12 +47959,12 @@ var StdioServerTransport = class {
     this.onclose?.();
   }
   send(message) {
-    return new Promise((resolve13) => {
+    return new Promise((resolve14) => {
       const json2 = serializeMessage(message);
       if (this._stdout.write(json2)) {
-        resolve13();
+        resolve14();
       } else {
-        this._stdout.once("drain", resolve13);
+        this._stdout.once("drain", resolve14);
       }
     });
   }
@@ -48627,7 +48888,7 @@ function posixLower(p) {
   return p.split(sep7).join("/").toLowerCase();
 }
 function isSensitivePath(fullPath) {
-  const home = posixLower(os16.homedir()).replace(/\/+$/, "");
+  const home = posixLower(os17.homedir()).replace(/\/+$/, "");
   const lower = posixLower(fullPath);
   const name = lower.split("/").pop() ?? "";
   if (SECRET_DIRS.some((d) => lower === `${home}/${d}` || lower.startsWith(`${home}/${d}/`))) return true;
@@ -48670,52 +48931,52 @@ function isInsideFolder(root, target) {
   return t === r || t.startsWith(`${r}/`);
 }
 function resolveEvidenceFile(input2, opts) {
-  const abs = isAbsolute7(input2) ? input2 : resolve11(opts.cwd, input2);
-  const real2 = realOrNull(abs);
-  if (!real2) throw new Error(`Arquivo n\xE3o encontrado: ${abs}`);
-  const st = statSync17(real2);
+  const abs = isAbsolute7(input2) ? input2 : resolve12(opts.cwd, input2);
+  const real3 = realOrNull(abs);
+  if (!real3) throw new Error(`Arquivo n\xE3o encontrado: ${abs}`);
+  const st = statSync17(real3);
   if (!st.isFile()) throw new Error(`N\xE3o \xE9 um arquivo: ${abs}`);
-  if (isSensitivePath(abs) || isSensitivePath(real2)) throw new Error("Esse arquivo parece conter segredos e n\xE3o pode ser enviado como evid\xEAncia.");
+  if (isSensitivePath(abs) || isSensitivePath(real3)) throw new Error("Esse arquivo parece conter segredos e n\xE3o pode ser enviado como evid\xEAncia.");
   const roots = opts.roots.map(realOrNull).filter((r) => !!r);
-  if (!roots.some((root) => isInsideFolder(root, real2))) {
+  if (!roots.some((root) => isInsideFolder(root, real3))) {
     throw new Error("S\xF3 \xE9 poss\xEDvel enviar como evid\xEAncia arquivos das pastas dos reposit\xF3rios, da pasta atual do trabalho ou da pasta tempor\xE1ria.");
   }
   if (st.size > (opts.maxBytes ?? MAX_EVIDENCE_BYTES)) throw new Error("Arquivo grande demais para evid\xEAncia (m\xE1ximo 25 MB).");
-  const ext = extname3(real2).toLowerCase();
-  const head = readHead(real2, 8192);
+  const ext = extname3(real3).toLowerCase();
+  const head = readHead(real3, 8192);
   if (opts.tipo === "captura") {
     if (!IMAGE_EXT.has(ext)) throw new Error("Para captura, envie uma imagem (.png, .jpg, .jpeg, .gif ou .webp).");
     if (!isImageData(head)) throw new Error("O arquivo da captura n\xE3o \xE9 uma imagem v\xE1lida.");
-    return { path: real2, upload: real2 };
+    return { path: real3, upload: real3 };
   }
   const looksText = TEXT_EXT.has(ext) || !IMAGE_EXT.has(ext) && !head.includes(0);
   if (!looksText) {
     if (PRIVATE_KEY_RE.test(head.toString("latin1"))) throw new Error("Esse arquivo parece conter segredos e n\xE3o pode ser enviado como evid\xEAncia.");
-    return { path: real2, upload: real2 };
+    return { path: real3, upload: real3 };
   }
-  const text2 = readFileSync17(real2, "utf8");
+  const text2 = readFileSync18(real3, "utf8");
   if (PRIVATE_KEY_RE.test(text2)) throw new Error("Esse arquivo parece conter segredos e n\xE3o pode ser enviado como evid\xEAncia.");
-  return { path: real2, upload: { name: basename6(real2), data: Buffer.from(opts.redact(text2), "utf8"), type: guessMime(real2) } };
+  return { path: real3, upload: { name: basename7(real3), data: Buffer.from(opts.redact(text2), "utf8"), type: guessMime(real3) } };
 }
 function resolveAttachmentFile(input2, opts) {
-  const abs = isAbsolute7(input2) ? input2 : resolve11(opts.cwd, input2.replace(/^~(?=$|\/)/, os16.homedir()));
-  const real2 = realOrNull(abs);
-  if (!real2) throw new Error(`Arquivo n\xE3o encontrado: ${abs}`);
-  const st = statSync17(real2);
+  const abs = isAbsolute7(input2) ? input2 : resolve12(opts.cwd, input2.replace(/^~(?=$|\/)/, os17.homedir()));
+  const real3 = realOrNull(abs);
+  if (!real3) throw new Error(`Arquivo n\xE3o encontrado: ${abs}`);
+  const st = statSync17(real3);
   if (!st.isFile()) throw new Error(`N\xE3o \xE9 um arquivo: ${abs}`);
-  if (isSensitivePath(abs) || isSensitivePath(real2)) throw new Error(`${basename6(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
-  if (st.size === 0) throw new Error(`${basename6(abs)} est\xE1 vazio.`);
-  if (st.size > (opts.maxBytes ?? MAX_EVIDENCE_BYTES)) throw new Error(`${basename6(abs)} \xE9 grande demais para anexar (m\xE1ximo 25 MB).`);
-  const ext = extname3(real2).toLowerCase();
-  const head = readHead(real2, 8192);
+  if (isSensitivePath(abs) || isSensitivePath(real3)) throw new Error(`${basename7(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
+  if (st.size === 0) throw new Error(`${basename7(abs)} est\xE1 vazio.`);
+  if (st.size > (opts.maxBytes ?? MAX_EVIDENCE_BYTES)) throw new Error(`${basename7(abs)} \xE9 grande demais para anexar (m\xE1ximo 25 MB).`);
+  const ext = extname3(real3).toLowerCase();
+  const head = readHead(real3, 8192);
   const looksText = TEXT_EXT.has(ext) || !IMAGE_EXT.has(ext) && !head.includes(0);
   if (!looksText) {
-    if (PRIVATE_KEY_RE.test(head.toString("latin1"))) throw new Error(`${basename6(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
-    return { path: real2, upload: real2 };
+    if (PRIVATE_KEY_RE.test(head.toString("latin1"))) throw new Error(`${basename7(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
+    return { path: real3, upload: real3 };
   }
-  const text2 = readFileSync17(real2, "utf8");
-  if (PRIVATE_KEY_RE.test(text2)) throw new Error(`${basename6(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
-  return { path: real2, upload: { name: basename6(real2), data: Buffer.from(opts.redact(text2), "utf8"), type: guessMime(real2) } };
+  const text2 = readFileSync18(real3, "utf8");
+  if (PRIVATE_KEY_RE.test(text2)) throw new Error(`${basename7(abs)} parece conter segredos e n\xE3o pode ser anexado.`);
+  return { path: real3, upload: { name: basename7(real3), data: Buffer.from(opts.redact(text2), "utf8"), type: guessMime(real3) } };
 }
 function parseFolders(raw) {
   if (!raw) return [];
@@ -48727,11 +48988,11 @@ function parseFolders(raw) {
   }
 }
 function defaultEvidenceRoots(entry, cwd, extra = [], workDir = null) {
-  const home = realOrNull(os16.homedir()) ?? os16.homedir();
+  const home = realOrNull(os17.homedir()) ?? os17.homedir();
   const roots = [...Object.values(entry.repos)];
   if (workDir) roots.push(workDir);
   else {
-    roots.push(os16.tmpdir());
+    roots.push(os17.tmpdir());
     if (process.platform !== "win32") roots.push("/tmp");
   }
   const realCwd = realOrNull(cwd);
@@ -48879,13 +49140,13 @@ ${text2}` : text2;
   function ensureDownloadDir() {
     const base = painelFilesDir && statSync17(painelFilesDir, { throwIfNoEntry: false })?.isDirectory() ? painelFilesDir : workDir;
     if (!downloadDir && base) {
-      downloadDir = join26(base, "anexos");
-      mkdirSync12(downloadDir, { recursive: true, mode: 448 });
+      downloadDir = join28(base, "anexos");
+      mkdirSync13(downloadDir, { recursive: true, mode: 448 });
     }
     if (!downloadDir) {
-      downloadDir = mkdtempSync9(join26(os16.tmpdir(), "benflow-anexos-"));
+      downloadDir = mkdtempSync10(join28(os17.tmpdir(), "benflow-anexos-"));
       const dir = downloadDir;
-      process.once("exit", () => rmSync13(dir, { recursive: true, force: true }));
+      process.once("exit", () => rmSync14(dir, { recursive: true, force: true }));
     }
     return downloadDir;
   }
@@ -49160,7 +49421,7 @@ ${text2}` : text2;
         },
         file2?.upload ?? null
       );
-      return said(work, `Evid\xEAncia "${a.titulo}" registrada no chamado #${a.numero}${file2 ? ` com o arquivo ${basename6(file2.path)}` : ""}.`);
+      return said(work, `Evid\xEAncia "${a.titulo}" registrada no chamado #${a.numero}${file2 ? ` com o arquivo ${basename7(file2.path)}` : ""}.`);
     }
   );
   if (!testMode) register(
@@ -49586,13 +49847,13 @@ ${wrapData("nota", note.content)}`;
   const MSG_URL_SCREEN = qaProducao ? "Use o endere\xE7o de produ\xE7\xE3o (ou de homologa\xE7\xE3o) do projeto cadastrado em Ambientes, ou o servidor de desenvolvimento desta m\xE1quina. Outros sites ficam de fora." : "Use o servidor de desenvolvimento desta m\xE1quina (http://localhost:porta/caminho, 127.0.0.1 ou [::1]) ou o endere\xE7o de homologa\xE7\xE3o do projeto cadastrado em Ambientes. A produ\xE7\xE3o e outros sites ficam de fora.";
   function ensureCaptureDir() {
     if (!captureDir && workDir) {
-      captureDir = join26(workDir, "capturas");
-      mkdirSync12(captureDir, { recursive: true, mode: 448 });
+      captureDir = join28(workDir, "capturas");
+      mkdirSync13(captureDir, { recursive: true, mode: 448 });
     }
     if (!captureDir) {
-      captureDir = mkdtempSync9(join26(os16.tmpdir(), "benflow-capturas-"));
+      captureDir = mkdtempSync10(join28(os17.tmpdir(), "benflow-capturas-"));
       const dir = captureDir;
-      process.once("exit", () => rmSync13(dir, { recursive: true, force: true }));
+      process.once("exit", () => rmSync14(dir, { recursive: true, force: true }));
     }
     return captureDir;
   }
@@ -49627,7 +49888,7 @@ ${wrapData("nota", note.content)}`;
       const problem = actionsProblem(acoes);
       if (problem) throw new Error(problem);
       const work = a.registrar === false ? null : await workFor(a.numero);
-      const out = join26(ensureCaptureDir(), captureFileName(a.titulo, ++captureSeq));
+      const out = join28(ensureCaptureDir(), captureFileName(a.titulo, ++captureSeq));
       const shot = await capture({ url: a.url, out, celular: a.celular, paginaInteira: a.pagina_inteira, esperarMs: a.esperar_ms, acoes, login: loginFor });
       const size = `${shot.width} x ${shot.height}${a.celular ? ", celular" : ""}`;
       const page = `A p\xE1gina ficou em ${plain(shot.url)}${shot.title ? `, com o t\xEDtulo ${inlineData("titulo", shot.title, 150)}` : ""}.`;
@@ -49680,7 +49941,7 @@ ${wrapData("nota", note.content)}`;
       const work = a.registrar === false ? null : await workFor(a.numero);
       const tell = (stage, reason) => work === null || testMode ? Promise.resolve() : client.videoProgress(work.id, { stage, reason: reason ?? null }).then(() => void 0, () => void 0);
       await tell("gravando");
-      const out = join26(ensureCaptureDir(), videoFileName(a.titulo, ++videoSeq));
+      const out = join28(ensureCaptureDir(), videoFileName(a.titulo, ++videoSeq));
       let video;
       try {
         video = await record2({ url: a.url, out, titulo: a.titulo, celular: a.celular, passos: a.passos, allowUrl, login: loginFor });
@@ -49702,7 +49963,7 @@ ${script}`, url: null, passed: null, total: null, failures: null }, video.path);
         await tell("erro", `O envio do v\xEDdeo falhou: ${errorMessage(err)}`);
         throw err;
       } finally {
-        rmSync13(video.path, { force: true });
+        rmSync14(video.path, { force: true });
       }
       return said(
         work,
@@ -49888,7 +50149,7 @@ function defaultIO() {
 `), err: (l) => process.stderr.write(`${l}
 `) };
 }
-function isDir3(p) {
+function isDir4(p) {
   try {
     return statSync18(p).isDirectory();
   } catch {
@@ -49951,9 +50212,9 @@ function parseRepoArgs(values) {
     const eq = raw.indexOf("=");
     if (eq <= 0) throw new Error(`Use --repo owner/nome=/caminho (recebido: ${raw}).`);
     const name = raw.slice(0, eq).trim();
-    const path2 = resolve12(expandHome(raw.slice(eq + 1).trim()));
+    const path2 = resolve13(expandHome(raw.slice(eq + 1).trim()));
     if (!REPO_RE2.test(name)) throw new Error(`Reposit\xF3rio inv\xE1lido: ${name}. Use owner/nome.`);
-    if (!isDir3(path2)) throw new Error(`A pasta do reposit\xF3rio ${name} n\xE3o existe: ${path2}`);
+    if (!isDir4(path2)) throw new Error(`A pasta do reposit\xF3rio ${name} n\xE3o existe: ${path2}`);
     repos[name] = path2;
   }
   return repos;
@@ -49982,13 +50243,13 @@ async function cmdConfigurar(args, deps, io) {
   const repos = parseRepoArgs(values.repo ?? []);
   let vault = null;
   if (values.cofre) {
-    vault = resolve12(expandHome(values.cofre.trim()));
-    if (!isDir3(vault)) throw new Error(`A pasta do cofre pessoal n\xE3o existe: ${vault}`);
+    vault = resolve13(expandHome(values.cofre.trim()));
+    if (!isDir4(vault)) throw new Error(`A pasta do cofre pessoal n\xE3o existe: ${vault}`);
   }
   let projectVault = null;
   if (values["cofre-projeto"]) {
-    projectVault = resolve12(expandHome(values["cofre-projeto"].trim()));
-    if (!isDir3(projectVault)) throw new Error(`A pasta do cofre do projeto n\xE3o existe: ${projectVault}`);
+    projectVault = resolve13(expandHome(values["cofre-projeto"].trim()));
+    if (!isDir4(projectVault)) throw new Error(`A pasta do cofre do projeto n\xE3o existe: ${projectVault}`);
   }
   const file2 = configPath(env);
   const current = loadConfig(file2, io.err);
@@ -50077,7 +50338,7 @@ async function cmdStatus(args, deps, io) {
     const repos = Object.entries(s2.repos);
     io.out(`  Reposit\xF3rios: ${repos.length ? "" : "N\xE3o informado"}`);
     for (const [name, path2] of repos) {
-      if (!isDir3(path2)) {
+      if (!isDir4(path2)) {
         io.out(`    - ${name}: ${path2} (pasta n\xE3o encontrada)`);
         continue;
       }
@@ -50087,13 +50348,13 @@ async function cmdStatus(args, deps, io) {
       io.out(`    - ${name}: ${path2} (${branch}${dirty})`);
     }
     if (s2.personalVault) {
-      const notes = isDir3(s2.personalVault) ? await countNotes(s2.personalVault) : null;
+      const notes = isDir4(s2.personalVault) ? await countNotes(s2.personalVault) : null;
       io.out(`  Cofre pessoal: ${s2.personalVault} (${notes === null ? "pasta n\xE3o encontrada" : notes === 1 ? "1 nota" : `${notes} notas`})`);
     } else {
       io.out("  Cofre pessoal: N\xE3o informado");
     }
     if (s2.projectVault) {
-      const notes = isDir3(s2.projectVault) ? await countNotes(s2.projectVault) : null;
+      const notes = isDir4(s2.projectVault) ? await countNotes(s2.projectVault) : null;
       io.out(`  Cofre do projeto: ${s2.projectVault} (${notes === null ? "pasta n\xE3o encontrada" : notes === 1 ? "1 nota" : `${notes} notas`}; o executor atualiza depois de cada produ\xE7\xE3o)`);
     } else {
       io.out("  Cofre do projeto: N\xE3o informado");
@@ -50127,12 +50388,12 @@ function executorTarget(self, fs) {
   if (!isClaudeManaged(self, fs)) return { script: self, version: mine, managed: false };
   const installed = installedBenflow(fs);
   if (installed && (isOlderVersion(mine, installed.version) || !existsSync19(self))) return { script: installed.script, version: installed.version, managed: true };
-  let real2 = self;
+  let real3 = self;
   try {
-    real2 = realpathSync12(self);
+    real3 = realpathSync12(self);
   } catch {
   }
-  return { script: real2, version: mine, managed: true };
+  return { script: real3, version: mine, managed: true };
 }
 function refreshStableDir(deps) {
   const fs = { env: deps.env ?? process.env, ...deps.claudeFs };
@@ -50140,7 +50401,7 @@ function refreshStableDir(deps) {
   if (!self || !isClaudeManaged(self, fs)) return null;
   const target = executorTarget(self, fs);
   if (!refreshStablePluginDir(dirname15(dirname15(target.script)), { dir: deps.benflowDir, platform: deps.platform })) return null;
-  return join27(stablePluginDir(deps.benflowDir), "server", "benflow.mjs");
+  return join29(stablePluginDir(deps.benflowDir), "server", "benflow.mjs");
 }
 async function superviseExecutar(args, deps, io) {
   const env = deps.env ?? process.env;
@@ -50291,9 +50552,9 @@ async function cmdCofre(args, deps, io) {
   const file2 = readableConfigPath(configPath(env));
   const cfg = loadConfig(file2, io.err);
   const entry = pickServer(cfg, values.org ?? orgFromEnv(env), values.url ?? null);
-  const dir = values.pasta ? resolve12(expandHome(values.pasta.trim())) : entry.projectVault;
+  const dir = values.pasta ? resolve13(expandHome(values.pasta.trim())) : entry.projectVault;
   if (!dir) throw new Error('Informe a pasta do cofre: cofre enviar --pasta "/caminho/da/pasta/do/Obsidian/do/projeto".');
-  if (!isDir3(dir)) throw new Error(`A pasta do cofre n\xE3o existe nesta m\xE1quina: ${dir}`);
+  if (!isDir4(dir)) throw new Error(`A pasta do cofre n\xE3o existe nesta m\xE1quina: ${dir}`);
   io.out(`Lendo as notas de ${dir}...`);
   const { files, skipped, bytes } = await collectVault(dir);
   if (!files.length) throw new Error("A pasta n\xE3o tem nenhuma nota .md que possa ser enviada.");
