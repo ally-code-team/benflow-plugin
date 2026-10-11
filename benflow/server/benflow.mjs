@@ -10854,7 +10854,7 @@ function homologacaoPrompt(input2) {
     `3. Traga a produ\xE7\xE3o para a ${h} antes do card: git merge --no-edit origin/${p} -m "[${tag}] Traz a produ\xE7\xE3o (origin/${p}) para a ${h}" (em dia, o git responde "Already up to date"). O que j\xE1 est\xE1 na ${p} sempre entra na ${h}: card que sobe direto para produ\xE7\xE3o n\xE3o passa pela ${h}, e a branch do chamado j\xE1 traz a ${p}. Commit de outro card que j\xE1 est\xE1 na ${p} nunca \xE9 motivo para parar a publica\xE7\xE3o.`,
     `4. Confira o que a branch do chamado traz a mais: git log --oneline HEAD..${branch}. Commits com a etiqueta [${tag}] e merges de sincroniza\xE7\xE3o s\xE3o do chamado. S\xF3 se aparecer commit com a etiqueta de outro card (c\xF3digo que n\xE3o est\xE1 nem na ${p} nem na ${h}), chame parar_publicacao com numero ${n2}, ambiente "homologacao", o motivo e depende_de com os n\xFAmeros desses cards, e pare: o Benflow deixa o card esperando esses cards chegarem \xE0 homologa\xE7\xE3o e ele sobe junto com eles.`,
     `5. Integre a branch do chamado: git merge --no-ff ${branch} -m "[${tag}] Integra ${branch} na ${h}".`,
-    `6. Se houver conflito (no passo 3 ou no 5), resolva com cuidado: preserve o que j\xE1 est\xE1 na ${h}, o que veio da ${p} e a mudan\xE7a do chamado, e nunca descarte mudan\xE7as de outras pessoas. Se n\xE3o tiver certeza, rode git merge --abort e ${stopPublish(n2, "homologacao")}.`,
+    `6. Se houver conflito (no passo 3 ou no 5), resolva com cuidado: preserve o que j\xE1 est\xE1 na ${h}, o que veio da ${p} e a mudan\xE7a do chamado, e nunca descarte mudan\xE7as de outras pessoas (arquivo apagado de um lado: git rm <arquivo> para apagar, git add <arquivo> para manter). Se n\xE3o tiver certeza, rode git merge --abort e ${stopPublish(n2, "homologacao")}.`,
     `7. Rode os testes de novo e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: ${stopPublish(n2, "homologacao")}. Se n\xE3o rodam porque falta nesta m\xE1quina um programa que eles usam (ex.: PHP, Composer, Postgres, um navegador), instale e chame registrar_dependencia. Se n\xE3o der para instalar, isso n\xE3o segura a homologa\xE7\xE3o: registre com registrar_evidencia tipo "teste" que os testes n\xE3o rodaram nesta m\xE1quina e por qu\xEA, e siga para o push (a homologa\xE7\xE3o existe para conferir, e o CI do reposit\xF3rio roda os testes). ${PUBLISH_FOREGROUND}`,
     input2.copy ? `8. Publique rodando exatamente: git push origin HEAD:${h} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push). Se o push for recusado porque a ${h} andou, rode git fetch origin e git merge origin/${h}, rode os testes de novo e tente outra vez.` : `8. Publique rodando exatamente: git push origin ${h} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push).`,
     `9. Chame informar_publicacao com numero ${n2}, ambiente "homologacao", repositorio (owner/nome) e sha (git rev-parse HEAD) de cada reposit\xF3rio publicado. O servidor acompanha a Action a partir desse SHA.`,
@@ -10876,7 +10876,7 @@ function producaoPrompt(input2) {
     `2. Entenda a mudan\xE7a do chamado: commits com a etiqueta [${tag}] (git log --all --grep "${tag}") e a branch ${branch}.`,
     input2.copy ? `3. Cada reposit\xF3rio j\xE1 est\xE1 pronto para esta publica\xE7\xE3o, solto na ${p} atualizada. Confira com git status que est\xE1 limpo e crie a branch ${hotfix} a partir de origin/${p} (git checkout -B ${hotfix} origin/${p}). N\xE3o rode git checkout ${p} nem git checkout ${h}.` : `3. Em cada reposit\xF3rio: confira com git status que est\xE1 limpo, rode git fetch origin e crie a branch ${hotfix} a partir de origin/${p} (git checkout -B ${hotfix} origin/${p}).`,
     `4. Refa\xE7a S\xD3 a mudan\xE7a do chamado, adaptando ao c\xF3digo da ${p}. Nunca fa\xE7a merge da ${h} nem da branch do chamado: a ${h} tem outras mudan\xE7as que n\xE3o podem ir para produ\xE7\xE3o. Se usar git cherry-pick de commits do chamado, confira que eles n\xE3o trazem nada al\xE9m da mudan\xE7a. Se a mudan\xE7a mexe em arquivos ou usa c\xF3digo que s\xF3 existe na ${h} (de outros cards que ainda n\xE3o subiram para produ\xE7\xE3o; as etiquetas deles aparecem em git log origin/${p}..${branch}), n\xE3o traga a ${h} nem reescreva o que falta: chame parar_publicacao com numero ${n2}, ambiente "producao", o motivo e depende_de com os n\xFAmeros desses cards, e pare. O Benflow deixa o card esperando esses cards chegarem \xE0 produ\xE7\xE3o e ele sobe junto com eles.`,
-    `5. Fa\xE7a commits com a etiqueta: "[${tag}] ...".`,
+    `5. Fa\xE7a commits com a etiqueta: "[${tag}] ...". Conflito em arquivo que a ${p} n\xE3o tem (por exemplo, um workflow que s\xF3 existe na ${h}, como o de deploy da homologa\xE7\xE3o): ele n\xE3o vai para a ${p}; tire-o com git rm <arquivo> e siga (git cherry-pick --continue).`,
     `6. Rode os testes e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: ${stopPublish(n2, "producao")}. Se n\xE3o rodam porque falta nesta m\xE1quina um programa que eles usam (ex.: PHP, Composer, Postgres), instale, chame registrar_dependencia e rode. Se n\xE3o der para instalar, veja se a mudan\xE7a do chamado j\xE1 passou pela homologa\xE7\xE3o (os commits com a etiqueta [${tag}] est\xE3o na origin/${h}: git log origin/${h} --oneline --grep "${tag}"; l\xE1 o deploy e o CI do reposit\xF3rio conferiram): com ela l\xE1, siga para o push e registre com registrar_evidencia tipo "teste" que os testes n\xE3o rodaram nesta m\xE1quina e que a mudan\xE7a passou pela homologa\xE7\xE3o. Sem ela l\xE1 (o card vai direto para produ\xE7\xE3o), ${stopPublish(n2, "producao")} dizendo o que falta instalar. ${PUBLISH_FOREGROUND}`,
     `7. Publique rodando exatamente: git push origin ${hotfix}:${p} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push). Se a ${p} andou, atualize a hotfix com git rebase origin/${p}, rode os testes de novo e tente outra vez.`,
     `8. Chame informar_publicacao com numero ${n2}, ambiente "producao", repositorio (owner/nome) e sha de cada reposit\xF3rio publicado.`,
@@ -11204,11 +11204,12 @@ function cleanApproved(raw) {
   }
   return out;
 }
+var PUBLISH_GIT_RM = "Bash(git rm*)";
 function allowedToolsFor(job, tag, copy = false) {
   if (isLocalOnly(job)) return [];
-  if (job.environment === "producao") return [`Bash(git push origin ${hotfixBranch(tag)}:${envBranch(job, "producao")})`];
+  if (job.environment === "producao") return [`Bash(git push origin ${hotfixBranch(tag)}:${envBranch(job, "producao")})`, PUBLISH_GIT_RM];
   const h = envBranch(job, "homologacao");
-  return [copy ? `Bash(git push origin HEAD:${h})` : `Bash(git push origin ${h})`];
+  return [copy ? `Bash(git push origin HEAD:${h})` : `Bash(git push origin ${h})`, PUBLISH_GIT_RM];
 }
 var SECRET_PATH_RULES = [
   "~/.benflow/**",
@@ -35286,8 +35287,8 @@ import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.60") {
-    cached2 = "0.1.60";
+  if ("0.1.61") {
+    cached2 = "0.1.61";
     return cached2;
   }
   let dir = dirname12(fileURLToPath(import.meta.url));
