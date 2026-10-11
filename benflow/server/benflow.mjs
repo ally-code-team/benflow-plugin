@@ -10877,7 +10877,7 @@ function producaoPrompt(input2) {
     input2.copy ? `3. Cada reposit\xF3rio j\xE1 est\xE1 pronto para esta publica\xE7\xE3o, solto na ${p} atualizada. Confira com git status que est\xE1 limpo e crie a branch ${hotfix} a partir de origin/${p} (git checkout -B ${hotfix} origin/${p}). N\xE3o rode git checkout ${p} nem git checkout ${h}.` : `3. Em cada reposit\xF3rio: confira com git status que est\xE1 limpo, rode git fetch origin e crie a branch ${hotfix} a partir de origin/${p} (git checkout -B ${hotfix} origin/${p}).`,
     `4. Refa\xE7a S\xD3 a mudan\xE7a do chamado, adaptando ao c\xF3digo da ${p}. Nunca fa\xE7a merge da ${h} nem da branch do chamado: a ${h} tem outras mudan\xE7as que n\xE3o podem ir para produ\xE7\xE3o. Se usar git cherry-pick de commits do chamado, confira que eles n\xE3o trazem nada al\xE9m da mudan\xE7a. Se a mudan\xE7a mexe em arquivos ou usa c\xF3digo que s\xF3 existe na ${h} (de outros cards que ainda n\xE3o subiram para produ\xE7\xE3o; as etiquetas deles aparecem em git log origin/${p}..${branch}), n\xE3o traga a ${h} nem reescreva o que falta: chame parar_publicacao com numero ${n2}, ambiente "producao", o motivo e depende_de com os n\xFAmeros desses cards, e pare. O Benflow deixa o card esperando esses cards chegarem \xE0 produ\xE7\xE3o e ele sobe junto com eles.`,
     `5. Fa\xE7a commits com a etiqueta: "[${tag}] ...".`,
-    `6. Rode os testes e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: ${stopPublish(n2, "producao")}. Se n\xE3o rodam porque falta nesta m\xE1quina um programa que eles usam (ex.: PHP, Composer, Postgres), instale, chame registrar_dependencia e rode; produ\xE7\xE3o s\xF3 sobe com os testes rodando, ent\xE3o, se n\xE3o der para instalar, ${stopPublish(n2, "producao")} dizendo o que falta. ${PUBLISH_FOREGROUND}`,
+    `6. Rode os testes e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: ${stopPublish(n2, "producao")}. Se n\xE3o rodam porque falta nesta m\xE1quina um programa que eles usam (ex.: PHP, Composer, Postgres), instale, chame registrar_dependencia e rode. Se n\xE3o der para instalar, veja se a mudan\xE7a do chamado j\xE1 passou pela homologa\xE7\xE3o (os commits com a etiqueta [${tag}] est\xE3o na origin/${h}: git log origin/${h} --oneline --grep "${tag}"; l\xE1 o deploy e o CI do reposit\xF3rio conferiram): com ela l\xE1, siga para o push e registre com registrar_evidencia tipo "teste" que os testes n\xE3o rodaram nesta m\xE1quina e que a mudan\xE7a passou pela homologa\xE7\xE3o. Sem ela l\xE1 (o card vai direto para produ\xE7\xE3o), ${stopPublish(n2, "producao")} dizendo o que falta instalar. ${PUBLISH_FOREGROUND}`,
     `7. Publique rodando exatamente: git push origin ${hotfix}:${p} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push). Se a ${p} andou, atualize a hotfix com git rebase origin/${p}, rode os testes de novo e tente outra vez.`,
     `8. Chame informar_publicacao com numero ${n2}, ambiente "producao", repositorio (owner/nome) e sha de cada reposit\xF3rio publicado.`,
     `9. N\xE3o fa\xE7a push na ${h}.`
@@ -35286,8 +35286,8 @@ import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.59") {
-    cached2 = "0.1.59";
+  if ("0.1.60") {
+    cached2 = "0.1.60";
     return cached2;
   }
   let dir = dirname12(fileURLToPath(import.meta.url));
