@@ -943,8 +943,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.58") {
-    cached = "0.1.58";
+  if ("0.1.59") {
+    cached = "0.1.59";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));

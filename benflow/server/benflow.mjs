@@ -9040,6 +9040,19 @@ async function syncCard(exec, repo, opts) {
   }
   return { fullName: repo.fullName, path: path2, steps, homolog };
 }
+async function bringProdToHomolog(exec, path2, opts) {
+  const refs = await remoteRefs(exec, path2, opts.env);
+  if (!refs.prod) return null;
+  const m = await missing(exec, path2, "HEAD", refs.prod);
+  if (!m.total) return null;
+  const where2 = refs.homolog ? refs.homolog.replace(/^origin\//, "") : "homologa\xE7\xE3o";
+  const n2 = m.shown === 1 ? "1 commit" : `${m.shown} commits`;
+  if (await dirtyTree(exec, path2)) return `A produ\xE7\xE3o (${refs.prod}) tem ${n2} que a ${where2} n\xE3o tem; a pasta tem mudan\xE7a sem commit, e o Claude junta antes de integrar o card.`;
+  const merged = await mergeRef(exec, path2, refs.prod, `[${opts.tag}] Traz a produ\xE7\xE3o (${refs.prod}) para a ${where2}`);
+  if (merged.ok) return `A produ\xE7\xE3o (${refs.prod}) tinha ${n2} que a ${where2} n\xE3o tinha (cards que subiram direto para produ\xE7\xE3o): o Benflow juntou na ${where2} antes de integrar o card.`;
+  const files = merged.conflicts.length ? ` (conflito em ${merged.conflicts.slice(0, 5).join(", ")})` : "";
+  return `A produ\xE7\xE3o (${refs.prod}) tem ${n2} que a ${where2} n\xE3o tem e o merge n\xE3o fechou sozinho${files}: o Claude junta antes de integrar o card.`;
+}
 async function bringHomolog(exec, sync, tag) {
   if (!sync.homolog) return;
   const pending = sync.steps.some((s2) => s2.status === "claude");
@@ -9486,6 +9499,10 @@ async function prepareOne(repo, opts) {
   const notes = [];
   const done = async (path2, slot, reused, restore) => {
     if (kind === "card") writeState(root, repo.fullName, opts.branch, path2);
+    if (kind === "publicar" && opts.bringProd) {
+      const note = await bringProdToHomolog(exec, path2, { tag: opts.tag, env: opts.env });
+      if (note) notes.push(`${repo.fullName}: ${note}`);
+    }
     const sync = kind === "card" && opts.sync ? await syncCard(exec, { fullName: repo.fullName, path: path2 }, { branch: opts.branch, tag: opts.tag, env: opts.env }) : null;
     return { ok: true, copy: { fullName: repo.fullName, main, path: path2, kind, slot, reused, restore }, note: notes.join(" ") || null, sync };
   };
@@ -10819,7 +10836,7 @@ function buildPublishNudge(job, tag, attempt) {
     `A publica\xE7\xE3o do chamado #${n2} ainda n\xE3o terminou: voc\xEA encerrou a resposta sem chamar informar_publicacao, e o Benflow s\xF3 d\xE1 a publica\xE7\xE3o por feita com ele. Continue de onde parou (o conector chamou de novo, vez ${attempt} de ${PUBLISH_NUDGES}).`,
     "1. Se deixou algum comando em segundo plano (testes, build), ele n\xE3o vai avisar: confira se ainda roda e, se precisar do resultado, rode de novo em primeiro plano e espere terminar. O build com pr\xE9-render n\xE3o \xE9 necess\xE1rio: a Action de deploy faz.",
     `2. Confira se o push j\xE1 aconteceu: git fetch origin e git log origin/${branch} procurando a etiqueta [${tag}]. Se j\xE1 aconteceu, chame informar_publicacao agora, com numero ${n2}, ambiente "${prod ? "producao" : "homologacao"}", o reposit\xF3rio e o sha publicado, sem fazer push de novo.`,
-    `3. Se n\xE3o aconteceu, termine o passo a passo da publica\xE7\xE3o: testes em primeiro plano, registrar_evidencia, o push e o informar_publicacao. Se algo impede de publicar (teste que falha, conflito que voc\xEA n\xE3o resolve com seguran\xE7a, c\xF3digo de outro card que ainda n\xE3o est\xE1 na ${branch}), ${stopPublish(n2, prod ? "producao" : "homologacao")}: assim o Benflow n\xE3o pede de novo.`
+    prod ? `3. Se n\xE3o aconteceu, termine o passo a passo da publica\xE7\xE3o: testes em primeiro plano, registrar_evidencia, o push e o informar_publicacao. Se algo impede de publicar (teste que falha, conflito que voc\xEA n\xE3o resolve com seguran\xE7a, c\xF3digo de outro card que ainda n\xE3o est\xE1 na ${branch}), ${stopPublish(n2, "producao")}: assim o Benflow n\xE3o pede de novo.` : `3. Se n\xE3o aconteceu, termine o passo a passo da publica\xE7\xE3o: produ\xE7\xE3o junta na ${branch} (git merge origin/${envBranch(job, "producao")}), testes em primeiro plano, registrar_evidencia, o push e o informar_publicacao. Commit de outro card que j\xE1 est\xE1 na produ\xE7\xE3o n\xE3o impede a publica\xE7\xE3o. Se algo impede de publicar (teste que falha, conflito que voc\xEA n\xE3o resolve com seguran\xE7a, c\xF3digo de outro card que n\xE3o est\xE1 nem na produ\xE7\xE3o nem na ${branch}), ${stopPublish(n2, "homologacao")}: assim o Benflow n\xE3o pede de novo.`
   ].join("\n");
 }
 function homologacaoPrompt(input2) {
@@ -10833,13 +10850,15 @@ function homologacaoPrompt(input2) {
     "",
     "Passo a passo:",
     `1. Chame ver_chamado com numero ${n2}. Confira nas permiss\xF5es que o dono do agente pode subir para ${h}; se n\xE3o puder, ${stopPublish(n2, "homologacao")}.`,
-    input2.copy ? `2. Cada reposit\xF3rio j\xE1 est\xE1 pronto para esta publica\xE7\xE3o, solto (HEAD destacado) na ${h} atualizada de origin. Confira com git status que est\xE1 limpo. N\xE3o rode git checkout ${h}: a ${h} pode estar aberta em outra pasta.` : `2. Em cada reposit\xF3rio: confira com git status que est\xE1 limpo. Rode git fetch origin, git checkout ${h} e git pull --ff-only origin ${h}.`,
-    `3. Integre a branch do chamado: git merge --no-ff ${branch} -m "[${tag}] Integra ${branch} na ${h}".`,
-    `4. Se houver conflito, resolva com cuidado: preserve o que j\xE1 est\xE1 na ${h} e a mudan\xE7a do chamado, e nunca descarte mudan\xE7as de outras pessoas. Se n\xE3o tiver certeza, rode git merge --abort e ${stopPublish(n2, "homologacao")}.`,
-    `5. Rode os testes de novo e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: ${stopPublish(n2, "homologacao")}. ${PUBLISH_FOREGROUND}`,
-    input2.copy ? `6. Publique rodando exatamente: git push origin HEAD:${h} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push). Se o push for recusado porque a ${h} andou, rode git fetch origin e git merge origin/${h}, rode os testes de novo e tente outra vez.` : `6. Publique rodando exatamente: git push origin ${h} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push).`,
-    `7. Chame informar_publicacao com numero ${n2}, ambiente "homologacao", repositorio (owner/nome) e sha (git rev-parse HEAD) de cada reposit\xF3rio publicado. O servidor acompanha a Action a partir desse SHA.`,
-    `8. N\xE3o fa\xE7a push em nenhuma outra branch e nunca mexa na ${p}.`
+    input2.copy ? `2. Cada reposit\xF3rio j\xE1 est\xE1 pronto para esta publica\xE7\xE3o, solto (HEAD destacado) na ${h} atualizada de origin e, quando a produ\xE7\xE3o tinha commits que a ${h} n\xE3o tinha, j\xE1 com ela junta (a linha do tempo do card diz). Confira com git status que est\xE1 limpo. N\xE3o rode git checkout ${h}: a ${h} pode estar aberta em outra pasta.` : `2. Em cada reposit\xF3rio: confira com git status que est\xE1 limpo. Rode git fetch origin, git checkout ${h} e git pull --ff-only origin ${h}.`,
+    `3. Traga a produ\xE7\xE3o para a ${h} antes do card: git merge --no-edit origin/${p} -m "[${tag}] Traz a produ\xE7\xE3o (origin/${p}) para a ${h}" (em dia, o git responde "Already up to date"). O que j\xE1 est\xE1 na ${p} sempre entra na ${h}: card que sobe direto para produ\xE7\xE3o n\xE3o passa pela ${h}, e a branch do chamado j\xE1 traz a ${p}. Commit de outro card que j\xE1 est\xE1 na ${p} nunca \xE9 motivo para parar a publica\xE7\xE3o.`,
+    `4. Confira o que a branch do chamado traz a mais: git log --oneline HEAD..${branch}. Commits com a etiqueta [${tag}] e merges de sincroniza\xE7\xE3o s\xE3o do chamado. S\xF3 se aparecer commit com a etiqueta de outro card (c\xF3digo que n\xE3o est\xE1 nem na ${p} nem na ${h}), chame parar_publicacao com numero ${n2}, ambiente "homologacao", o motivo e depende_de com os n\xFAmeros desses cards, e pare: o Benflow deixa o card esperando esses cards chegarem \xE0 homologa\xE7\xE3o e ele sobe junto com eles.`,
+    `5. Integre a branch do chamado: git merge --no-ff ${branch} -m "[${tag}] Integra ${branch} na ${h}".`,
+    `6. Se houver conflito (no passo 3 ou no 5), resolva com cuidado: preserve o que j\xE1 est\xE1 na ${h}, o que veio da ${p} e a mudan\xE7a do chamado, e nunca descarte mudan\xE7as de outras pessoas. Se n\xE3o tiver certeza, rode git merge --abort e ${stopPublish(n2, "homologacao")}.`,
+    `7. Rode os testes de novo e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: ${stopPublish(n2, "homologacao")}. Se n\xE3o rodam porque falta nesta m\xE1quina um programa que eles usam (ex.: PHP, Composer, Postgres, um navegador), instale e chame registrar_dependencia. Se n\xE3o der para instalar, isso n\xE3o segura a homologa\xE7\xE3o: registre com registrar_evidencia tipo "teste" que os testes n\xE3o rodaram nesta m\xE1quina e por qu\xEA, e siga para o push (a homologa\xE7\xE3o existe para conferir, e o CI do reposit\xF3rio roda os testes). ${PUBLISH_FOREGROUND}`,
+    input2.copy ? `8. Publique rodando exatamente: git push origin HEAD:${h} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push). Se o push for recusado porque a ${h} andou, rode git fetch origin e git merge origin/${h}, rode os testes de novo e tente outra vez.` : `8. Publique rodando exatamente: git push origin ${h} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push).`,
+    `9. Chame informar_publicacao com numero ${n2}, ambiente "homologacao", repositorio (owner/nome) e sha (git rev-parse HEAD) de cada reposit\xF3rio publicado. O servidor acompanha a Action a partir desse SHA.`,
+    `10. N\xE3o fa\xE7a push em nenhuma outra branch e nunca mexa na ${p}.`
   ].join("\n");
 }
 function producaoPrompt(input2) {
@@ -10858,7 +10877,7 @@ function producaoPrompt(input2) {
     input2.copy ? `3. Cada reposit\xF3rio j\xE1 est\xE1 pronto para esta publica\xE7\xE3o, solto na ${p} atualizada. Confira com git status que est\xE1 limpo e crie a branch ${hotfix} a partir de origin/${p} (git checkout -B ${hotfix} origin/${p}). N\xE3o rode git checkout ${p} nem git checkout ${h}.` : `3. Em cada reposit\xF3rio: confira com git status que est\xE1 limpo, rode git fetch origin e crie a branch ${hotfix} a partir de origin/${p} (git checkout -B ${hotfix} origin/${p}).`,
     `4. Refa\xE7a S\xD3 a mudan\xE7a do chamado, adaptando ao c\xF3digo da ${p}. Nunca fa\xE7a merge da ${h} nem da branch do chamado: a ${h} tem outras mudan\xE7as que n\xE3o podem ir para produ\xE7\xE3o. Se usar git cherry-pick de commits do chamado, confira que eles n\xE3o trazem nada al\xE9m da mudan\xE7a. Se a mudan\xE7a mexe em arquivos ou usa c\xF3digo que s\xF3 existe na ${h} (de outros cards que ainda n\xE3o subiram para produ\xE7\xE3o; as etiquetas deles aparecem em git log origin/${p}..${branch}), n\xE3o traga a ${h} nem reescreva o que falta: chame parar_publicacao com numero ${n2}, ambiente "producao", o motivo e depende_de com os n\xFAmeros desses cards, e pare. O Benflow deixa o card esperando esses cards chegarem \xE0 produ\xE7\xE3o e ele sobe junto com eles.`,
     `5. Fa\xE7a commits com a etiqueta: "[${tag}] ...".`,
-    `6. Rode os testes e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: ${stopPublish(n2, "producao")}. ${PUBLISH_FOREGROUND}`,
+    `6. Rode os testes e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: ${stopPublish(n2, "producao")}. Se n\xE3o rodam porque falta nesta m\xE1quina um programa que eles usam (ex.: PHP, Composer, Postgres), instale, chame registrar_dependencia e rode; produ\xE7\xE3o s\xF3 sobe com os testes rodando, ent\xE3o, se n\xE3o der para instalar, ${stopPublish(n2, "producao")} dizendo o que falta. ${PUBLISH_FOREGROUND}`,
     `7. Publique rodando exatamente: git push origin ${hotfix}:${p} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push). Se a ${p} andou, atualize a hotfix com git rebase origin/${p}, rode os testes de novo e tente outra vez.`,
     `8. Chame informar_publicacao com numero ${n2}, ambiente "producao", repositorio (owner/nome) e sha de cada reposit\xF3rio publicado.`,
     `9. N\xE3o fa\xE7a push na ${h}.`
@@ -35267,8 +35286,8 @@ import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.58") {
-    cached2 = "0.1.58";
+  if ("0.1.59") {
+    cached2 = "0.1.59";
     return cached2;
   }
   let dir = dirname12(fileURLToPath(import.meta.url));
@@ -36371,7 +36390,8 @@ async function runJob(opts, job) {
       claim: opts.claim,
       unclaim: opts.unclaim,
       log,
-      sync: wantsSync
+      sync: wantsSync,
+      bringProd: kind === "publicar" && job.environment !== "producao"
     });
     if (!prepared.ok) {
       await releaseWorkspace(prepared.copies, { exec, root, log }).catch(() => []);
