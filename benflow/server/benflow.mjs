@@ -7822,7 +7822,10 @@ var CONNECTOR_CAPABILITIES = [
   "atualizar-cofre-enviado",
   // Achar a pasta do cofre do projeto (vaultFind.ts): o batimento traz caminhos de notas do cofre do servidor (vaultFind)
   // e o executor procura nas pastas do Google Drive desta máquina a que tem as mesmas notas; achou, grava no config.
-  "achar-cofre"
+  "achar-cofre",
+  // Produção por Pull Request (Ambientes, Como entra na produção): nos repositórios de job.prRepos, a publicação manda só
+  // a branch da hotfix e o servidor abre o PR. O servidor só pede essa publicação a quem anuncia esta capacidade.
+  "publicar-por-pr"
 ];
 var PLUGIN_UPDATE_CAPABILITY = "atualizar-plugin";
 var PROJECT_VAULT_CAPABILITY = "cofre-projeto";
@@ -8273,8 +8276,13 @@ var AgentClient = class _AgentClient {
   workStopped(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/work-stopped`, { json: body });
   }
+  // Produção por Pull Request (servidor com publishPrs): a resposta traz o PR aberto (pr) e deployment vem null.
   published(executionId, body) {
-    return this.requestJson("POST", `/api/agent/executions/${executionId}/published`, { json: body });
+    return this.requestJson(
+      "POST",
+      `/api/agent/executions/${executionId}/published`,
+      { json: body }
+    );
   }
   // Pedido de confirmação de um comando fora da lista liberada: o servidor guarda no card e devolve a situação.
   requestApproval(executionId, body) {
@@ -9009,12 +9017,13 @@ var SOURCE_TEXT = {
   producao: "Traz a produ\xE7\xE3o",
   homologacao: "Traz a homologa\xE7\xE3o"
 };
-function mergeMessage(tag, source, ref) {
-  return `[${tag}] ${SOURCE_TEXT[source]} (${ref}) para a branch`;
+function mergeMessage(tag, source, ref, conventional = false) {
+  const text2 = `${SOURCE_TEXT[source]} (${ref}) para a branch`;
+  return conventional ? `chore: ${text2.charAt(0).toLowerCase()}${text2.slice(1)} [${tag}]` : `[${tag}] ${text2}`;
 }
-async function apply(exec, path2, step, tag, blocked) {
+async function apply(exec, path2, step, tag, blocked, conventional = false) {
   if (blocked) return { ...step, status: "claude", reason: blocked };
-  const merged = await mergeRef(exec, path2, step.ref, mergeMessage(tag, step.source, step.ref));
+  const merged = await mergeRef(exec, path2, step.ref, mergeMessage(tag, step.source, step.ref, conventional));
   if (merged.ok) return { ...step, status: "feito" };
   return { ...step, status: "claude", ...merged.conflicts.length ? { conflicts: merged.conflicts.slice(0, 20), reason: "conflito" } : { reason: merged.error } };
 }
@@ -9029,7 +9038,7 @@ async function syncCard(exec, repo, opts) {
   for (const p of plan) {
     const m = await missing(exec, path2, "HEAD", p.ref);
     if (!m.total) continue;
-    const step = await apply(exec, path2, { ...p, count: m.shown }, opts.tag, blocked);
+    const step = await apply(exec, path2, { ...p, count: m.shown }, opts.tag, blocked, opts.conventional);
     steps.push(step);
     if (step.status === "claude") blocked = blocked ?? "passo anterior";
   }
@@ -9048,16 +9057,16 @@ async function bringProdToHomolog(exec, path2, opts) {
   const where2 = refs.homolog ? refs.homolog.replace(/^origin\//, "") : "homologa\xE7\xE3o";
   const n2 = m.shown === 1 ? "1 commit" : `${m.shown} commits`;
   if (await dirtyTree(exec, path2)) return `A produ\xE7\xE3o (${refs.prod}) tem ${n2} que a ${where2} n\xE3o tem; a pasta tem mudan\xE7a sem commit, e o Claude junta antes de integrar o card.`;
-  const merged = await mergeRef(exec, path2, refs.prod, `[${opts.tag}] Traz a produ\xE7\xE3o (${refs.prod}) para a ${where2}`);
+  const merged = await mergeRef(exec, path2, refs.prod, opts.conventional ? `chore: traz a produ\xE7\xE3o (${refs.prod}) para a ${where2} [${opts.tag}]` : `[${opts.tag}] Traz a produ\xE7\xE3o (${refs.prod}) para a ${where2}`);
   if (merged.ok) return `A produ\xE7\xE3o (${refs.prod}) tinha ${n2} que a ${where2} n\xE3o tinha (cards que subiram direto para produ\xE7\xE3o): o Benflow juntou na ${where2} antes de integrar o card.`;
   const files = merged.conflicts.length ? ` (conflito em ${merged.conflicts.slice(0, 5).join(", ")})` : "";
   return `A produ\xE7\xE3o (${refs.prod}) tem ${n2} que a ${where2} n\xE3o tem e o merge n\xE3o fechou sozinho${files}: o Claude junta antes de integrar o card.`;
 }
-async function bringHomolog(exec, sync, tag) {
+async function bringHomolog(exec, sync, tag, conventional = false) {
   if (!sync.homolog) return;
   const pending = sync.steps.some((s2) => s2.status === "claude");
   const blocked = pending ? "passo anterior" : await dirtyTree(exec, sync.path) ? "mudan\xE7a sem commit" : null;
-  sync.steps.push(await apply(exec, sync.path, { source: "homologacao", ref: sync.homolog.ref, count: sync.homolog.count }, tag, blocked));
+  sync.steps.push(await apply(exec, sync.path, { source: "homologacao", ref: sync.homolog.ref, count: sync.homolog.count }, tag, blocked, conventional));
 }
 function skipHomolog(sync) {
   if (sync.homolog) sync.steps.push({ source: "homologacao", ref: sync.homolog.ref, count: sync.homolog.count, status: "sem" });
@@ -9123,6 +9132,9 @@ function syncTimelineText(syncs) {
 
 // connector/workspace.ts
 var MAX_SLOTS = 5;
+function isConventional(opts, fullName) {
+  return !!opts.conventional?.some((r) => r.toLowerCase() === fullName.toLowerCase());
+}
 function workspaceRoot(configFile) {
   const dir = dirname4(resolve3(configFile));
   return join7(dirname4(dir), `${basename3(dir)}-trabalhos`);
@@ -9500,10 +9512,10 @@ async function prepareOne(repo, opts) {
   const done = async (path2, slot, reused, restore) => {
     if (kind === "card") writeState(root, repo.fullName, opts.branch, path2);
     if (kind === "publicar" && opts.bringProd) {
-      const note = await bringProdToHomolog(exec, path2, { tag: opts.tag, env: opts.env });
+      const note = await bringProdToHomolog(exec, path2, { tag: opts.tag, env: opts.env, ...isConventional(opts, repo.fullName) ? { conventional: true } : {} });
       if (note) notes.push(`${repo.fullName}: ${note}`);
     }
-    const sync = kind === "card" && opts.sync ? await syncCard(exec, { fullName: repo.fullName, path: path2 }, { branch: opts.branch, tag: opts.tag, env: opts.env }) : null;
+    const sync = kind === "card" && opts.sync ? await syncCard(exec, { fullName: repo.fullName, path: path2 }, { branch: opts.branch, tag: opts.tag, env: opts.env, ...isConventional(opts, repo.fullName) ? { conventional: true } : {} }) : null;
     return { ok: true, copy: { fullName: repo.fullName, main, path: path2, kind, slot, reused, restore }, note: notes.join(" ") || null, sync };
   };
   if (kind === "card") {
@@ -10621,6 +10633,35 @@ function envBranch(job, environment) {
 function jobEnvRefs(job) {
   return { producao: envBranch(job, "producao"), homologacao: envBranch(job, "homologacao") };
 }
+function jobRepoSubset(job, list) {
+  const names = (list ?? []).filter((r) => typeof r === "string" && r.trim() !== "");
+  if (!names.length || !job.repos?.length) return names;
+  const own2 = new Set(job.repos.map((r) => r.toLowerCase()));
+  return names.filter((r) => own2.has(r.toLowerCase()));
+}
+function coversJob(job, subset) {
+  if (!subset.length) return false;
+  if (!job.repos?.length) return true;
+  return new Set(job.repos.map((r) => r.toLowerCase())).size <= new Set(subset.map((r) => r.toLowerCase())).size;
+}
+function prodPrRepos(job) {
+  return job.environment === "producao" ? jobRepoSubset(job, job.prRepos?.producao) : [];
+}
+function conventionalRepos(job) {
+  return jobRepoSubset(job, job.conventionalRepos);
+}
+function lowerFirst(text2) {
+  return text2.charAt(0).toLowerCase() + text2.slice(1);
+}
+function commitMessage(job, tag, text2, type = "chore") {
+  return coversJob(job, conventionalRepos(job)) ? `${type}: ${lowerFirst(text2)} [${tag}]` : `[${tag}] ${text2}`;
+}
+function conventionalRule(job, tag) {
+  const repos = conventionalRepos(job);
+  if (!repos.length) return null;
+  const where2 = coversJob(job, repos) ? "Os reposit\xF3rios deste trabalho conferem" : `Os reposit\xF3rios ${repos.join(", ")} conferem`;
+  return `${where2} as mensagens dos commits com o commitlint (Conventional Commits). Nas mensagens deles, escreva a primeira linha como tipo(escopo): assunto, com o tipo entre feat, fix, chore, docs, refactor, test, perf, ci, build, style e revert, o escopo opcional, o assunto come\xE7ando com letra min\xFAscula, at\xE9 100 caracteres, e a etiqueta [${tag}] no fim da linha (n\xE3o no in\xEDcio), por exemplo: "fix(rateio): corrige o c\xE1lculo do prazo [${tag}]". Vale tamb\xE9m para os commits de merge (git merge -m "chore: integra ... [${tag}]"). Nunca use --no-verify para passar do commitlint: se ele recusar, ajuste a mensagem.`;
+}
 function wrapData(marker, text2) {
   const safe = text2.replace(new RegExp(`<(/?)(${marker})`, "gi"), "&lt;$1$2");
   return `<${marker}>
@@ -10680,6 +10721,13 @@ function pushRule(job, tag) {
   const prod = envBranch(job, "producao");
   const homolog = envBranch(job, "homologacao");
   if (job.environment === "producao") {
+    const pr = prodPrRepos(job);
+    if (pr.length && coversJob(job, pr)) {
+      return `Este trabalho s\xF3 pode fazer push da branch ${hotfixBranch(tag)} (criada de origin/${prod}, ou da origin/${hotfixBranch(tag)} quando ela j\xE1 existe): a ${prod} s\xF3 aceita Pull Request, e o Benflow abre o PR e cuida do merge depois do informar_publicacao. Nunca fa\xE7a push na ${prod}, nunca fa\xE7a merge da ${homolog} na ${prod} e n\xE3o fa\xE7a push na ${homolog}.`;
+    }
+    if (pr.length) {
+      return `Este trabalho s\xF3 pode fazer push na ${prod}, a partir da branch ${hotfixBranch(tag)} criada de origin/${prod} (autorizado pelo servidor para o dono do agente); nos reposit\xF3rios ${pr.join(", ")}, a ${prod} s\xF3 aceita Pull Request: neles, fa\xE7a push s\xF3 da branch ${hotfixBranch(tag)}, e o Benflow abre o PR. Nunca fa\xE7a merge da ${homolog} na ${prod} e n\xE3o fa\xE7a push na ${homolog}.`;
+    }
     return `Este trabalho s\xF3 pode fazer push na ${prod}, a partir da branch ${hotfixBranch(tag)} criada de origin/${prod} (autorizado pelo servidor para o dono do agente). Nunca fa\xE7a merge da ${homolog} na ${prod} e n\xE3o fa\xE7a push na ${homolog}.`;
   }
   return `Este trabalho s\xF3 pode fazer push na branch ${homolog} dos reposit\xF3rios dele. Nunca fa\xE7a push na ${prod}.`;
@@ -10702,6 +10750,8 @@ function buildSystemRules(input2) {
     ] : []
   ];
   lines2.push(`${input2.copy ? 10 : 9}. ${PREP_RULE}`);
+  const commits2 = conventionalRule(input2.job, input2.tag);
+  if (commits2) lines2.push(`${input2.copy ? 11 : 10}. ${commits2}`);
   const instructions = input2.instructions?.trim();
   if (instructions) {
     lines2.push("", "Instru\xE7\xF5es da organiza\xE7\xE3o (definidas pelo administrador, siga-as):", instructions);
@@ -10801,7 +10851,7 @@ function executarPrompt(input2) {
     input2.copy ? input2.sync ? `5. Cada reposit\xF3rio j\xE1 est\xE1 na branch ${branch}, na pasta que o Benflow preparou para este card, e o Benflow j\xE1 buscou o Git (veja Vers\xE3o nova do Git acima, quando houver). Confira com git status (mudan\xE7a sem commit ali \xE9 de um trabalho anterior deste card: continue a partir dela). N\xE3o troque de branch e n\xE3o fa\xE7a merge al\xE9m do que a Vers\xE3o nova do Git pedir. Se faltarem as depend\xEAncias do projeto na pasta (node_modules ou vendor, por exemplo), instale com o comando do projeto antes de rodar testes.` : `5. Cada reposit\xF3rio j\xE1 est\xE1 na branch ${branch}, na pasta que o Benflow preparou para este card. Confira com git status (mudan\xE7a sem commit ali \xE9 de um trabalho anterior deste card: continue a partir dela). Rode git fetch origin e traga a develop atualizada com git merge origin/develop. N\xE3o troque de branch. Se faltarem as depend\xEAncias do projeto na pasta (node_modules ou vendor, por exemplo), instale com o comando do projeto antes de rodar testes.` : input2.sync ? `5. Em cada reposit\xF3rio: confira com git status que n\xE3o h\xE1 mudan\xE7as que n\xE3o sejam suas (se houver, chame parar_trabalho com situacao "precisa_da_equipe", dizendo quais arquivos e de onde parecem vir). Rode git fetch origin. Se a branch ${branch} j\xE1 existir aqui, continue nela (git checkout ${branch}); se s\xF3 existir no GitHub, crie a partir dela (git checkout -b ${branch} origin/${branch}); se n\xE3o existir, atualize a develop (git checkout develop e git pull --ff-only origin develop) e crie a branch a partir dela. Depois fa\xE7a os merges que a Vers\xE3o nova do Git pedir, antes de mexer no c\xF3digo.` : `5. Em cada reposit\xF3rio: confira com git status que n\xE3o h\xE1 mudan\xE7as que n\xE3o sejam suas (se houver, chame parar_trabalho com situacao "precisa_da_equipe", dizendo quais arquivos e de onde parecem vir). Rode git fetch origin, atualize a develop (git checkout develop e git pull --ff-only origin develop) e crie a branch ${branch} a partir dela. Se a branch j\xE1 existir, continue nela e traga a develop atualizada.`,
     "6. Implemente a mudan\xE7a com o menor escopo que resolva o chamado. Chame atualizar_progresso ao mudar de etapa: desenvolvimento (10 a 60), testes (60 a 80), evidencias (80 a 90).",
     "   Se precisar subir o servidor de desenvolvimento (para testar ou capturar a tela), rode em segundo plano e chame informar_ambiente_local com repo, url (ex.: http://localhost:5173) e rotulo (front ou API).",
-    `7. Fa\xE7a commits pequenos com a etiqueta no in\xEDcio da mensagem, por exemplo: "[${tag}] Corrige o c\xE1lculo do prazo".`,
+    coversJob(job, conventionalRepos(job)) ? `7. Fa\xE7a commits pequenos no padr\xE3o do reposit\xF3rio (Conventional Commits) com a etiqueta no fim da primeira linha, por exemplo: "fix: corrige o c\xE1lculo do prazo [${tag}]".` : `7. Fa\xE7a commits pequenos com a etiqueta no in\xEDcio da mensagem, por exemplo: "[${tag}] Corrige o c\xE1lculo do prazo".`,
     '8. Rode os testes do projeto (e o typecheck ou lint, se existirem) em primeiro plano, esperando terminar (su\xEDte longa: aumente o timeout do Bash). Registre com registrar_evidencia tipo "teste" a sa\xEDda resumida e os n\xFAmeros: passou, total e falhas.',
     evidenceStep(input2),
     "10. No fim, chame concluir_local com o resumo do que foi feito, como_testar (o passo a passo de quem vai validar em homologa\xE7\xE3o: por onde entrar, o que clicar e o que deve aparecer, um passo por linha), a branch e a lista de commits (sha e mensagem).",
@@ -10831,11 +10881,13 @@ function stopPublish(n2, environment) {
 function buildPublishNudge(job, tag, attempt) {
   const n2 = job.taskNumber;
   const prod = job.environment === "producao";
+  const pr = prod ? prodPrRepos(job) : [];
   const branch = envBranch(job, prod ? "producao" : "homologacao");
+  const pushed = pr.length && coversJob(job, pr) ? hotfixBranch(tag) : branch;
   return [
     `A publica\xE7\xE3o do chamado #${n2} ainda n\xE3o terminou: voc\xEA encerrou a resposta sem chamar informar_publicacao, e o Benflow s\xF3 d\xE1 a publica\xE7\xE3o por feita com ele. Continue de onde parou (o conector chamou de novo, vez ${attempt} de ${PUBLISH_NUDGES}).`,
     "1. Se deixou algum comando em segundo plano (testes, build), ele n\xE3o vai avisar: confira se ainda roda e, se precisar do resultado, rode de novo em primeiro plano e espere terminar. O build com pr\xE9-render n\xE3o \xE9 necess\xE1rio: a Action de deploy faz.",
-    `2. Confira se o push j\xE1 aconteceu: git fetch origin e git log origin/${branch} procurando a etiqueta [${tag}]. Se j\xE1 aconteceu, chame informar_publicacao agora, com numero ${n2}, ambiente "${prod ? "producao" : "homologacao"}", o reposit\xF3rio e o sha publicado, sem fazer push de novo.`,
+    `2. Confira se o push j\xE1 aconteceu: git fetch origin e git log origin/${pushed} procurando a etiqueta [${tag}]. Se j\xE1 aconteceu, chame informar_publicacao agora, com numero ${n2}, ambiente "${prod ? "producao" : "homologacao"}", o reposit\xF3rio e o sha publicado, sem fazer push de novo.`,
     prod ? `3. Se n\xE3o aconteceu, termine o passo a passo da publica\xE7\xE3o: testes em primeiro plano, registrar_evidencia, o push e o informar_publicacao. Se algo impede de publicar (teste que falha, conflito que voc\xEA n\xE3o resolve com seguran\xE7a, c\xF3digo de outro card que ainda n\xE3o est\xE1 na ${branch}), ${stopPublish(n2, "producao")}: assim o Benflow n\xE3o pede de novo.` : `3. Se n\xE3o aconteceu, termine o passo a passo da publica\xE7\xE3o: produ\xE7\xE3o junta na ${branch} (git merge origin/${envBranch(job, "producao")}), testes em primeiro plano, registrar_evidencia, o push e o informar_publicacao. Commit de outro card que j\xE1 est\xE1 na produ\xE7\xE3o n\xE3o impede a publica\xE7\xE3o. Se algo impede de publicar (teste que falha, conflito que voc\xEA n\xE3o resolve com seguran\xE7a, c\xF3digo de outro card que n\xE3o est\xE1 nem na produ\xE7\xE3o nem na ${branch}), ${stopPublish(n2, "homologacao")}: assim o Benflow n\xE3o pede de novo.`
   ].join("\n");
 }
@@ -10851,9 +10903,9 @@ function homologacaoPrompt(input2) {
     "Passo a passo:",
     `1. Chame ver_chamado com numero ${n2}. Confira nas permiss\xF5es que o dono do agente pode subir para ${h}; se n\xE3o puder, ${stopPublish(n2, "homologacao")}.`,
     input2.copy ? `2. Cada reposit\xF3rio j\xE1 est\xE1 pronto para esta publica\xE7\xE3o, solto (HEAD destacado) na ${h} atualizada de origin e, quando a produ\xE7\xE3o tinha commits que a ${h} n\xE3o tinha, j\xE1 com ela junta (a linha do tempo do card diz). Confira com git status que est\xE1 limpo. N\xE3o rode git checkout ${h}: a ${h} pode estar aberta em outra pasta.` : `2. Em cada reposit\xF3rio: confira com git status que est\xE1 limpo. Rode git fetch origin, git checkout ${h} e git pull --ff-only origin ${h}.`,
-    `3. Traga a produ\xE7\xE3o para a ${h} antes do card: git merge --no-edit origin/${p} -m "[${tag}] Traz a produ\xE7\xE3o (origin/${p}) para a ${h}" (em dia, o git responde "Already up to date"). O que j\xE1 est\xE1 na ${p} sempre entra na ${h}: card que sobe direto para produ\xE7\xE3o n\xE3o passa pela ${h}, e a branch do chamado j\xE1 traz a ${p}. Commit de outro card que j\xE1 est\xE1 na ${p} nunca \xE9 motivo para parar a publica\xE7\xE3o.`,
+    `3. Traga a produ\xE7\xE3o para a ${h} antes do card: git merge --no-edit origin/${p} -m "${commitMessage(job, tag, `Traz a produ\xE7\xE3o (origin/${p}) para a ${h}`)}" (em dia, o git responde "Already up to date"). O que j\xE1 est\xE1 na ${p} sempre entra na ${h}: card que sobe direto para produ\xE7\xE3o n\xE3o passa pela ${h}, e a branch do chamado j\xE1 traz a ${p}. Commit de outro card que j\xE1 est\xE1 na ${p} nunca \xE9 motivo para parar a publica\xE7\xE3o.`,
     `4. Confira o que a branch do chamado traz a mais: git log --oneline HEAD..${branch}. Commits com a etiqueta [${tag}] e merges de sincroniza\xE7\xE3o s\xE3o do chamado. S\xF3 se aparecer commit com a etiqueta de outro card (c\xF3digo que n\xE3o est\xE1 nem na ${p} nem na ${h}), chame parar_publicacao com numero ${n2}, ambiente "homologacao", o motivo e depende_de com os n\xFAmeros desses cards, e pare: o Benflow deixa o card esperando esses cards chegarem \xE0 homologa\xE7\xE3o e ele sobe junto com eles.`,
-    `5. Integre a branch do chamado: git merge --no-ff ${branch} -m "[${tag}] Integra ${branch} na ${h}".`,
+    `5. Integre a branch do chamado: git merge --no-ff ${branch} -m "${commitMessage(job, tag, `Integra ${branch} na ${h}`)}".`,
     `6. Se houver conflito (no passo 3 ou no 5), resolva com cuidado: preserve o que j\xE1 est\xE1 na ${h}, o que veio da ${p} e a mudan\xE7a do chamado, e nunca descarte mudan\xE7as de outras pessoas (arquivo apagado de um lado: git rm <arquivo> para apagar, git add <arquivo> para manter). Se n\xE3o tiver certeza, rode git merge --abort e ${stopPublish(n2, "homologacao")}.`,
     `7. Rode os testes de novo e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: ${stopPublish(n2, "homologacao")}. Se n\xE3o rodam porque falta nesta m\xE1quina um programa que eles usam (ex.: PHP, Composer, Postgres, um navegador), instale e chame registrar_dependencia. Se n\xE3o der para instalar, isso n\xE3o segura a homologa\xE7\xE3o: registre com registrar_evidencia tipo "teste" que os testes n\xE3o rodaram nesta m\xE1quina e por qu\xEA, e siga para o push (a homologa\xE7\xE3o existe para conferir, e o CI do reposit\xF3rio roda os testes). ${PUBLISH_FOREGROUND}`,
     input2.copy ? `8. Publique rodando exatamente: git push origin HEAD:${h} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push). Se o push for recusado porque a ${h} andou, rode git fetch origin e git merge origin/${h}, rode os testes de novo e tente outra vez.` : `8. Publique rodando exatamente: git push origin ${h} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push).`,
@@ -10868,19 +10920,22 @@ function producaoPrompt(input2) {
   const hotfix = hotfixBranch(tag);
   const p = envBranch(job, "producao");
   const h = envBranch(job, "homologacao");
+  const pr = prodPrRepos(job);
+  const allPr = coversJob(job, pr);
+  const prReuse = pr.length ? ` ${allPr ? "Se" : `Nos reposit\xF3rios ${pr.join(", ")} (a ${p} deles s\xF3 aceita Pull Request), se`} a origin/${hotfix} j\xE1 existe (o PR de uma tentativa anterior), parta dela em vez de recriar a branch: git checkout -B ${hotfix} origin/${hotfix} e git merge origin/${p}.` : "";
   return [
     ...header(input2, `Publique em produ\xE7\xE3o a corre\xE7\xE3o do chamado #${n2}${orgPart(input2.orgName)} por hotfix na ${p}.`),
     "",
     "Passo a passo:",
     `1. Chame ver_chamado com numero ${n2}. Confira nas permiss\xF5es que o dono do agente pode subir para ${p}; se n\xE3o puder, ${stopPublish(n2, "producao")}.`,
     `2. Entenda a mudan\xE7a do chamado: commits com a etiqueta [${tag}] (git log --all --grep "${tag}") e a branch ${branch}.`,
-    input2.copy ? `3. Cada reposit\xF3rio j\xE1 est\xE1 pronto para esta publica\xE7\xE3o, solto na ${p} atualizada. Confira com git status que est\xE1 limpo e crie a branch ${hotfix} a partir de origin/${p} (git checkout -B ${hotfix} origin/${p}). N\xE3o rode git checkout ${p} nem git checkout ${h}.` : `3. Em cada reposit\xF3rio: confira com git status que est\xE1 limpo, rode git fetch origin e crie a branch ${hotfix} a partir de origin/${p} (git checkout -B ${hotfix} origin/${p}).`,
+    input2.copy ? `3. Cada reposit\xF3rio j\xE1 est\xE1 pronto para esta publica\xE7\xE3o, solto na ${p} atualizada. Confira com git status que est\xE1 limpo e crie a branch ${hotfix} a partir de origin/${p} (git checkout -B ${hotfix} origin/${p}). N\xE3o rode git checkout ${p} nem git checkout ${h}.${prReuse}` : `3. Em cada reposit\xF3rio: confira com git status que est\xE1 limpo, rode git fetch origin e crie a branch ${hotfix} a partir de origin/${p} (git checkout -B ${hotfix} origin/${p}).${prReuse}`,
     `4. Refa\xE7a S\xD3 a mudan\xE7a do chamado, adaptando ao c\xF3digo da ${p}. Nunca fa\xE7a merge da ${h} nem da branch do chamado: a ${h} tem outras mudan\xE7as que n\xE3o podem ir para produ\xE7\xE3o. Se usar git cherry-pick de commits do chamado, confira que eles n\xE3o trazem nada al\xE9m da mudan\xE7a. Se a mudan\xE7a mexe em arquivos ou usa c\xF3digo que s\xF3 existe na ${h} (de outros cards que ainda n\xE3o subiram para produ\xE7\xE3o; as etiquetas deles aparecem em git log origin/${p}..${branch}), n\xE3o traga a ${h} nem reescreva o que falta: chame parar_publicacao com numero ${n2}, ambiente "producao", o motivo e depende_de com os n\xFAmeros desses cards, e pare. O Benflow deixa o card esperando esses cards chegarem \xE0 produ\xE7\xE3o e ele sobe junto com eles.`,
-    `5. Fa\xE7a commits com a etiqueta: "[${tag}] ...". Conflito em arquivo que a ${p} n\xE3o tem (por exemplo, um workflow que s\xF3 existe na ${h}, como o de deploy da homologa\xE7\xE3o): ele n\xE3o vai para a ${p}; tire-o com git rm <arquivo> e siga (git cherry-pick --continue).`,
-    `6. Rode os testes e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: ${stopPublish(n2, "producao")}. Se n\xE3o rodam porque falta nesta m\xE1quina um programa que eles usam (ex.: PHP, Composer, Postgres), instale, chame registrar_dependencia e rode. Se n\xE3o der para instalar, veja se a mudan\xE7a do chamado j\xE1 passou pela homologa\xE7\xE3o (os commits com a etiqueta [${tag}] est\xE3o na origin/${h}: git log origin/${h} --oneline --grep "${tag}"; l\xE1 o deploy e o CI do reposit\xF3rio conferiram): com ela l\xE1, siga para o push e registre com registrar_evidencia tipo "teste" que os testes n\xE3o rodaram nesta m\xE1quina e que a mudan\xE7a passou pela homologa\xE7\xE3o. Sem ela l\xE1 (o card vai direto para produ\xE7\xE3o), ${stopPublish(n2, "producao")} dizendo o que falta instalar. ${PUBLISH_FOREGROUND}`,
-    `7. Publique rodando exatamente: git push origin ${hotfix}:${p} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push). Se a ${p} andou, atualize a hotfix com git rebase origin/${p}, rode os testes de novo e tente outra vez.`,
-    `8. Chame informar_publicacao com numero ${n2}, ambiente "producao", repositorio (owner/nome) e sha de cada reposit\xF3rio publicado.`,
-    `9. N\xE3o fa\xE7a push na ${h}.`
+    `5. Fa\xE7a commits com a etiqueta: "${commitMessage(job, tag, "...", "fix")}". Conflito em arquivo que a ${p} n\xE3o tem (por exemplo, um workflow que s\xF3 existe na ${h}, como o de deploy da homologa\xE7\xE3o): ele n\xE3o vai para a ${p}; tire-o com git rm <arquivo> e siga (git cherry-pick --continue).`,
+    `6. Rode os testes e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se falharem, N\xC3O fa\xE7a push: ${stopPublish(n2, "producao")}. Se n\xE3o rodam porque falta nesta m\xE1quina um programa que eles usam (ex.: PHP, Composer, Postgres), instale, chame registrar_dependencia e rode. Se n\xE3o der para instalar, veja se a mudan\xE7a do chamado j\xE1 passou pela homologa\xE7\xE3o (os commits com a etiqueta [${tag}] est\xE3o na origin/${h}: git log origin/${h} --oneline --grep "${tag}"; l\xE1 o deploy e o CI do reposit\xF3rio conferiram): com ela l\xE1, siga para o push e registre com registrar_evidencia tipo "teste" que os testes n\xE3o rodaram nesta m\xE1quina e que a mudan\xE7a passou pela homologa\xE7\xE3o. ${allPr ? `Sem ela l\xE1 (o card vai direto para produ\xE7\xE3o), a produ\xE7\xE3o por Pull Request ainda confere: os checks obrigat\xF3rios do PR rodam no CI e o merge s\xF3 sai com eles verdes. Siga para o push e registre com registrar_evidencia tipo "teste" que os testes n\xE3o rodaram nesta m\xE1quina, o que faltou instalar e que os checks do PR conferem.` : `Sem ela l\xE1 (o card vai direto para produ\xE7\xE3o), ${stopPublish(n2, "producao")} dizendo o que falta instalar.`} ${PUBLISH_FOREGROUND}`,
+    allPr ? `7. Publique rodando exatamente: git push origin ${hotfix} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push). A ${p} s\xF3 aceita Pull Request: depois do informar_publicacao, o Benflow abre o PR da ${hotfix} para a ${p}, acompanha os checks e cuida do merge. Se o push for recusado porque a origin/${hotfix} andou, rode git fetch origin e git merge origin/${hotfix}, rode os testes de novo e tente outra vez.` : pr.length ? `7. Publique rodando exatamente, sem --force e sem outras op\xE7\xF5es (o conector s\xF3 libera estes comandos de push): nos reposit\xF3rios ${pr.join(", ")}, git push origin ${hotfix} (a ${p} deles s\xF3 aceita Pull Request: depois do informar_publicacao, o Benflow abre o PR); nos outros, git push origin ${hotfix}:${p}. Se a ${p} andou, atualize a hotfix com git rebase origin/${p}, rode os testes de novo e tente outra vez.` : `7. Publique rodando exatamente: git push origin ${hotfix}:${p} (sem --force e sem outras op\xE7\xF5es; o conector s\xF3 libera esse comando de push). Se a ${p} andou, atualize a hotfix com git rebase origin/${p}, rode os testes de novo e tente outra vez.`,
+    pr.length ? `8. Chame informar_publicacao com numero ${n2}, ambiente "producao", repositorio (owner/nome) e sha (git rev-parse HEAD, o \xFAltimo commit da ${hotfix}) de cada reposit\xF3rio publicado. ${allPr ? "A resposta traz o PR aberto" : `Nos reposit\xF3rios ${pr.join(", ")}, a resposta traz o PR aberto`}; se ela disser que a branch n\xE3o est\xE1 no GitHub com esse commit, fa\xE7a o push e chame de novo.` : `8. Chame informar_publicacao com numero ${n2}, ambiente "producao", repositorio (owner/nome) e sha de cada reposit\xF3rio publicado.`,
+    allPr ? `9. N\xE3o fa\xE7a push na ${h} nem na ${p}.` : pr.length ? `9. N\xE3o fa\xE7a push na ${h}, nem na ${p} dos reposit\xF3rios ${pr.join(", ")}.` : `9. N\xE3o fa\xE7a push na ${h}.`
   ].join("\n");
 }
 function jobInstruction(job) {
@@ -10918,7 +10973,7 @@ function continuarPrompt(input2) {
     "Passo a passo:",
     input2.copy ? `1. Siga a instru\xE7\xE3o nas pastas listadas (j\xE1 na branch ${branch}; n\xE3o troque de branch)${syncTodo(input2) ? ", depois de fazer os merges que a Vers\xE3o nova do Git pede" : ""}. Se precisar rever o chamado, chame ver_chamado com numero ${n2}.` : `1. Siga a instru\xE7\xE3o nas mesmas pastas e na branch ${branch}${input2.sync ? ` (se a pasta n\xE3o estiver nela, git checkout ${branch})` : ""}${syncTodo(input2) ? ", depois de fazer os merges que a Vers\xE3o nova do Git pede" : ""}. Se precisar rever o chamado, chame ver_chamado com numero ${n2}.`,
     "2. Chame atualizar_progresso a cada mudan\xE7a de etapa (desenvolvimento, testes, evidencias), com o percentual e uma frase do que est\xE1 fazendo.",
-    `3. Fa\xE7a commits com a etiqueta no in\xEDcio da mensagem, por exemplo: "[${tag}] Ajusta o texto do bot\xE3o".`,
+    coversJob(job, conventionalRepos(job)) ? `3. Fa\xE7a commits no padr\xE3o do reposit\xF3rio (Conventional Commits) com a etiqueta no fim da primeira linha, por exemplo: "fix: ajusta o texto do bot\xE3o [${tag}]".` : `3. Fa\xE7a commits com a etiqueta no in\xEDcio da mensagem, por exemplo: "[${tag}] Ajusta o texto do bot\xE3o".`,
     `4. Rode os testes de novo e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se subir um servidor de desenvolvimento, chame informar_ambiente_local. ${jobVideoMode(job) === "depois" ? `Se a instru\xE7\xE3o mudou alguma tela, registre o print novo de cada uma com capturar_tela. ${VIDEO_LATER_TEXT}` : jobVideoMode(job) === "nao" ? `Se a instru\xE7\xE3o mudou alguma tela, registre o print novo de cada uma com capturar_tela. ${VIDEO_OFF_TEXT}` : "Se a instru\xE7\xE3o mudou alguma tela, registre o print novo de cada uma com capturar_tela e grave um v\xEDdeo novo com gravar_tela at\xE9 o que mudou."}`,
     "5. No fim, chame concluir_local com o resumo atualizado, como_testar (o passo a passo de quem vai validar em homologa\xE7\xE3o), a branch e os commits.",
     `6. N\xC3O fa\xE7a push e N\xC3O mexa na main. Se a instru\xE7\xE3o pedir algo fora do objetivo do chamado ou das regras, chame parar_trabalho com situacao "precisa_da_equipe", o motivo e o que a equipe decide. ${WORK_STOP_RULE}`
@@ -11207,7 +11262,13 @@ function cleanApproved(raw) {
 var PUBLISH_GIT_RM = "Bash(git rm*)";
 function allowedToolsFor(job, tag, copy = false) {
   if (isLocalOnly(job)) return [];
-  if (job.environment === "producao") return [`Bash(git push origin ${hotfixBranch(tag)}:${envBranch(job, "producao")})`, PUBLISH_GIT_RM];
+  if (job.environment === "producao") {
+    const pr = prodPrRepos(job);
+    const toBranch = `Bash(git push origin ${hotfixBranch(tag)})`;
+    const toProd = `Bash(git push origin ${hotfixBranch(tag)}:${envBranch(job, "producao")})`;
+    if (pr.length) return coversJob(job, pr) ? [toBranch, PUBLISH_GIT_RM] : [toProd, toBranch, PUBLISH_GIT_RM];
+    return [toProd, PUBLISH_GIT_RM];
+  }
   const h = envBranch(job, "homologacao");
   return [copy ? `Bash(git push origin HEAD:${h})` : `Bash(git push origin ${h})`, PUBLISH_GIT_RM];
 }
@@ -11286,7 +11347,12 @@ function disallowedToolsFor(job, tag = "") {
   if (isLocalOnly(job)) return [...base, "Bash(git push)", "Bash(git push*)"];
   const prod = envBranch(job, "producao");
   const homolog = envBranch(job, "homologacao");
-  const push = job.environment === "producao" ? [`Bash(git push*${homolog}*)`, `Bash(git push* :${prod}*)`] : [.../* @__PURE__ */ new Set(["Bash(git push*main*)", "Bash(git push*master*)", `Bash(git push*${prod}*)`])].concat(`Bash(git push* :${homolog}*)`);
+  const push = job.environment === "producao" ? [
+    `Bash(git push*${homolog}*)`,
+    `Bash(git push* :${prod}*)`,
+    // Produção por Pull Request: nenhum push vai para a branch de produção (só a da hotfix).
+    ...prodPrRepos(job).length ? [`Bash(git push*:${prod}*)`, `Bash(git push origin ${prod})`] : []
+  ] : [.../* @__PURE__ */ new Set(["Bash(git push*main*)", "Bash(git push*master*)", `Bash(git push*${prod}*)`])].concat(`Bash(git push* :${homolog}*)`);
   const allowed = [...allowedToolsFor(job, tag, true), ...allowedToolsFor(job, tag, false)];
   return [...base, ...PUSH_ALWAYS, ...push.filter((rule) => !allowed.some((a) => permissionRuleMatches(rule, a)))];
 }
@@ -35287,8 +35353,8 @@ import { fileURLToPath } from "node:url";
 var cached2 = null;
 function connectorVersion() {
   if (cached2) return cached2;
-  if ("0.1.61") {
-    cached2 = "0.1.61";
+  if ("0.1.63") {
+    cached2 = "0.1.63";
     return cached2;
   }
   let dir = dirname12(fileURLToPath(import.meta.url));
@@ -36392,7 +36458,9 @@ async function runJob(opts, job) {
       unclaim: opts.unclaim,
       log,
       sync: wantsSync,
-      bringProd: kind === "publicar" && job.environment !== "producao"
+      bringProd: kind === "publicar" && job.environment !== "producao",
+      // Repositórios de Conventional Commits (Ambientes): os merges do conector levam a etiqueta no fim.
+      ...conventionalRepos(job).length ? { conventional: conventionalRepos(job) } : {}
     });
     if (!prepared.ok) {
       await releaseWorkspace(prepared.copies, { exec, root, log }).catch(() => []);
@@ -36467,7 +36535,7 @@ async function decideHomolog(opts, job, syncs, w) {
   if (waiting.length) return waiting;
   for (const [s2, a] of answers) {
     if (a === "sem") skipHomolog(s2);
-    else if (w.copy) await bringHomolog(exec, s2, w.tag);
+    else if (w.copy) await bringHomolog(exec, s2, w.tag, conventionalRepos(job).some((r) => r.toLowerCase() === s2.fullName.toLowerCase()));
     else homologForClaude(s2);
   }
   return [];
@@ -49555,7 +49623,7 @@ ${text2}` : text2;
     "informar_publicacao",
     {
       title: "Informar publica\xE7\xE3o",
-      description: "Informa ao servidor o SHA que foi enviado (push) para homologa\xE7\xE3o (develop) ou produ\xE7\xE3o (main), para ele acompanhar a Action de deploy. Use logo depois do push. S\xF3 vale dentro de um trabalho de publica\xE7\xE3o pedido pelo painel (Subir para homologa\xE7\xE3o ou Subir para produ\xE7\xE3o).",
+      description: "Informa ao servidor o SHA que foi enviado (push) para homologa\xE7\xE3o (develop) ou produ\xE7\xE3o (main), para ele acompanhar a Action de deploy. Na produ\xE7\xE3o que s\xF3 aceita Pull Request, \xE9 o SHA da branch da hotfix: o servidor abre o PR e a resposta traz o n\xFAmero e o endere\xE7o dele. Use logo depois do push. S\xF3 vale dentro de um trabalho de publica\xE7\xE3o pedido pelo painel (Subir para homologa\xE7\xE3o ou Subir para produ\xE7\xE3o).",
       inputSchema: {
         numero,
         ambiente: external_exports.enum(["homologacao", "producao"]),
@@ -49566,7 +49634,11 @@ ${text2}` : text2;
     async ({ numero: n2, ambiente, repositorio, sha: rawSha }) => {
       const sha = rawSha.toLowerCase();
       const { id } = await workFor(n2, "publicacao");
-      await client.published(id, { environment: ambiente, repo: repositorio, sha });
+      const res = await client.published(id, { environment: ambiente, repo: repositorio, sha });
+      if (res?.pr) {
+        const who = res.pr.mode === "pr_cliente" ? "a equipe faz o merge no GitHub" : "o Benflow faz o merge quando os checks obrigat\xF3rios passarem";
+        return `PR #${res.pr.number ?? "?"} aberto de ${res.pr.head} para a ${res.pr.base} em ${repositorio} (${sha.slice(0, 7)}): ${res.pr.url ?? ""}. Agora ${who}; depois do merge, o Benflow segue a publica\xE7\xE3o sozinho. N\xE3o fa\xE7a push na ${res.pr.base}.`;
+      }
       return `Publica\xE7\xE3o em ${ambiente === "producao" ? "produ\xE7\xE3o" : "homologa\xE7\xE3o"} informada: ${repositorio} ${sha.slice(0, 7)}.`;
     }
   );

@@ -463,8 +463,13 @@ var AgentClient = class _AgentClient {
   workStopped(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/work-stopped`, { json: body });
   }
+  // Produção por Pull Request (servidor com publishPrs): a resposta traz o PR aberto (pr) e deployment vem null.
   published(executionId, body) {
-    return this.requestJson("POST", `/api/agent/executions/${executionId}/published`, { json: body });
+    return this.requestJson(
+      "POST",
+      `/api/agent/executions/${executionId}/published`,
+      { json: body }
+    );
   }
   // Pedido de confirmação de um comando fora da lista liberada: o servidor guarda no card e devolve a situação.
   requestApproval(executionId, body) {
@@ -943,8 +948,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.61") {
-    cached = "0.1.61";
+  if ("0.1.63") {
+    cached = "0.1.63";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
