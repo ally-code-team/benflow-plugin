@@ -8605,8 +8605,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.65") {
-    cached = "0.1.65";
+  if ("0.1.66") {
+    cached = "0.1.66";
     return cached;
   }
   let dir = dirname3(fileURLToPath(import.meta.url));
@@ -8751,12 +8751,12 @@ function isPluginManaged(script, deps = {}) {
   const cache = realOrResolved(cacheDir);
   return realOrResolved(script).startsWith(cache + sep) || resolve3(script).startsWith(resolve3(cacheDir) + sep);
 }
-function stablePluginDir(dir = defaultConfigDir()) {
-  return join4(dir, "plugin");
+function stablePluginDir(dir = defaultConfigDir(), provider = "claude") {
+  return join4(dir, provider === "codex" ? "plugin-codex" : "plugin");
 }
 function refreshStablePluginDir(installPath, opts = {}) {
   if ((opts.platform ?? process.platform) === "win32") return false;
-  const link = stablePluginDir(opts.dir);
+  const link = stablePluginDir(opts.dir, isCodexManaged(installPath, opts.fs) ? "codex" : "claude");
   let target;
   try {
     target = realpathSync2(installPath);
@@ -51512,8 +51512,8 @@ function refreshStableDir(deps) {
   const self = deps.selfScript ?? process.argv[1];
   if (!self || !isPluginManaged(self, fs)) return null;
   const target = executorTarget(self, fs);
-  if (!refreshStablePluginDir(dirname16(dirname16(target.script)), { dir: deps.benflowDir, platform: deps.platform })) return null;
-  return join30(stablePluginDir(deps.benflowDir), "server", "benflow.mjs");
+  if (!refreshStablePluginDir(dirname16(dirname16(target.script)), { dir: deps.benflowDir, platform: deps.platform, fs })) return null;
+  return join30(stablePluginDir(deps.benflowDir, isCodexManaged(target.script, fs) ? "codex" : "claude"), "server", "benflow.mjs");
 }
 async function superviseExecutar(args, deps, io) {
   const env = deps.env ?? process.env;
@@ -51537,7 +51537,7 @@ async function superviseLoop(args, deps, io, ctx) {
   const { env, fs, spawnFn, platform, self, restarts } = ctx;
   for (; ; ) {
     const target = executorTarget(self, fs);
-    if (target.managed) refreshStablePluginDir(dirname16(dirname16(target.script)), { dir: deps.benflowDir, platform });
+    if (target.managed) refreshStablePluginDir(dirname16(dirname16(target.script)), { dir: deps.benflowDir, platform, fs });
     const launch = nodeScriptLaunch(target.script, ["executar", "--filho", ...args]);
     let child;
     try {
