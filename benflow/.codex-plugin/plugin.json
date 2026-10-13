@@ -1,0 +1,20 @@
+{
+  "name": "benflow",
+  "displayName": "Benflow",
+  "version": "0.1.65",
+  "description": "Chamados do Benflow dentro do Codex da OpenAI: lista as tarefas da organização, mostra o card, abre cards novos e anexa arquivos, trabalha no código e vai atualizando etapa, evidências e ambiente local no painel. Nada vai para o repositório remoto sem a pessoa pedir.",
+  "author": {
+    "name": "Ally Code",
+    "url": "https://allycode.com.br"
+  },
+  "keywords": [
+    "benflow",
+    "chamados",
+    "tarefas",
+    "cards",
+    "equipe-ia",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.codex.json"
+}

@@ -46,6 +46,25 @@ precisam ser preenchidos de novo no `/plugin` (o Claude Code guarda por plugin);
 3. O conector acha sozinho o `claude.exe` ou o `claude.cmd` do npm e aceita pastas com espaço no nome. A configuração
    do terminal fica em `%USERPROFILE%\.benflow\config.json`.
 
+## Instalar no Codex da OpenAI
+
+O mesmo plugin funciona no Codex (o Codex CLI, que entra com a conta do ChatGPT). No painel, use **Equipe IA > Agentes >
+Outras IAs > Ligar meu Codex**: a janela mostra os comandos já com o token. No terminal:
+
+```
+npm install -g @openai/codex
+codex login
+codex plugin marketplace add ally-code-team/benflow-plugin
+codex plugin add benflow@benflow-marketplace
+B="$(ls -dt ~/.codex/plugins/cache/benflow-marketplace/benflow/*/server/benflow.mjs | head -1)"
+node "$B" configurar --url <endereço do painel> --token-stdin
+node "$B" executar --url <endereço do painel> --org <slug> --ia codex
+```
+
+O `configurar` reconhece pelo token que o agente é um Codex e grava a entrada dele ao lado da do Claude do mesmo projeto.
+O executor roda o `codex exec` num cercado (escreve só nas pastas do trabalho e no `.git` delas, com rede) e traduz a
+saída para o painel. `conta-codex` atualiza a conta do ChatGPT e o uso do plano nos projetos da máquina.
+
 ## Executor (botão "Com IA" do painel)
 
 Opcional: só para o painel mandar trabalho para o seu Claude. O `/benflow:status` mostra o caminho do `benflow.mjs`.

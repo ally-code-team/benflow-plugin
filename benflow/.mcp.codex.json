@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "benflow": {
+      "command": "node",
+      "args": ["./server/benflow.mjs", "mcp"],
+      "cwd": ".",
+      "env": {
+        "BENFLOW_IA": "codex"
+      }
+    }
+  }
+}

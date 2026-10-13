@@ -1,8 +1,8 @@
 {
   "name": "benflow",
   "displayName": "Benflow",
-  "version": "0.1.63",
-  "description": "Chamados do Benflow dentro do Claude Code: lista as tarefas da organização, mostra o card, abre cards novos e anexa arquivos (por exemplo a partir de um documento técnico), trabalha no código e vai atualizando etapa, evidências e ambiente local no painel. Nada vai para o repositório remoto sem a pessoa pedir.",
+  "version": "0.1.65",
+  "description": "Chamados do Benflow dentro do Claude Code (e do Codex da OpenAI): lista as tarefas da organização, mostra o card, abre cards novos e anexa arquivos (por exemplo a partir de um documento técnico), trabalha no código e vai atualizando etapa, evidências e ambiente local no painel. Nada vai para o repositório remoto sem a pessoa pedir.",
   "author": {
     "name": "Ally Code",
     "url": "https://allycode.com.br"

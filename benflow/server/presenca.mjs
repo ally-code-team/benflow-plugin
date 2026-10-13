@@ -619,6 +619,12 @@ import { chmodSync, existsSync, mkdirSync, readFileSync, realpathSync, renameSyn
 import os from "node:os";
 import { dirname, join as join2, resolve } from "node:path";
 
+// connector/codex.ts
+var CODEX_SANDBOXES = ["workspace-write", "danger-full-access"];
+function defaultCodexSettings() {
+  return { bin: "codex", model: null, sandbox: "workspace-write", network: true };
+}
+
 // connector/legado.ts
 var LEGACY_CONFIG_DIRS = [".bora", ".chamados"];
 var LEGACY_ENV_PREFIXES = ["BORA_", "CHAMADOS_"];
@@ -643,6 +649,15 @@ function migrateAllowedTools(rules) {
 }
 
 // connector/config.ts
+function isAiProvider(v) {
+  return v === "claude" || v === "codex";
+}
+function entryProvider(entry) {
+  return entry.provider === "codex" ? "codex" : "claude";
+}
+function providerName(provider) {
+  return provider === "codex" ? "Codex" : "Claude";
+}
 var MACHINE_ID_RE = /^[A-Za-z0-9_-]{8,80}$/;
 var DEFAULT_ALLOWED_TOOLS = [
   "Read",
@@ -810,7 +825,19 @@ function normalizeEntry(raw, index) {
     repos,
     personalVault: asString(r.personalVault),
     projectVault: asString(r.projectVault),
-    claude: normalizeClaude(r.claude)
+    claude: normalizeClaude(r.claude),
+    ...r.provider === "codex" ? { provider: "codex", codex: normalizeCodex(r.codex) } : {}
+  };
+}
+function normalizeCodex(raw) {
+  const base = defaultCodexSettings();
+  if (!raw || typeof raw !== "object") return base;
+  const r = raw;
+  return {
+    bin: asString(r.bin) ?? base.bin,
+    model: asString(r.model),
+    sandbox: CODEX_SANDBOXES.includes(String(r.sandbox)) ? r.sandbox : base.sandbox,
+    network: typeof r.network === "boolean" ? r.network : base.network
   };
 }
 function parseConfig(text, path = "config.json") {
@@ -840,32 +867,41 @@ function loadConfig(requested = configPath(), warn = () => {
   }
   return parseConfig(readFileSync(path, "utf8"), path);
 }
-function pickServer(cfg, orgSlug, url) {
+function pickServer(cfg, orgSlug, url, provider) {
   const slug = orgSlug?.trim();
   const rawUrl = url?.trim();
+  const servers = provider ? cfg.servers.filter((s) => entryProvider(s) === provider) : [...cfg.servers.filter((s) => entryProvider(s) === "claude"), ...cfg.servers.filter((s) => entryProvider(s) !== "claude")];
+  const which = provider ? ` com o ${providerName(provider)}` : "";
   if (rawUrl) {
     const wanted = normalizeUrl(rawUrl);
-    const found = cfg.servers.find((s) => s.url === wanted && (!slug || s.orgSlug === slug));
-    if (!found) throw new Error(`Este computador n\xE3o est\xE1 ligado a ${wanted}${slug ? ` (organiza\xE7\xE3o "${slug}")` : ""}. Gere um token na Equipe IA desse painel e rode o configurar.`);
+    const found = servers.find((s) => s.url === wanted && (!slug || s.orgSlug === slug));
+    if (!found) throw new Error(`Este computador n\xE3o est\xE1 ligado a ${wanted}${slug ? ` (organiza\xE7\xE3o "${slug}")` : ""}${which}. Gere um token na Equipe IA desse painel e rode o configurar.`);
     return found;
   }
   if (slug) {
-    const found = cfg.servers.find((s) => s.orgSlug === slug);
-    if (!found) throw new Error(`Nenhum servidor configurado para a organiza\xE7\xE3o "${slug}".`);
+    const found = servers.find((s) => s.orgSlug === slug);
+    if (!found) throw new Error(`Nenhum servidor configurado para a organiza\xE7\xE3o "${slug}"${which}.`);
     return found;
   }
-  const first = cfg.servers[0];
-  if (!first) throw new Error(NOT_CONFIGURED);
+  const first = servers[0];
+  if (!first) throw new Error(provider === "codex" ? NOT_CONFIGURED_CODEX : NOT_CONFIGURED);
   return first;
 }
+function providerFromEnv(env = process.env) {
+  const v = benflowEnv(env, "IA")?.toLowerCase();
+  return isAiProvider(v) ? v : null;
+}
 var NOT_CONFIGURED = "O Benflow ainda n\xE3o est\xE1 configurado nesta m\xE1quina. No Claude Code, abra /plugin, escolha o plugin benflow e preencha o endere\xE7o e o token do agente (Equipe IA > Ligar meu Claude), ou rode: node benflow.mjs configurar --url <endere\xE7o>.";
+var NOT_CONFIGURED_CODEX = "O Benflow ainda n\xE3o est\xE1 configurado para o Codex nesta m\xE1quina. Gere o token em Equipe IA > Outras IAs > Ligar meu Codex e rode: node benflow.mjs configurar --url <endere\xE7o> (o Benflow guarda o token no ~/.benflow/config.json).";
 function resolveServer(cfg, env = process.env, cwd = process.cwd()) {
   const rawUrl = benflowEnv(env, "URL", "CLAUDE_PLUGIN_OPTION_URL");
   const token = benflowEnv(env, "TOKEN", "CLAUDE_PLUGIN_OPTION_TOKEN");
   const org = orgFromEnv(env);
+  const provider = providerFromEnv(env);
+  const ordered = provider ? { ...cfg, servers: [...cfg.servers.filter((s) => entryProvider(s) === provider), ...cfg.servers.filter((s) => entryProvider(s) !== provider)] } : cfg;
   if (rawUrl && token) {
     const url = normalizeUrl(rawUrl);
-    const same = cfg.servers.filter((s) => s.url === url);
+    const same = ordered.servers.filter((s) => s.url === url);
     const base = same.find((s) => s.token === token) ?? (org ? same.find((s) => s.orgSlug === org) : void 0) ?? (same.length === 1 ? same[0] : void 0);
     return {
       url,
@@ -874,16 +910,18 @@ function resolveServer(cfg, env = process.env, cwd = process.cwd()) {
       repos: base?.repos ?? {},
       personalVault: base?.personalVault ?? null,
       projectVault: base?.projectVault ?? null,
-      claude: base?.claude ?? defaultClaudeSettings()
+      claude: base?.claude ?? defaultClaudeSettings(),
+      ...base && entryProvider(base) === "codex" ? { provider: "codex", codex: base.codex ?? defaultCodexSettings() } : {}
     };
   }
-  if (!cfg.servers.length) return null;
-  if (rawUrl) return pickServer(cfg, org, rawUrl);
+  if (!ordered.servers.length) return null;
+  if (rawUrl) return pickServer(ordered, org, rawUrl, provider && ordered.servers.some((s) => s.url === normalizeUrl(rawUrl) && entryProvider(s) === provider) ? provider : null);
   if (!org) {
-    const here = serverForFolder(cfg.servers, cwd);
+    const here = serverForFolder(ordered.servers, provider === "codex" && env.PWD ? env.PWD : cwd);
     if (here) return here;
   }
-  return pickServer(cfg, org);
+  if (provider && !org) return ordered.servers[0];
+  return pickServer(ordered, org, null, provider && ordered.servers.some((s) => entryProvider(s) === provider && (!org || s.orgSlug === org)) ? provider : null);
 }
 function realOrSelf(p) {
   try {
@@ -948,8 +986,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.63") {
-    cached = "0.1.63";
+  if ("0.1.65") {
+    cached = "0.1.65";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
