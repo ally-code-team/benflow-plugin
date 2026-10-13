@@ -49,7 +49,7 @@ precisam ser preenchidos de novo no `/plugin` (o Claude Code guarda por plugin);
 ## Instalar no Codex da OpenAI
 
 O mesmo plugin funciona no Codex (o Codex CLI, que entra com a conta do ChatGPT). No painel, use **Equipe IA > Agentes >
-Outras IAs > Ligar meu Codex**: a janela mostra os comandos já com o token. No terminal:
+IAs**, escolha o **Codex** e clique em **Ligar meu Codex**: a janela mostra os comandos já com o token. No terminal:
 
 ```
 npm install -g @openai/codex

@@ -8541,7 +8541,7 @@ function providerFromEnv(env = process.env) {
   return isAiProvider(v) ? v : null;
 }
 var NOT_CONFIGURED = "O Benflow ainda n\xE3o est\xE1 configurado nesta m\xE1quina. No Claude Code, abra /plugin, escolha o plugin benflow e preencha o endere\xE7o e o token do agente (Equipe IA > Ligar meu Claude), ou rode: node benflow.mjs configurar --url <endere\xE7o>.";
-var NOT_CONFIGURED_CODEX = "O Benflow ainda n\xE3o est\xE1 configurado para o Codex nesta m\xE1quina. Gere o token em Equipe IA > Outras IAs > Ligar meu Codex e rode: node benflow.mjs configurar --url <endere\xE7o> (o Benflow guarda o token no ~/.benflow/config.json).";
+var NOT_CONFIGURED_CODEX = "O Benflow ainda n\xE3o est\xE1 configurado para o Codex nesta m\xE1quina. Gere o token em Equipe IA > Agentes > IAs, escolha o Codex > Ligar meu Codex e rode: node benflow.mjs configurar --url <endere\xE7o> (o Benflow guarda o token no ~/.benflow/config.json).";
 function resolveServer(cfg, env = process.env, cwd = process.cwd()) {
   const rawUrl = benflowEnv(env, "URL", "CLAUDE_PLUGIN_OPTION_URL");
   const token = benflowEnv(env, "TOKEN", "CLAUDE_PLUGIN_OPTION_TOKEN");
@@ -8605,8 +8605,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.66") {
-    cached = "0.1.66";
+  if ("0.1.67") {
+    cached = "0.1.67";
     return cached;
   }
   let dir = dirname3(fileURLToPath(import.meta.url));
@@ -51803,7 +51803,7 @@ async function cmdContaCodex(deps, io) {
   const cfg = existsSync19(file2) ? loadConfig(file2, io.err) : { servers: [] };
   const servers = cfg.servers.filter((s2) => entryProvider(s2) === "codex");
   if (!servers.length) {
-    io.out("Nenhum Codex configurado nesta m\xE1quina. Gere o token em Equipe IA > Outras IAs > Ligar meu Codex e rode: configurar --url <endere\xE7o> --token-stdin");
+    io.out("Nenhum Codex configurado nesta m\xE1quina. Gere o token em Equipe IA > Agentes > IAs, escolha o Codex > Ligar meu Codex e rode: configurar --url <endere\xE7o> --token-stdin");
     return 1;
   }
   const codex = servers[0].codex ?? defaultCodexSettings();
