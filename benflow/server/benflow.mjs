@@ -8605,8 +8605,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.67") {
-    cached = "0.1.67";
+  if ("0.1.70") {
+    cached = "0.1.70";
     return cached;
   }
   let dir = dirname3(fileURLToPath(import.meta.url));
@@ -8713,7 +8713,11 @@ function isCodexManaged(script, deps = {}) {
   if (!script) return false;
   const cacheDir = join4(codexHomeDir(deps), "plugins", "cache");
   const cache = realOrResolved(cacheDir);
+  if (resolve3(script).startsWith(resolve3(stablePluginDir(benflowHomeDir(deps), "codex")) + sep)) return true;
   return realOrResolved(script).startsWith(cache + sep) || resolve3(script).startsWith(resolve3(cacheDir) + sep);
+}
+function benflowHomeDir(deps = {}) {
+  return deps.homedir ? join4(deps.homedir, ".benflow") : defaultConfigDir();
 }
 function installedBenflow(deps = {}, script) {
   if (isCodexManaged(script, deps)) return installedBenflowCodex(deps);
@@ -8747,6 +8751,7 @@ function realOrResolved(path2) {
 function isPluginManaged(script, deps = {}) {
   if (!script) return false;
   if (isCodexManaged(script, deps)) return true;
+  if (resolve3(script).startsWith(resolve3(stablePluginDir(benflowHomeDir(deps), "claude")) + sep)) return true;
   const cacheDir = join4(claudeHome(deps), "plugins", "cache");
   const cache = realOrResolved(cacheDir);
   return realOrResolved(script).startsWith(cache + sep) || resolve3(script).startsWith(resolve3(cacheDir) + sep);
@@ -8939,6 +8944,9 @@ var CONNECTOR_CAPABILITIES = [
   // Achar a pasta do cofre do projeto (vaultFind.ts): o batimento traz caminhos de notas do cofre do servidor (vaultFind)
   // e o executor procura nas pastas do Google Drive desta máquina a que tem as mesmas notas; achou, grava no config.
   "achar-cofre",
+  // Preparo da máquina conferido na hora (Equipe IA > Agentes > Máquina): o pedido vem no batimento e o conector confere
+  // a lista do projeto e o que a aplicação pede, sem instalar nada (preparo.ts, checkMachine).
+  "conferir-preparo",
   // Produção por Pull Request (Ambientes, Como entra na produção): nos repositórios de job.prRepos, a publicação manda só
   // a branch da hotfix e o servidor abre o PR. O servidor só pede essa publicação a quem anuncia esta capacidade.
   "publicar-por-pr"
@@ -10927,7 +10935,7 @@ function resolveClaudeLaunch(bin, deps = {}) {
   if (platform !== "win32") return { command: bin, prefixArgs: [], shell: false };
   const env = deps.env ?? process.env;
   const isFile = deps.isFile ?? defaultIsFile;
-  const readText4 = deps.readText ?? ((p) => readFileSync6(p, "utf8"));
+  const readText3 = deps.readText ?? ((p) => readFileSync6(p, "utf8"));
   const home = deps.homedir ?? os7.homedir();
   const hasDir = /[\\/]/.test(bin);
   const ext = path.win32.extname(bin).toLowerCase();
@@ -10946,7 +10954,7 @@ function resolveClaudeLaunch(bin, deps = {}) {
   if (/\.exe$/i.test(found)) return { command: found, prefixArgs: [], shell: false };
   let shim = null;
   try {
-    shim = parseCmdShim(readText4(found), found);
+    shim = parseCmdShim(readText3(found), found);
   } catch {
     shim = null;
   }
@@ -13119,37 +13127,36 @@ function createScreenCapture(opts = {}) {
 // connector/appNeeds.ts
 import { readdirSync as readdirSync4, readFileSync as readFileSync9, statSync as statSync8 } from "node:fs";
 import { join as join14 } from "node:path";
-var PROGRAMS = {
-  node: { name: "Node", bin: "node", args: ["--version"] },
-  npm: { name: "npm", bin: "npm", args: ["--version"] },
-  pnpm: { name: "pnpm", bin: "pnpm", args: ["--version"] },
-  yarn: { name: "Yarn", bin: "yarn", args: ["--version"] },
-  bun: { name: "Bun", bin: "bun", args: ["--version"] },
-  php: { name: "PHP", bin: "php", args: ["--version"] },
-  composer: { name: "Composer", bin: "composer", args: ["--version", "--no-ansi"] },
-  python: { name: "Python", bin: "python3", args: ["--version"] },
-  ruby: { name: "Ruby", bin: "ruby", args: ["--version"] },
-  go: { name: "Go", bin: "go", args: ["version"] },
-  git: { name: "Git", bin: "git", args: ["--version"] }
+
+// server/services/appNeedsRead.ts
+var NEED_NAMES = {
+  node: "Node",
+  npm: "npm",
+  pnpm: "pnpm",
+  yarn: "Yarn",
+  bun: "Bun",
+  php: "PHP",
+  composer: "Composer",
+  python: "Python",
+  ruby: "Ruby",
+  go: "Go",
+  docker: "Docker"
 };
 function needName(key) {
-  return PROGRAMS[key].name;
+  return NEED_NAMES[key];
 }
 function needLabel(n2) {
   return n2.want ? `${n2.name} ${n2.want}` : n2.name;
 }
-var SKIP_DIRS2 = /* @__PURE__ */ new Set(["node_modules", "vendor", "dist", "build", "out", "coverage", "tmp", "temp", "data"]);
+var APP_SKIP_DIRS = /* @__PURE__ */ new Set(["node_modules", "vendor", "dist", "build", "out", "coverage", "tmp", "temp", "data"]);
 var VERSION_SPEC = /^[0-9.^~<>=|+ -]{1,60}$/;
-function readText3(path2) {
-  try {
-    const text2 = readFileSync9(path2, "utf8");
-    return text2.length > 2e5 ? null : text2;
-  } catch {
-    return null;
-  }
+var COMPOSE_FILES = ["docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml"];
+var APP_MAX_DIRS = 12;
+function joinRel(dir, name) {
+  return dir === "." ? name : `${dir}/${name}`;
 }
-function readJson2(path2) {
-  const text2 = readText3(path2);
+function readJson2(files, path2) {
+  const text2 = files.text(path2);
   if (!text2) return null;
   try {
     const v = JSON.parse(text2);
@@ -13186,47 +13193,39 @@ function nodeSpec(raw) {
   if (/^(node|stable|latest|lts|current)$/i.test(v)) return null;
   return cleanSpec(v);
 }
-function toolVersions(dir) {
+function toolVersions(files, dir) {
   const out = {};
-  for (const line of (readText3(join14(dir, ".tool-versions")) ?? "").split(/\r?\n/)) {
+  for (const line of (files.text(joinRel(dir, ".tool-versions")) ?? "").split(/\r?\n/)) {
     const [tool, version2] = line.trim().split(/\s+/);
     if (tool && version2 && !tool.startsWith("#")) out[tool] = version2;
   }
   return out;
 }
-function appDirs(root, maxDirs = 12) {
-  const out = [{ rel: ".", abs: root }];
-  const visit2 = (abs, rel, depth) => {
+function appDirsIn(files, maxDirs = APP_MAX_DIRS) {
+  const out = ["."];
+  const visit2 = (rel, depth) => {
     if (depth > 2 || out.length >= maxDirs) return;
-    let names;
-    try {
-      names = readdirSync4(abs);
-    } catch {
-      return;
-    }
-    if (rel !== "." && (names.includes("package.json") || names.includes("composer.json"))) out.push({ rel, abs });
-    for (const name of names.sort()) {
-      if (name.startsWith(".") || SKIP_DIRS2.has(name)) continue;
-      const child = join14(abs, name);
-      try {
-        if (!statSync8(child).isDirectory()) continue;
-      } catch {
-        continue;
-      }
-      visit2(child, rel === "." ? name : `${rel}/${name}`, depth + 1);
+    const names = files.list(rel);
+    if (!names) return;
+    if (rel !== "." && (names.includes("package.json") || names.includes("composer.json"))) out.push(rel);
+    for (const name of [...names].sort()) {
+      if (name.startsWith(".") || APP_SKIP_DIRS.has(name)) continue;
+      const child = joinRel(rel, name);
+      if (!files.isDir(child)) continue;
+      visit2(child, depth + 1);
     }
   };
-  visit2(root, ".", 0);
+  visit2(".", 0);
   return out;
 }
-function nodeOf(dir) {
-  const nvmrc = readText3(join14(dir, ".nvmrc"));
+function nodeOf(files, dir) {
+  const nvmrc = files.text(joinRel(dir, ".nvmrc"));
   if (nvmrc !== null) return { want: nodeSpec(nvmrc), from: ".nvmrc" };
-  const nv = readText3(join14(dir, ".node-version"));
+  const nv = files.text(joinRel(dir, ".node-version"));
   if (nv !== null) return { want: nodeSpec(nv), from: ".node-version" };
-  const tv = toolVersions(dir);
+  const tv = toolVersions(files, dir);
   if (tv.nodejs || tv.node) return { want: nodeSpec(tv.nodejs ?? tv.node), from: ".tool-versions" };
-  const pkg = readJson2(join14(dir, "package.json"));
+  const pkg = readJson2(files, joinRel(dir, "package.json"));
   const volta = field(pkg, "volta", "node");
   if (volta) return { want: cleanSpec(volta), from: "package.json (volta.node)" };
   const engines = field(pkg, "engines", "node");
@@ -13241,57 +13240,112 @@ var LOCKS = [
   { file: "bun.lock", key: "bun" },
   { file: "bun.lockb", key: "bun" }
 ];
-function managerOf(dir, pkg) {
+function managerOf(files, dir, pkg) {
   const pm = field(pkg, "packageManager")?.match(/^(npm|pnpm|yarn|bun)@([^+\s]+)/);
   if (pm) return { key: pm[1], want: cleanSpec(pm[2]), from: "package.json (packageManager)" };
-  let names = [];
-  try {
-    names = readdirSync4(dir);
-  } catch {
-    names = [];
-  }
+  const names = files.list(dir) ?? [];
   const lock = LOCKS.find((l) => names.includes(l.file));
   const key = lock?.key ?? "npm";
   const engine = field(pkg, "engines", key);
   if (engine) return { key, want: cleanSpec(engine), from: `package.json (engines.${key})` };
   return { key, want: null, from: lock?.file ?? "package.json" };
 }
-function readAppNeeds(repo, root) {
+function readAppNeedsFrom(repo, files) {
   const out = [];
   const add = (n2) => {
     if (out.some((o) => o.key === n2.key && o.want === n2.want)) return;
     out.push({ ...n2, name: needName(n2.key), repo });
   };
-  const rootNode = nodeOf(root);
-  for (const d of appDirs(root)) {
-    const pkg = readJson2(join14(d.abs, "package.json"));
+  const rootNode = nodeOf(files, ".");
+  for (const dir of appDirsIn(files)) {
+    const pkg = readJson2(files, joinRel(dir, "package.json"));
     if (pkg) {
-      const node2 = nodeOf(d.abs) ?? rootNode;
-      add({ key: "node", want: node2?.want ?? null, from: node2?.from ?? "package.json", dir: node2 && node2 !== rootNode ? d.rel : "." });
-      const pm = managerOf(d.abs, pkg);
-      add({ key: pm.key, want: pm.want, from: pm.from, dir: d.rel });
+      const node2 = nodeOf(files, dir) ?? rootNode;
+      add({ key: "node", want: node2?.want ?? null, from: node2?.from ?? "package.json", dir: node2 && node2 !== rootNode ? dir : "." });
+      const pm = managerOf(files, dir, pkg);
+      add({ key: pm.key, want: pm.want, from: pm.from, dir });
     }
-    const composer = readJson2(join14(d.abs, "composer.json"));
+    const composer = readJson2(files, joinRel(dir, "composer.json"));
     if (composer) {
       const php = field(composer, "require", "php");
-      add({ key: "php", want: cleanSpec(php), from: php ? "composer.json (require.php)" : "composer.json", dir: d.rel });
-      let hasLock = false;
-      try {
-        hasLock = statSync8(join14(d.abs, "composer.lock")).isFile();
-      } catch {
-        hasLock = false;
-      }
-      add({ key: "composer", want: null, from: hasLock ? "composer.lock" : "composer.json", dir: d.rel });
+      add({ key: "php", want: cleanSpec(php), from: php ? "composer.json (require.php)" : "composer.json", dir });
+      const hasLock = (files.list(dir) ?? []).includes("composer.lock");
+      add({ key: "composer", want: null, from: hasLock ? "composer.lock" : "composer.json", dir });
     }
   }
-  const tv = toolVersions(root);
-  const python = readText3(join14(root, ".python-version"));
+  const tv = toolVersions(files, ".");
+  const python = files.text(".python-version");
   if (python !== null || tv.python) add({ key: "python", want: cleanSpec(python ?? tv.python), from: python !== null ? ".python-version" : ".tool-versions", dir: "." });
-  const ruby = readText3(join14(root, ".ruby-version"));
+  const ruby = files.text(".ruby-version");
   if (ruby !== null || tv.ruby) add({ key: "ruby", want: cleanSpec(ruby ?? tv.ruby), from: ruby !== null ? ".ruby-version" : ".tool-versions", dir: "." });
-  const goMod = readText3(join14(root, "go.mod"));
+  const goMod = files.text("go.mod");
   if (goMod !== null) add({ key: "go", want: cleanSpec(goMod.match(/^go\s+(\d+(?:\.\d+){0,2})\s*$/m)?.[1] ?? null), from: "go.mod", dir: "." });
+  const compose = COMPOSE_FILES.find((f) => (files.list(".") ?? []).includes(f));
+  if (compose) add({ key: "docker", want: null, from: compose, dir: "." });
   return out;
+}
+function major(spec) {
+  return spec?.match(/\d+/)?.[0] ?? null;
+}
+function installHint(key, want, platform) {
+  const v = major(want);
+  if (key === "node") return v ? `Instale o Node ${v} (nvm install ${v}, fnm install ${v} ou nodejs.org).` : "Instale o Node (nodejs.org).";
+  if (key === "pnpm" || key === "yarn") return `Ative com corepack enable ou instale com npm i -g ${key}${want ? `@${want}` : ""}.`;
+  if (key === "npm") return "O npm vem com o Node: instale o Node.";
+  if (key === "bun") return "Instale o Bun (bun.sh).";
+  if (key === "php") return platform === "darwin" ? `Instale o PHP${v ? ` ${want}` : ""} (brew install php).` : platform === "linux" ? "Instale o PHP (sudo apt-get install -y php-cli)." : "Instale o PHP (windows.php.net).";
+  if (key === "composer") return "Instale o Composer (getcomposer.org).";
+  if (key === "python") return `Instale o Python${want ? ` ${want}` : ""} (pyenv install ${want ?? "3"} ou python.org).`;
+  if (key === "ruby") return want ? `Instale o Ruby ${want} (rbenv install ${want}).` : "Instale o Ruby (ruby-lang.org).";
+  if (key === "docker")
+    return platform === "linux" ? "Instale o Docker (sudo apt-get install -y docker.io) e ponha o usu\xE1rio do Claude no grupo docker." : "Instale o Docker Desktop (ou o Colima, no Mac) e deixe ligado.";
+  return `Instale o Go${want ? ` ${want}` : ""} (go.dev/dl).`;
+}
+
+// connector/appNeeds.ts
+var PROGRAMS = {
+  node: { name: "Node", bin: "node", args: ["--version"] },
+  npm: { name: "npm", bin: "npm", args: ["--version"] },
+  pnpm: { name: "pnpm", bin: "pnpm", args: ["--version"] },
+  yarn: { name: "Yarn", bin: "yarn", args: ["--version"] },
+  bun: { name: "Bun", bin: "bun", args: ["--version"] },
+  php: { name: "PHP", bin: "php", args: ["--version"] },
+  composer: { name: "Composer", bin: "composer", args: ["--version", "--no-ansi"] },
+  python: { name: "Python", bin: "python3", args: ["--version"] },
+  ruby: { name: "Ruby", bin: "ruby", args: ["--version"] },
+  go: { name: "Go", bin: "go", args: ["version"] },
+  docker: { name: "Docker", bin: "docker", args: ["--version"] },
+  git: { name: "Git", bin: "git", args: ["--version"] }
+};
+function diskFiles(root) {
+  const abs = (rel) => rel === "." ? root : join14(root, ...rel.split("/"));
+  return {
+    list(dir) {
+      try {
+        return readdirSync4(abs(dir));
+      } catch {
+        return null;
+      }
+    },
+    isDir(path2) {
+      try {
+        return statSync8(abs(path2)).isDirectory();
+      } catch {
+        return false;
+      }
+    },
+    text(path2) {
+      try {
+        const text2 = readFileSync9(abs(path2), "utf8");
+        return text2.length > 2e5 ? null : text2;
+      } catch {
+        return null;
+      }
+    }
+  };
+}
+function readAppNeeds(repo, root) {
+  return readAppNeedsFrom(repo, diskFiles(root));
 }
 function parseVer(text2) {
   const m = text2.match(/(\d+)(?:\.(\d+|x|\*))?(?:\.(\d+|x|\*))?/i);
@@ -13336,21 +13390,6 @@ function versionIn(key, text2) {
   if (key === "composer") return flat.match(/Composer(?: version)?\s+(\d+\.\d+(?:\.\d+)?)/i)?.[1] ?? null;
   if (key === "go") return flat.match(/go(\d+\.\d+(?:\.\d+)?)/)?.[1] ?? null;
   return flat.match(/(\d+\.\d+(?:\.\d+)?)/)?.[1] ?? null;
-}
-function major(spec) {
-  return spec?.match(/\d+/)?.[0] ?? null;
-}
-function installHint(key, want, platform) {
-  const v = major(want);
-  if (key === "node") return v ? `Instale o Node ${v} (nvm install ${v}, fnm install ${v} ou nodejs.org).` : "Instale o Node (nodejs.org).";
-  if (key === "pnpm" || key === "yarn") return `Ative com corepack enable ou instale com npm i -g ${key}${want ? `@${want}` : ""}.`;
-  if (key === "npm") return "O npm vem com o Node: instale o Node.";
-  if (key === "bun") return "Instale o Bun (bun.sh).";
-  if (key === "php") return platform === "darwin" ? `Instale o PHP${v ? ` ${want}` : ""} (brew install php).` : platform === "linux" ? "Instale o PHP (sudo apt-get install -y php-cli)." : "Instale o PHP (windows.php.net).";
-  if (key === "composer") return "Instale o Composer (getcomposer.org).";
-  if (key === "python") return `Instale o Python${want ? ` ${want}` : ""} (pyenv install ${want ?? "3"} ou python.org).`;
-  if (key === "ruby") return want ? `Instale o Ruby ${want} (rbenv install ${want}).` : "Instale o Ruby (ruby-lang.org).";
-  return `Instale o Go${want ? ` ${want}` : ""} (go.dev/dl).`;
 }
 async function checkAppNeeds(needs, o) {
   const versions = /* @__PURE__ */ new Map();
@@ -13584,7 +13623,7 @@ var JS_LOCKS = [
   { file: "bun.lock", kind: "bun" },
   { file: "bun.lockb", kind: "bun" }
 ];
-var SKIP_DIRS3 = /* @__PURE__ */ new Set(["node_modules", "vendor", "dist", "build", "out", "coverage", "tmp", "temp", "data"]);
+var SKIP_DIRS2 = /* @__PURE__ */ new Set(["node_modules", "vendor", "dist", "build", "out", "coverage", "tmp", "temp", "data"]);
 function lockDirs(root, maxDirs = 12) {
   const out = [];
   const visit2 = (abs, rel, depth) => {
@@ -13601,7 +13640,7 @@ function lockDirs(root, maxDirs = 12) {
     if (has.has("composer.json") && has.has("composer.lock")) out.push({ rel, abs, lock: "composer.lock", kind: "composer", depsDir: join15(abs, "vendor") });
     if (depth >= 2) return;
     for (const name of names.sort()) {
-      if (name.startsWith(".") || SKIP_DIRS3.has(name)) continue;
+      if (name.startsWith(".") || SKIP_DIRS2.has(name)) continue;
       const child = join15(abs, name);
       try {
         if (!statSync9(child).isDirectory()) continue;
@@ -13857,6 +13896,85 @@ ${res.stdout}`);
   }
   const hasReport = report.items.length || report.repos.length || report.needs || report.tools;
   return { timeline, prompt, report: hasReport ? report : null };
+}
+async function catalogInstallable(cat, ctx) {
+  const step = cat.install[ctx.platform];
+  if (!step) return { ok: false, detail: cat.manual?.[ctx.platform] ?? `O Benflow n\xE3o instala ${cat.name} sozinho neste sistema.` };
+  const manual = manualCommand(cat, ctx.platform) ?? `instale ${cat.name}`;
+  const full = { ...ctx, aptUpdated: { done: true } };
+  const has = (name) => whichProgram(name, ctx.env, ctx.platform, ctx.probe.isExec) !== null;
+  if (step.manager === "apt" || step.manager === "deb") {
+    if (step.manager === "deb") {
+      if (ctx.arch !== step.arch) return { ok: false, detail: `O pacote oficial \xE9 s\xF3 para x64 (esta m\xE1quina \xE9 ${ctx.arch}): ${cat.manual?.linux ?? manual}` };
+      if (!has("curl") && !has("wget")) return { ok: false, detail: `Sem curl nem wget para baixar o pacote: ${manual}` };
+    }
+    if (!has("apt-get")) return { ok: false, detail: `Este Linux n\xE3o tem apt-get: instale \xE0 m\xE3o (${manual}).` };
+    if (!await adminPrefix(full)) return { ok: false, detail: `Precisa de administrador nesta m\xE1quina: rode ${manual}` };
+    return { ok: true, how: "apt-get" };
+  }
+  if (step.manager === "brew") {
+    if (!has("brew")) return { ok: false, detail: `Esta m\xE1quina n\xE3o tem o Homebrew (brew.sh): instale o Homebrew e rode ${manual}` };
+    if (ctx.isRoot) return { ok: false, detail: `O Homebrew n\xE3o roda como root: ${manual} com o usu\xE1rio do Mac.` };
+    return { ok: true, how: "Homebrew" };
+  }
+  if (!has("winget")) return { ok: false, detail: `Este Windows n\xE3o tem o winget: ${manual}` };
+  return { ok: true, how: "winget" };
+}
+async function checkMachine(o) {
+  const platform = o.platform ?? process.platform;
+  const env = o.env ?? process.env;
+  const exec = o.exec ?? prepExec(platform);
+  const isRoot = o.isRoot ?? (typeof process.getuid === "function" && process.getuid() === 0);
+  const probe = { env, platform, ...o.isExec ? { isExec: o.isExec } : {}, ...o.exists ? { exists: o.exists } : {} };
+  const report = { platform, items: [], repos: [] };
+  const cache = readPrepCache(o.cacheFile);
+  const resetAt = o.plan?.resetAt ?? null;
+  if (o.plan?.items.length && isPrepPlatform(platform)) {
+    const ctx = { exec, env, platform, arch: o.arch ?? process.arch, isRoot, probe };
+    for (const item of o.plan.items) {
+      const cat = item.catalogId ? catalogItem(item.catalogId) : null;
+      if (!cat) {
+        const done = cache.itens[prepItemKey(o.scope, item)];
+        report.items.push(
+          done && fresh(done.at, resetAt) ? { key: item.key, name: item.name, status: "ok", detail: null } : { key: item.key, name: item.name, status: "com_claude", detail: "O Claude confere e instala no come\xE7o do pr\xF3ximo trabalho." }
+        );
+        continue;
+      }
+      if (catalogPresent(cat, probe)) {
+        report.items.push({ key: item.key, name: cat.name, status: "ok", detail: null });
+        continue;
+      }
+      const can = await catalogInstallable(cat, ctx);
+      report.items.push(
+        can.ok ? { key: item.key, name: cat.name, status: "pendente", detail: `O Benflow instala pelo ${can.how} antes do pr\xF3ximo trabalho.` } : { key: item.key, name: cat.name, status: "falta", detail: can.detail }
+      );
+    }
+  }
+  for (const repo of o.repos) {
+    for (const d of lockDirs(repo.path)) {
+      const folder = realDir(d.abs);
+      const hash2 = fileHash(join15(d.abs, d.lock));
+      if (!hash2) continue;
+      const known = cache.pastas[folder]?.[d.lock];
+      const has = existsSync11(d.depsDir);
+      const upToDate = has && (known ? known.hash === hash2 : !(d.kind === "npm" && npmDepsStale(d.abs)));
+      const cmd = depsCommand(d, env, platform, probe.isExec);
+      const label = "missing" in cmd ? null : cmd.label;
+      report.repos.push(
+        upToDate ? { repo: repo.fullName, dir: d.rel, status: "ok", detail: null } : "missing" in cmd ? { repo: repo.fullName, dir: d.rel, status: "falhou", detail: `Falta o ${cmd.missing} nesta m\xE1quina para instalar as depend\xEAncias.` } : { repo: repo.fullName, dir: d.rel, status: "pendente", detail: `O Benflow roda ${label} antes do pr\xF3ximo trabalho.` }
+      );
+    }
+  }
+  const fromServer = new Set(o.needs.map((n2) => n2.repo));
+  const local = o.repos.filter((r) => !fromServer.has(r.fullName)).flatMap((r) => readAppNeeds(r.fullName, r.path));
+  const needs = [...o.needs, ...local];
+  if (needs.length) {
+    const which = (name) => whichProgram(name, env, platform, probe.isExec);
+    const { checks, tools } = await checkAppNeeds(needs, { exec, platform, which });
+    report.needs = checks;
+    report.tools = tools;
+  }
+  return report;
 }
 
 // ../benflow/node_modules/zod/v4/classic/external.js
@@ -38526,6 +38644,9 @@ var Executor = class {
   // o batimento rápido enquanto a tela está aberta.
   scansDone = /* @__PURE__ */ new Set();
   scanRunning = false;
+  // Preparo da máquina: conferências pedidas pela Equipe IA > Máquina já feitas (o servidor repete o id até a resposta).
+  prepChecksDone = /* @__PURE__ */ new Set();
+  prepCheckRunning = false;
   repoPathsDone = /* @__PURE__ */ new Set();
   repoCreatesDone = /* @__PURE__ */ new Set();
   repoPathsAck = [];
@@ -38698,6 +38819,7 @@ var Executor = class {
         if (Array.isArray(res?.repoPaths) && res.repoPaths.length) this.applyRepoPaths(res.repoPaths);
         if (Array.isArray(res?.projectRepos)) void this.repoKeeper.update(res.projectRepos);
         if (res?.machineScan?.id) void this.runMachineScan(res.machineScan.id);
+        if (res?.preparoCheck?.id) void this.runPrepCheck(res.preparoCheck);
         if (Array.isArray(res?.repoCreates) && res.repoCreates.length) void this.runRepoCreates(res.repoCreates);
         if (Array.isArray(res?.vaultFind?.paths) && res.vaultFind.paths.length) void this.findProjectVault(res.vaultFind.paths);
         if (typeof res?.pulseMs === "number" && res.pulseMs >= 1e3) this.pulse(Math.min(res.pulseMs, 3e4));
@@ -38819,6 +38941,32 @@ var Executor = class {
       }
     } finally {
       this.scanRunning = false;
+    }
+  }
+  // Preparo da máquina conferido na hora (Equipe IA > Máquina aberta no painel): confere a lista do projeto e o que a
+  // aplicação pede, sem instalar nada, e manda a situação desta máquina. Um pedido por id, um de cada vez.
+  async runPrepCheck(req) {
+    if (this.prepChecksDone.has(req.id) || this.prepCheckRunning) return;
+    this.prepChecksDone.add(req.id);
+    this.prepCheckRunning = true;
+    try {
+      const repos = Object.entries(this.opts.entry.repos).filter(([, path2]) => isDirectory(path2)).map(([fullName, path2]) => ({ fullName, path: path2 }));
+      const report = await checkMachine({
+        plan: req.plan,
+        needs: Array.isArray(req.needs) ? req.needs : [],
+        repos,
+        cacheFile: prepCachePath(this.opts.configFile),
+        scope: `${this.opts.entry.url}|${this.opts.entry.orgSlug ?? ""}`,
+        ...this.opts.prepExec ? { exec: this.opts.prepExec } : {},
+        ...this.opts.env ? { env: this.opts.env } : {}
+      });
+      await this.opts.client.machinePrep({ ...report, checkId: req.id, checkOnly: true });
+      const missing2 = report.items.filter((i) => i.status === "falta").length + (report.needs ?? []).filter((n2) => n2.status === "falta").length;
+      this.log(`Preparo da m\xE1quina conferido a pedido do painel: ${missing2 ? `${missing2} ${missing2 === 1 ? "item falta" : "itens faltam"} instalar \xE0 m\xE3o` : "nada para instalar \xE0 m\xE3o"}.`);
+    } catch (err) {
+      this.log(`N\xE3o deu para conferir o preparo da m\xE1quina: ${msgOf(err)}`);
+    } finally {
+      this.prepCheckRunning = false;
     }
   }
   // Projeto do zero (Começar): cria a pasta e o repositório privado no GitHub e responde ao painel. Um pedido por id.
@@ -39146,15 +39294,19 @@ var Executor = class {
     if (now - this.lastUpdateCheck < (this.opts.updateCheckMs ?? 6e4)) return false;
     this.lastUpdateCheck = now;
     const open2 = this.pluginUpdateOpen;
+    const cli = isCodexManaged(this.selfScript, this.opts.claudeFs) || entryProvider(this.opts.entry) === "codex" ? "O Codex" : "O Claude Code";
+    const cliName = cli.slice(2);
     if (!isPluginManaged(this.selfScript, this.opts.claudeFs)) {
-      if (open2) this.failPluginUpdate(`este executor roda de ${this.selfScript}, fora da pasta de plugins do Claude Code, e n\xE3o se atualiza sozinho. Atualize o plugin pelo Claude Code e ligue o executor de novo pelo benflow.mjs da vers\xE3o nova.`);
+      if (open2) this.failPluginUpdate(`este executor roda de ${this.selfScript}, fora da pasta de plugins do ${cliName}, e n\xE3o se atualiza sozinho. Atualize o plugin pelo ${cliName} e ligue o executor de novo pelo benflow.mjs da vers\xE3o nova.`);
       return false;
     }
     const mine = this.opts.version ?? connectorVersion();
     let installed = this.installed();
     const wanted = this.wantedVersion;
     if (open2 && !installed) {
-      this.failPluginUpdate("n\xE3o achei o plugin do Benflow instalado no Claude Code deste computador. Instale de novo: claude plugin install benflow@benflow-marketplace.");
+      this.failPluginUpdate(
+        cliName === "Codex" ? "n\xE3o achei o plugin do Benflow instalado no Codex deste computador. Instale de novo: codex plugin add benflow@benflow-marketplace." : "n\xE3o achei o plugin do Benflow instalado no Claude Code deste computador. Instale de novo: claude plugin install benflow@benflow-marketplace."
+      );
       return false;
     }
     if (this.opts.restartOnUpdate && wanted && installed && isOlderVersion(installed.version, wanted) && this.autoUpdateOn()) {
@@ -39163,11 +39315,12 @@ var Executor = class {
         this.fetchTried.set(wanted, now);
         const fetched = await this.fetchPluginUpdate(installed, wanted);
         installed = this.installed();
+        if (installed) refreshStablePluginDir(installed.installPath, { fs: this.opts.claudeFs });
         if (open2 && fetched !== "ocupado") {
           if (fetched) this.failPluginUpdate(fetched);
           else if (installed && isOlderVersion(installed.version, wanted)) {
             this.failPluginUpdate(
-              `o Claude Code deste computador n\xE3o achou a vers\xE3o ${wanted} do plugin: o marketplace ${installed.marketplace || "benflow-marketplace"} ainda tem a ${installed.version}. Se a vers\xE3o nova acabou de sair, tente de novo em alguns minutos.`
+              `o ${cliName} deste computador n\xE3o achou a vers\xE3o ${wanted} do plugin: o marketplace ${installed.marketplace || "benflow-marketplace"} ainda tem a ${installed.version}. Se a vers\xE3o nova acabou de sair, tente de novo em alguns minutos.`
             );
           }
         }
@@ -39182,13 +39335,14 @@ var Executor = class {
     if (!this.opts.restartOnUpdate) {
       if (this.installedNoticed !== installed.version) {
         this.installedNoticed = installed.version;
-        this.log(`O Claude Code instalou a vers\xE3o ${installed.version} do plugin do Benflow. Religue este executor para usar a vers\xE3o nova.`);
+        this.log(`${cli} instalou a vers\xE3o ${installed.version} do plugin do Benflow. Religue este executor para usar a vers\xE3o nova.`);
       }
       if (open2) this.failPluginUpdate(`a vers\xE3o ${installed.version} foi instalada, mas este executor roda sem o supervisor e n\xE3o reinicia sozinho. Pare o executor e ligue de novo para usar a vers\xE3o nova.`);
       return false;
     }
     this.pluginUpdateOpen = null;
-    this.log(`O Claude Code instalou a vers\xE3o ${installed.version} do plugin do Benflow (este executor est\xE1 na ${mine}). Reiniciando nela.`);
+    this.log(`${cli} instalou a vers\xE3o ${installed.version} do plugin do Benflow (este executor est\xE1 na ${mine}). Reiniciando nela.`);
+    refreshStablePluginDir(installed.installPath, { fs: this.opts.claudeFs });
     this.restartTo = installed;
     return true;
   }
