@@ -8605,8 +8605,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.70") {
-    cached = "0.1.70";
+  if ("0.1.71") {
+    cached = "0.1.71";
     return cached;
   }
   let dir = dirname3(fileURLToPath(import.meta.url));
@@ -34012,7 +34012,8 @@ function registerPainelTools(deps) {
         setor: external_exports.string().max(120).optional().describe("Nome do setor do projeto, ex.: Bug ou Melhoria. Se errar, a resposta lista os setores"),
         prazo: external_exports.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().describe("Prazo no formato AAAA-MM-DD"),
         responsaveis: external_exports.array(external_exports.string().min(1).max(200)).max(10).optional().describe("Nomes ou e-mails de membros do projeto. Se errar, a resposta lista os membros"),
-        arquivos: external_exports.array(external_exports.number().int().positive()).max(10).optional().describe("Ids dos arquivos desta conversa para anexar ao card (at\xE9 10), como aparecem na mensagem")
+        arquivos: external_exports.array(external_exports.number().int().positive()).max(10).optional().describe("Ids dos arquivos desta conversa para anexar ao card (at\xE9 10), como aparecem na mensagem"),
+        analisar: external_exports.boolean().optional().describe("Analisar com a IA ao criar: true, o Benflow confere o card com a base de conhecimento logo depois de criado e ajusta o t\xEDtulo e a descri\xE7\xE3o; false, o card entra como voc\xEA escreveu. Sem o campo, vale o padr\xE3o do projeto. Use false s\xF3 quando a pessoa pedir o card sem a an\xE1lise")
       }
     },
     async (a) => {
@@ -34023,7 +34024,8 @@ function registerPainelTools(deps) {
         category: a.setor ?? null,
         dueDate: a.prazo ?? null,
         assignees: a.responsaveis ?? [],
-        ...fileIds.length ? { fileIds } : {}
+        ...fileIds.length ? { fileIds } : {},
+        ...a.analisar !== void 0 ? { analisar: a.analisar } : {}
       }).catch((err) => unsure(err, "O card pode ter sido criado mesmo assim: confira com listar_chamados antes de tentar de novo, para n\xE3o abrir em dobro."));
       const t = res.task;
       const info = [STATUS_LABEL[t.status] ?? t.status, t.category ? `setor ${t.category}` : null, t.dueDate ? `prazo ${t.dueDate}` : null, t.assignees?.length ? `respons\xE1veis ${t.assignees.join(", ")}` : null].filter(Boolean).join(", ");
@@ -50492,7 +50494,8 @@ ${text2}` : text2;
         setor: external_exports.string().max(120).optional().describe("Nome do setor do projeto, ex.: Bug ou Melhoria. Se errar, a resposta lista os setores"),
         prazo: external_exports.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().describe("Prazo no formato AAAA-MM-DD"),
         responsaveis: external_exports.array(external_exports.string().min(1).max(200)).max(10).optional().describe("Nomes ou e-mails de membros do projeto. Se errar, a resposta lista os membros"),
-        anexos: paths.optional().describe("Arquivos locais para anexar ao card (at\xE9 10, 25 MB cada)")
+        anexos: paths.optional().describe("Arquivos locais para anexar ao card (at\xE9 10, 25 MB cada)"),
+        analisar: external_exports.boolean().optional().describe("Analisar com a IA ao criar: true, o Benflow confere o card com a base de conhecimento logo depois de criado e ajusta o t\xEDtulo e a descri\xE7\xE3o; false, o card entra como voc\xEA escreveu. Sem o campo, vale o padr\xE3o do projeto. Use false s\xF3 quando a pessoa pedir o card sem a an\xE1lise")
       }
     },
     async (a) => {
@@ -50502,7 +50505,8 @@ ${text2}` : text2;
         description: a.descricao ? redact(a.descricao) : null,
         category: a.setor ?? null,
         dueDate: a.prazo ?? null,
-        assignees: a.responsaveis ?? []
+        assignees: a.responsaveis ?? [],
+        ...a.analisar !== void 0 ? { analisar: a.analisar } : {}
       });
       const t = res.task;
       const info = [STATUS_LABEL2[t.status] ?? t.status, t.category ? `setor ${t.category}` : null, t.dueDate ? `prazo ${t.dueDate}` : null, t.assignees.length ? `respons\xE1veis ${t.assignees.join(", ")}` : null].filter(Boolean).join(", ");
