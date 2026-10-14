@@ -452,6 +452,7 @@ var AgentClient = class _AgentClient {
   analysis(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/analysis`, { json: body });
   }
+  // files (Portão): a lista completa de arquivos da branch, quando o git desta máquina diz; o servidor de antes ignora.
   localDone(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/local-done`, { json: body });
   }
@@ -986,8 +987,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.71") {
-    cached = "0.1.71";
+  if ("0.1.72") {
+    cached = "0.1.72";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
