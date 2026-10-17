@@ -1,5 +1,5 @@
 {
-  "description": "Ao abrir o Claude Code numa pasta de repositório da organização, mostra um resumo curto dos chamados abertos do Benflow. Nessas pastas, avisa o Benflow quando a sessão abre, trabalha, espera você ou fecha, para o quadro mostrar quem está no terminal agora (o estado, o repositório, a branch, o nome da pasta e a máquina). Nessas pastas, o seu pedido e a resposta do Claude também aparecem na sua conversa com este Claude no Terminal do Claude do painel, que só você lê (os segredos conhecidos saem mascarados; dos comandos e arquivos vai só a descrição e o nome). Nessas pastas, a primeira mudança de arquivo (ou o primeiro commit) da sessão abre o card do trabalho no Benflow (o Claude escreve o título, a descrição e o impacto analisando o sistema; o seu pedido fica no Pedido original), e o card anda sozinho com os testes, os commits, o push e o fim da vez (pergunta e leitura não abrem card). Para não mandar o texto, defina BENFLOW_ESPELHO=0; BENFLOW_CARD_TERMINAL=0 desliga o card automático; BENFLOW_PRESENCA=0 desliga tudo.",
+  "description": "Ao abrir o Claude Code numa pasta de repositório da organização, mostra um resumo curto dos chamados abertos do Benflow. Nessas pastas, avisa o Benflow quando a sessão abre, trabalha, espera você ou fecha, para o quadro mostrar quem está no terminal agora (o estado, o repositório, a branch, o nome da pasta e a máquina). Nessas pastas, o seu pedido e a resposta do Claude também aparecem na sua conversa com este Claude no Terminal do Claude do painel, que só você lê (os segredos conhecidos saem mascarados; dos comandos e arquivos vai só a descrição e o nome). Nessas pastas, a primeira mudança de arquivo (ou o primeiro commit) da sessão abre o card do trabalho no Benflow (o Claude escreve o título, a descrição e o impacto analisando o sistema; o seu pedido fica no Pedido original), e o card anda sozinho com os testes, os commits, o push e o fim da vez (pergunta e leitura não abrem card). Com a sessão já num card, cada pedido seu chega ao Claude com o lembrete do card de agora, para ele abrir um card novo quando o pedido for outra tarefa. Para não mandar o texto, defina BENFLOW_ESPELHO=0; BENFLOW_CARD_TERMINAL=0 desliga o card automático; BENFLOW_PRESENCA=0 desliga tudo.",
   "hooks": {
     "SessionStart": [
       {
@@ -26,6 +26,16 @@
       }
     ],
     "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/server/presenca.mjs", "pedido"],
+            "timeout": 5
+          }
+        ]
+      },
       {
         "hooks": [
           {

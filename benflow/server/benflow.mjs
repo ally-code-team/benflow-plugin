@@ -8605,8 +8605,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.73") {
-    cached = "0.1.73";
+  if ("0.1.74") {
+    cached = "0.1.74";
     return cached;
   }
   let dir = dirname3(fileURLToPath(import.meta.url));
@@ -50593,14 +50593,16 @@ ${text2}` : text2;
     async ({ numero: n2, titulo, descricao, complemento }) => {
       let target = n2;
       let created = "";
+      let startedNow = null;
       if (!target) {
         if (!titulo) throw new Error("Informe o numero do chamado ou, para uma tarefa nova sem card, titulo e descricao para o Benflow criar o card.");
-        const card = await client.createTask({ title: titulo, description: descricao ? redact(descricao) : null, category: null, dueDate: null, assignees: [] });
+        const card = await client.createTask({ title: titulo, description: descricao ? redact(descricao) : null, category: null, dueDate: null, assignees: [], iniciar: true, complemento: complemento ?? null });
         target = card.task.number;
         created = `Card #${target} criado pelo terminal: "${card.task.title}". No painel: ${entry.url.replace(/\/+$/, "")}${card.task.path}
 `;
+        if (card.execution) startedNow = { execution: card.execution };
       }
-      const res = await client.startExecution(target, complemento ?? null);
+      const res = startedNow ?? await client.startExecution(target, complemento ?? null);
       const ex = obj2(res?.execution);
       const id = num2(ex.id);
       if (id) keepAlive(id);

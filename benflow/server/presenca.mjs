@@ -992,8 +992,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.73") {
-    cached = "0.1.73";
+  if ("0.1.74") {
+    cached = "0.1.74";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
@@ -1468,6 +1468,7 @@ function readWork(file) {
   return {
     sent: d?.sent && typeof d.sent === "object" ? d.sent : {},
     card: d?.card && typeof d.card === "object" && typeof d.card.number === "number" ? d.card : null,
+    base: typeof d?.base === "string" ? d.base : null,
     repoDir: typeof d?.repoDir === "string" ? d.repoDir : null,
     off: Array.isArray(d?.off) ? d.off.filter((r) => typeof r === "string") : []
   };
@@ -1519,14 +1520,30 @@ function contextText(card, base) {
     `Use a etiqueta [${card.tag}] no come\xE7o de cada commit. O card anda sozinho com as mudan\xE7as, os testes, os commits, o push e o fim da vez.`
   ].join(" ");
 }
+function promptContextText(card, base) {
+  const link = base ? ` (${base.replace(/\/+$/, "")}${card.path})` : "";
+  return [
+    `Benflow: esta sess\xE3o est\xE1 no card #${card.number} "${card.title}"${link}.`,
+    `Se este pedido for outra tarefa (outra tela, outro problema ou outra mudan\xE7a, e n\xE3o um ajuste, uma corre\xE7\xE3o ou a continua\xE7\xE3o do #${card.number}), abra um card novo antes de mexer no c\xF3digo: iniciar_execucao sem numero, com titulo e descricao escritos por voc\xEA a partir do pedido. O #${card.number} fica como est\xE1, e cada tarefa nova pedida nesta mensagem ganha o seu card.`,
+    `Se for do #${card.number}, siga nele. Pergunta, explica\xE7\xE3o ou conversa n\xE3o abrem card.`
+  ].join(" ");
+}
 function workPromptHook(deps) {
   const env = deps.env ?? process.env;
-  if (benflowEnv(env, "EXECUTOR") === "1" || benflowEnv(env, "EXECUTION_ID")) return;
+  if (benflowEnv(env, "EXECUTOR") === "1" || benflowEnv(env, "EXECUTION_ID")) return null;
   const input = parseInput3(deps.stdinText);
-  if (!input.sessionId || input.event !== "UserPromptSubmit") return;
-  const file = join6(stateDir(env), `${presenceSessionKey(input.sessionId)}.pedido.json`);
+  if (!input.sessionId || input.event !== "UserPromptSubmit") return null;
+  const key = presenceSessionKey(input.sessionId);
+  const file = join6(stateDir(env), `${key}.pedido.json`);
   const old = readJson(file);
   writeJson(file, { turn: (typeof old?.turn === "number" ? old.turn : 0) + 1, prompt: (input.prompt ?? "").trim().slice(0, PROMPT_MAX) });
+  for (const name of ["PRESENCA", "CARD_TERMINAL"]) {
+    const v = benflowEnv(env, name);
+    if (v && OFF_VALUES.has(v.trim().toLowerCase())) return null;
+  }
+  const work = readWork(join6(stateDir(env), `${key}.trabalho.json`));
+  if (!work.card) return null;
+  return JSON.stringify({ hookSpecificOutput: { hookEventName: "UserPromptSubmit", additionalContext: promptContextText(work.card, work.base) } });
 }
 async function workHook(deps) {
   const result = (outcome, extra = {}) => ({ outcome, event: null, card: null, opened: false, output: null, ...extra });
@@ -1615,8 +1632,8 @@ async function workHook(deps) {
   const sent = { ...state.sent };
   if (main?.value?.card && (event === "mudanca" || event === "testes")) sent[event] = turn;
   if (opened) sent.mudanca = turn;
-  writeJson(workFile, { sent, card: main?.value?.card ?? state.card, repoDir: git.top, off: state.off });
-  const output = opened && main?.value?.card && input.event === "PostToolUse" ? JSON.stringify({ hookSpecificOutput: { hookEventName: "PostToolUse", additionalContext: contextText(main.value.card, main.entry.url) } }) : null;
+  writeJson(workFile, { sent, card: main?.value?.card ?? state.card, base: main?.value?.card ? main.entry.url : state.base, repoDir: git.top, off: state.off });
+  const output = opened && main?.value?.card && input.event === "PostToolUse" && event !== "ligar" ? JSON.stringify({ hookSpecificOutput: { hookEventName: "PostToolUse", additionalContext: contextText(main.value.card, main.entry.url) } }) : null;
   return result(tracked.length ? "enviado" : "fora", { event, card, opened, output });
 }
 
@@ -1653,22 +1670,26 @@ function eventOf(text) {
 }
 var guard = setTimeout(() => process.exit(0), 9500);
 var workOnly = process.argv[2] === "trabalho";
+var promptOnly = process.argv[2] === "pedido";
 readStdin(1500).then(async (stdinText) => {
   if (workOnly) {
     const res = await workHook({ exec, stdinText }).catch(() => null);
     if (res?.output) process.stdout.write(res.output);
     return;
   }
+  if (promptOnly) {
+    let out = null;
+    try {
+      out = workPromptHook({ exec, stdinText });
+    } catch {
+    }
+    if (out) process.stdout.write(out);
+    return;
+  }
   const event = eventOf(stdinText);
   if (event === "SessionEnd") {
     await Promise.allSettled([presenceHook({ exec, stdinText }), mirrorHook({ exec, stdinText })]);
     return;
-  }
-  if (event === "UserPromptSubmit") {
-    try {
-      workPromptHook({ exec, stdinText });
-    } catch {
-    }
   }
   await presenceHook({ exec, stdinText }).catch(() => null);
   await mirrorHook({ exec, stdinText }).catch(() => null);
