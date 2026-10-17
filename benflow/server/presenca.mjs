@@ -401,6 +401,11 @@ var AgentClient = class _AgentClient {
   terminalMirror(body, timeoutMs = 4e3) {
     return this.requestJson("POST", "/api/agent/terminal/espelho", { json: body, retries: 0, timeoutMs });
   }
+  // Trabalho pelo terminal: a mudança de arquivo e o commit abrem o card; testes, push e o fim da vez fazem ele andar.
+  // opened: o card foi aberto (ou ligado à sessão) agora. Servidor de antes da rota: 404 (o gancho sai calado).
+  terminalWork(body, timeoutMs = 6e3) {
+    return this.requestJson("POST", "/api/agent/terminal/trabalho", { json: body, retries: 0, timeoutMs });
+  }
   // Situação da gravação do vídeo de evidência (o card mostra ao vivo): gravando, enviando ou o erro da tentativa.
   videoProgress(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/video`, { json: body, retries: 0 });
@@ -987,8 +992,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.72") {
-    cached = "0.1.72";
+  if ("0.1.73") {
+    cached = "0.1.73";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
@@ -1420,6 +1425,201 @@ async function mirrorHook(deps) {
   return "enviado";
 }
 
+// connector/terminalWork.ts
+import { mkdirSync as mkdirSync5, readFileSync as readFileSync6, writeFileSync as writeFileSync5 } from "node:fs";
+import os4 from "node:os";
+import { basename as basename4, dirname as dirname5, isAbsolute, join as join6, resolve as resolve2 } from "node:path";
+var FILE_TOOLS = /* @__PURE__ */ new Set(["Edit", "Write", "MultiEdit", "NotebookEdit"]);
+var START_TOOL_RE = /^mcp__(?:plugin_[\w-]+_)?benflow__iniciar_execucao$/;
+var COMMIT_RE = /\bgit\s+(?:-C\s+\S+\s+)?commit\b/;
+var PUSH_RE = /\bgit\s+(?:-C\s+\S+\s+)?push\b/;
+var TEST_RE = /\b(?:npm|pnpm|yarn|bun)\s+(?:run\s+)?(?:test|t)(?:\b|:)|\bnpx\s+(?:vitest|jest|playwright)\b|\bvitest\b|\bjest\b|\bpytest\b|\bgo\s+test\b|\bcargo\s+test\b|\bphpunit\b|\bmvn\s+test\b|\bgradlew?\s+test\b|\brspec\b|\bplaywright\s+test\b/;
+var COMMIT_FRESH_MS = 10 * 6e4;
+var PROMPT_MAX = 8e3;
+var WORK_TIMEOUT_MS = 6e3;
+function parseInput3(text) {
+  const empty = { sessionId: null, cwd: null, event: null, toolName: null, toolInput: {}, toolResponse: null, prompt: null, transcriptPath: null };
+  if (!text) return empty;
+  try {
+    const d = JSON.parse(text);
+    const s = (v) => typeof v === "string" && v ? v : null;
+    const input = d.tool_input && typeof d.tool_input === "object" ? d.tool_input : {};
+    return { sessionId: s(d.session_id), cwd: s(d.cwd), event: s(d.hook_event_name), toolName: s(d.tool_name), toolInput: input, toolResponse: d.tool_response ?? null, prompt: s(d.prompt), transcriptPath: s(d.transcript_path) };
+  } catch {
+    return empty;
+  }
+}
+function readJson(file) {
+  try {
+    return JSON.parse(readFileSync6(file, "utf8"));
+  } catch {
+    return null;
+  }
+}
+function writeJson(file, data) {
+  try {
+    mkdirSync5(dirname5(file), { recursive: true, mode: 448 });
+    writeFileSync5(file, JSON.stringify(data), { mode: 384 });
+  } catch {
+  }
+}
+function readWork(file) {
+  const d = readJson(file);
+  return {
+    sent: d?.sent && typeof d.sent === "object" ? d.sent : {},
+    card: d?.card && typeof d.card === "object" && typeof d.card.number === "number" ? d.card : null,
+    repoDir: typeof d?.repoDir === "string" ? d.repoDir : null,
+    off: Array.isArray(d?.off) ? d.off.filter((r) => typeof r === "string") : []
+  };
+}
+function startedExecutionId(response) {
+  const text = typeof response === "string" ? response : JSON.stringify(response ?? "");
+  const m = /Execu\S{1,8}o #(\d+) iniciada/i.exec(text);
+  const n = m ? Number(m[1]) : NaN;
+  return Number.isSafeInteger(n) && n > 0 ? n : null;
+}
+function workEventOf(toolName, toolInput) {
+  if (!toolName) return null;
+  if (FILE_TOOLS.has(toolName)) {
+    const file = typeof toolInput.file_path === "string" ? toolInput.file_path : typeof toolInput.notebook_path === "string" ? toolInput.notebook_path : null;
+    return file ? { event: "mudanca", file, command: null } : null;
+  }
+  if (START_TOOL_RE.test(toolName)) return { event: "ligar", file: null, command: null };
+  if (toolName !== "Bash") return null;
+  const command = typeof toolInput.command === "string" ? toolInput.command : "";
+  if (COMMIT_RE.test(command)) return { event: "commit", file: null, command };
+  if (PUSH_RE.test(command)) return { event: "push", file: null, command };
+  if (TEST_RE.test(command)) return { event: "testes", file: null, command };
+  return null;
+}
+async function gitAt(exec2, dir) {
+  const head = await exec2("git", ["rev-parse", "--show-toplevel", "--abbrev-ref", "HEAD"], { cwd: dir, timeoutMs: 3e3 }).catch(() => null);
+  if (!head || head.code !== 0) return null;
+  const lines = head.stdout.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const top = lines[0];
+  if (!top) return null;
+  const remote = await exec2("git", ["remote", "get-url", "origin"], { cwd: top, timeoutMs: 3e3 }).catch(() => null);
+  return { top, repo: remote && remote.code === 0 ? repoFromRemote(remote.stdout) : null, branch: lines[1] && lines[1] !== "HEAD" ? lines[1] : null };
+}
+function inside(file, top) {
+  const f = resolve2(file);
+  const t = resolve2(top);
+  return f === t || f.startsWith(`${t}/`) || f.startsWith(`${t}\\`);
+}
+function targetsFor(cfg, resolved, repo, dir) {
+  let name = repo;
+  if (!name) for (const s of [...resolved ? [resolved] : [], ...cfg.servers]) name ??= repoForPath(dir, s.repos);
+  return presenceTargets(cfg, resolved, name, false);
+}
+function contextText(card, base) {
+  const link = base ? ` (${base.replace(/\/+$/, "")}${card.path})` : "";
+  return [
+    `Benflow: o trabalho desta sess\xE3o est\xE1 no card #${card.number}${link}, aberto sozinho pelo terminal com o t\xEDtulo provis\xF3rio "${card.title}" e o pedido da pessoa s\xF3 no Pedido original.`,
+    `Antes de seguir com o c\xF3digo, analise o pedido com a base de conhecimento (buscar_conhecimento e ler_nota) e o c\xF3digo, e chame analisar_chamado com numero ${card.number}, resultado "ajustado", titulo (curto, o que muda para quem usa), descricao (o que vai ser feito, onde no sistema e como conferir), mudancas, motivo e impacto (resumo, areas, perfis e regras afetados).`,
+    `Use a etiqueta [${card.tag}] no come\xE7o de cada commit. O card anda sozinho com as mudan\xE7as, os testes, os commits, o push e o fim da vez.`
+  ].join(" ");
+}
+function workPromptHook(deps) {
+  const env = deps.env ?? process.env;
+  if (benflowEnv(env, "EXECUTOR") === "1" || benflowEnv(env, "EXECUTION_ID")) return;
+  const input = parseInput3(deps.stdinText);
+  if (!input.sessionId || input.event !== "UserPromptSubmit") return;
+  const file = join6(stateDir(env), `${presenceSessionKey(input.sessionId)}.pedido.json`);
+  const old = readJson(file);
+  writeJson(file, { turn: (typeof old?.turn === "number" ? old.turn : 0) + 1, prompt: (input.prompt ?? "").trim().slice(0, PROMPT_MAX) });
+}
+async function workHook(deps) {
+  const result = (outcome, extra = {}) => ({ outcome, event: null, card: null, opened: false, output: null, ...extra });
+  const env = deps.env ?? process.env;
+  if (benflowEnv(env, "EXECUTOR") === "1" || benflowEnv(env, "EXECUTION_ID")) return result("executor");
+  for (const name of ["PRESENCA", "CARD_TERMINAL"]) {
+    const v = benflowEnv(env, name);
+    if (v && OFF_VALUES.has(v.trim().toLowerCase())) return result("desligado");
+  }
+  const input = parseInput3(deps.stdinText);
+  if (!input.sessionId) return result("ignorado");
+  const key = presenceSessionKey(input.sessionId);
+  const workFile = join6(stateDir(env), `${key}.trabalho.json`);
+  const state = readWork(workFile);
+  const cwd = input.cwd || deps.cwd || process.cwd();
+  let found;
+  if (input.event === "PostToolUse") found = workEventOf(input.toolName, input.toolInput);
+  else if (input.event === "Stop") found = state.card ? { event: "fim", file: null, command: null } : null;
+  else return result("ignorado");
+  if (!found) return result("nada");
+  const event = found.event;
+  if ((event === "testes" || event === "push") && !state.card) return result("nada", { event });
+  const prompt = readJson(join6(stateDir(env), `${key}.pedido.json`));
+  const turn = typeof prompt?.turn === "number" ? prompt.turn : 0;
+  if ((event === "mudanca" || event === "testes") && state.card && state.sent[event] === turn) return result("nada", { event, card: state.card });
+  const dir = found.file ? dirname5(isAbsolute(found.file) ? found.file : join6(cwd, found.file)) : event === "fim" && state.repoDir ? state.repoDir : cwd;
+  const git = await gitAt(deps.exec, dir);
+  if (!git) return result("fora", { event });
+  if (found.file && !inside(isAbsolute(found.file) ? found.file : join6(cwd, found.file), git.top)) return result("fora", { event });
+  if (git.repo && state.off.includes(git.repo.toLowerCase())) return result("fora", { event });
+  let cfg;
+  let resolved = null;
+  try {
+    cfg = loadConfig(readableConfigPath(configPath(env)));
+    resolved = resolveServer(cfg, env);
+  } catch {
+    return result("sem-config", { event });
+  }
+  const targets = targetsFor(cfg, resolved, git.repo, git.top);
+  if (!targets.length) return result("fora", { event });
+  const body = {
+    session: key,
+    event,
+    repo: git.repo,
+    branch: git.branch,
+    folder: basename4(git.top) || null,
+    machineName: machineNameOf((deps.hostname ?? os4.hostname)())
+  };
+  if (event === "mudanca" || event === "commit") {
+    body.prompt = (prompt?.prompt || readTranscriptTurn(input.transcriptPath).prompt || "").slice(0, PROMPT_MAX) || null;
+  }
+  if (event === "commit") {
+    const log = await deps.exec("git", ["log", "-1", "--format=%H%x1f%ct%x1f%s"], { cwd: git.top, timeoutMs: 3e3 }).catch(() => null);
+    const [sha, at, subject] = log && log.code === 0 ? log.stdout.trim().split("") : [];
+    const now = (deps.now ?? Date.now)();
+    if (!sha || !/^[0-9a-f]{40}$/.test(sha) || now - Number(at) * 1e3 > COMMIT_FRESH_MS) return result("nada", { event });
+    body.commit = { sha, message: (subject ?? "").slice(0, 500) || null };
+  }
+  if (event === "ligar") {
+    const id = startedExecutionId(input.toolResponse);
+    if (!id) return result("nada", { event });
+    body.executionId = id;
+  }
+  if (event === "fim") {
+    const status = await deps.exec("git", ["status", "--porcelain"], { cwd: git.top, timeoutMs: 3e3 }).catch(() => null);
+    body.clean = !!status && status.code === 0 && status.stdout.trim() === "";
+  }
+  const version = deps.version ?? connectorVersion();
+  const results = await Promise.allSettled(
+    targets.map(
+      (e) => new AgentClient({ url: e.url, token: e.token, fetch: deps.fetch, retries: 0, timeoutMs: deps.timeoutMs ?? WORK_TIMEOUT_MS, userAgent: `benflow-conector/${version} trabalho` }).terminalWork(
+        body,
+        deps.timeoutMs ?? WORK_TIMEOUT_MS
+      )
+    )
+  );
+  const answers = results.map((r, i) => ({ entry: targets[i], value: r.status === "fulfilled" ? r.value : null }));
+  const tracked = answers.filter((a) => a.value?.tracked);
+  if (git.repo && answers.every((a) => a.value && !a.value.tracked)) {
+    writeJson(workFile, { ...state, off: [...state.off, git.repo.toLowerCase()] });
+    return result("fora", { event });
+  }
+  const main = tracked.find((a) => a.value?.card) ?? tracked[0];
+  const card = main?.value?.card ?? state.card;
+  const opened = tracked.some((a) => a.value?.opened);
+  const sent = { ...state.sent };
+  if (main?.value?.card && (event === "mudanca" || event === "testes")) sent[event] = turn;
+  if (opened) sent.mudanca = turn;
+  writeJson(workFile, { sent, card: main?.value?.card ?? state.card, repoDir: git.top, off: state.off });
+  const output = opened && main?.value?.card && input.event === "PostToolUse" ? JSON.stringify({ hookSpecificOutput: { hookEventName: "PostToolUse", additionalContext: contextText(main.value.card, main.entry.url) } }) : null;
+  return result(tracked.length ? "enviado" : "fora", { event, card, opened, output });
+}
+
 // connector/presenca.ts
 var exec = (cmd, args, opts = {}) => new Promise((done) => {
   execFile(cmd, args, { cwd: opts.cwd, timeout: opts.timeoutMs ?? 3e3, windowsHide: true, encoding: "utf8" }, (err, stdout, stderr) => {
@@ -1452,13 +1652,27 @@ function eventOf(text) {
   }
 }
 var guard = setTimeout(() => process.exit(0), 9500);
+var workOnly = process.argv[2] === "trabalho";
 readStdin(1500).then(async (stdinText) => {
-  if (eventOf(stdinText) === "SessionEnd") {
+  if (workOnly) {
+    const res = await workHook({ exec, stdinText }).catch(() => null);
+    if (res?.output) process.stdout.write(res.output);
+    return;
+  }
+  const event = eventOf(stdinText);
+  if (event === "SessionEnd") {
     await Promise.allSettled([presenceHook({ exec, stdinText }), mirrorHook({ exec, stdinText })]);
     return;
   }
+  if (event === "UserPromptSubmit") {
+    try {
+      workPromptHook({ exec, stdinText });
+    } catch {
+    }
+  }
   await presenceHook({ exec, stdinText }).catch(() => null);
   await mirrorHook({ exec, stdinText }).catch(() => null);
+  if (event === "Stop") await workHook({ exec, stdinText }).catch(() => null);
 }).catch(() => null).finally(() => {
   clearTimeout(guard);
   process.exit(0);
