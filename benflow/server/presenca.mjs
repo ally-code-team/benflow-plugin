@@ -996,8 +996,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.75") {
-    cached = "0.1.75";
+  if ("0.1.76") {
+    cached = "0.1.76";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
@@ -1073,6 +1073,7 @@ function readState(file) {
       state: d.state === "trabalhando" || d.state === "esperando" || d.state === "fechada" ? d.state : null,
       sentAt: typeof d.sentAt === "number" ? d.sentAt : 0,
       off: d.off === true,
+      cwd: typeof d.cwd === "string" ? d.cwd : null,
       targets: Array.isArray(d.targets) ? d.targets.filter((t) => t && typeof t.url === "string").map((t) => ({ url: t.url, org: typeof t.org === "string" ? t.org : null })) : []
     };
   } catch {
@@ -1148,7 +1149,8 @@ async function presenceHook(deps) {
   const file = join4(dir, `${key}.json`);
   const local = readState(file);
   if (input.event === "SessionStart") pruneStates(dir, now);
-  if (local?.off && !benflowTool) {
+  const cwd = input.cwd || deps.cwd || process.cwd();
+  if (local?.off && !benflowTool && local.cwd === cwd) {
     if (state === "fechada") dropState(file);
     return "fora";
   }
@@ -1163,7 +1165,6 @@ async function presenceHook(deps) {
     return "sem-config";
   }
   if (!cfg.servers.length && !resolved) return "sem-config";
-  const cwd = input.cwd || deps.cwd || process.cwd();
   const git = await gitInfo(deps.exec, cwd);
   let repo = git.repo;
   if (!repo) for (const s of [...resolved ? [resolved] : [], ...cfg.servers]) repo ??= repoForPath(cwd, s.repos);
@@ -1171,7 +1172,7 @@ async function presenceHook(deps) {
   if (benflowTool && resolved) addEntry(targets, resolved);
   if (!targets.length) {
     if (state === "fechada") dropState(file);
-    else writeState(file, { state: null, sentAt: now, off: true, targets: [] });
+    else writeState(file, { state: null, sentAt: now, off: true, cwd, targets: [] });
     return "fora";
   }
   const body = {
@@ -1203,7 +1204,7 @@ async function presenceHook(deps) {
     return "enviado";
   }
   if (!kept.length) {
-    writeState(file, { state: null, sentAt: now, off: true, targets: [] });
+    writeState(file, { state: null, sentAt: now, off: true, cwd, targets: [] });
     return "fora";
   }
   writeState(file, { state, sentAt: now, off: false, targets: kept.map((e) => ({ url: e.url, org: e.orgSlug ?? null })) });
@@ -1567,6 +1568,7 @@ async function workHook(deps) {
   let found;
   if (input.event === "PostToolUse") found = workEventOf(input.toolName, input.toolInput);
   else if (input.event === "Stop") found = state.card ? { event: "fim", file: null, command: null } : null;
+  else if (input.event === "SessionEnd") found = state.card ? { event: "fechou", file: null, command: null } : null;
   else return result("ignorado");
   if (!found) return result("nada");
   const event = found.event;
@@ -1574,7 +1576,7 @@ async function workHook(deps) {
   const prompt = readJson(join6(stateDir(env), `${key}.pedido.json`));
   const turn = typeof prompt?.turn === "number" ? prompt.turn : 0;
   if ((event === "mudanca" || event === "testes") && state.card && state.sent[event] === turn) return result("nada", { event, card: state.card });
-  const dir = found.file ? dirname5(isAbsolute(found.file) ? found.file : join6(cwd, found.file)) : event === "fim" && state.repoDir ? state.repoDir : cwd;
+  const dir = found.file ? dirname5(isAbsolute(found.file) ? found.file : join6(cwd, found.file)) : (event === "fim" || event === "fechou") && state.repoDir ? state.repoDir : cwd;
   const git = await gitAt(deps.exec, dir);
   if (!git) return result("fora", { event });
   if (found.file && !inside(isAbsolute(found.file) ? found.file : join6(cwd, found.file), git.top)) return result("fora", { event });
@@ -1693,7 +1695,7 @@ readStdin(1500).then(async (stdinText) => {
   }
   const event = eventOf(stdinText);
   if (event === "SessionEnd") {
-    await Promise.allSettled([presenceHook({ exec, stdinText }), mirrorHook({ exec, stdinText })]);
+    await Promise.allSettled([presenceHook({ exec, stdinText }), mirrorHook({ exec, stdinText }), workHook({ exec, stdinText, timeoutMs: 3500 })]);
     return;
   }
   await presenceHook({ exec, stdinText }).catch(() => null);
