@@ -996,8 +996,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.76") {
-    cached = "0.1.76";
+  if ("0.1.77") {
+    cached = "0.1.77";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
@@ -1615,7 +1615,7 @@ async function workHook(deps) {
     body.executionId = id;
   }
   if (event === "fim") {
-    const status = await deps.exec("git", ["status", "--porcelain"], { cwd: git.top, timeoutMs: 3e3 }).catch(() => null);
+    const status = await deps.exec("git", ["status", "--porcelain", "--untracked-files=no"], { cwd: git.top, timeoutMs: 3e3 }).catch(() => null);
     body.clean = !!status && status.code === 0 && status.stdout.trim() === "";
   }
   const version = deps.version ?? connectorVersion();
