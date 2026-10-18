@@ -10,7 +10,7 @@ allowed-tools: mcp__plugin_benflow_benflow__listar_chamados mcp__plugin_benflow_
 
 As ferramentas vêm do servidor MCP "benflow" deste plugin: listar_chamados, ver_chamado, baixar_anexo,
 criar_chamado, anexar_arquivo, iniciar_execucao, atualizar_progresso, registrar_evidencia, capturar_tela, gravar_tela, comentar,
-analisar_chamado, concluir_local, parar_trabalho, informar_publicacao, parar_publicacao, buscar_conhecimento, ler_nota, ambientes,
+analisar_chamado, concluir_local, parar_trabalho, pedir_acao, informar_publicacao, parar_publicacao, buscar_conhecimento, ler_nota, ambientes,
 configurar_ambientes, informar_ambiente_local, subir_ambiente_local e registrar_dependencia.
 
 Pedido da pessoa: $ARGUMENTS
@@ -86,8 +86,10 @@ link do cliente e senhas ficam com a pessoa, na tela que o prompt indica.
     Conte à pessoa o resultado e lembre que a subida para homologação é pelo painel.
 12. Ficou bloqueado? Resolva o que estiver ao seu alcance (teste que não passa, conflito, programa que falta) e, na
     dúvida que não depende de acesso, decida pelo caminho mais seguro. Sem nada a mudar no código, chame
-    `parar_trabalho` com situacao `nada_a_mudar`. Se só a equipe resolve (acesso, senha, aprovação), pergunte à pessoa
-    aqui no terminal; num trabalho pedido pelo painel, chame `parar_trabalho` com situacao `precisa_da_equipe` e o
+    `parar_trabalho` com situacao `nada_a_mudar`. Se só a pessoa resolve (entrar numa conta, rodar um comando que pede
+    senha, liberar algo no navegador), chame `pedir_acao` com o motivo e os `passos` (o comando exato quando houver) e
+    peça também aqui no terminal: o card fica em vermelho com Esperando você até você voltar a chamar
+    `atualizar_progresso`. Num trabalho pedido pelo painel, chame `parar_trabalho` com situacao `precisa_da_equipe` e o
     passo a passo em `o_que_fazer`, com o comando exato quando houver.
 
 ## Abrir cards e anexar arquivos

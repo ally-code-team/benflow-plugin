@@ -469,6 +469,10 @@ var AgentClient = class _AgentClient {
   workStopped(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/work-stopped`, { json: body });
   }
+  // pedir_acao: o trabalho do terminal espera uma ação da pessoa (Esperando você no card), sem parar.
+  workWaiting(executionId, body) {
+    return this.requestJson("POST", `/api/agent/executions/${executionId}/waiting-user`, { json: body });
+  }
   // Produção por Pull Request (servidor com publishPrs): a resposta traz o PR aberto (pr) e deployment vem null.
   published(executionId, body) {
     return this.requestJson(
@@ -992,8 +996,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.74") {
-    cached = "0.1.74";
+  if ("0.1.75") {
+    cached = "0.1.75";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
@@ -1525,7 +1529,8 @@ function promptContextText(card, base) {
   return [
     `Benflow: esta sess\xE3o est\xE1 no card #${card.number} "${card.title}"${link}.`,
     `Se este pedido for outra tarefa (outra tela, outro problema ou outra mudan\xE7a, e n\xE3o um ajuste, uma corre\xE7\xE3o ou a continua\xE7\xE3o do #${card.number}), abra um card novo antes de mexer no c\xF3digo: iniciar_execucao sem numero, com titulo e descricao escritos por voc\xEA a partir do pedido. O #${card.number} fica como est\xE1, e cada tarefa nova pedida nesta mensagem ganha o seu card.`,
-    `Se for do #${card.number}, siga nele. Pergunta, explica\xE7\xE3o ou conversa n\xE3o abrem card.`
+    `Se for do #${card.number}, siga nele. Pergunta, explica\xE7\xE3o ou conversa n\xE3o abrem card.`,
+    `Se voc\xEA precisar que a pessoa fa\xE7a algo para seguir (entrar numa conta, rodar um comando que pede senha, liberar algo no navegador), chame pedir_acao no card antes de pedir aqui: o card mostra em vermelho o que falta.`
   ].join(" ");
 }
 function workPromptHook(deps) {
