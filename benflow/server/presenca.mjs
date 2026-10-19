@@ -1,7 +1,7 @@
 // Benflow: ganchos de presença do terminal (arquivo gerado por npm run build:connector; não edite).
 
 // connector/presenca.ts
-import { execFile } from "node:child_process";
+import { execFile as execFile2 } from "node:child_process";
 
 // connector/memoria.ts
 import { readFile } from "node:fs/promises";
@@ -1043,8 +1043,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.79") {
-    cached = "0.1.79";
+  if ("0.1.80") {
+    cached = "0.1.80";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
@@ -1212,8 +1212,8 @@ async function presenceHook(deps) {
     return "sem-config";
   }
   if (!cfg.servers.length && !resolved) return "sem-config";
-  const [git, memory] = await Promise.all([gitInfo(deps.exec, cwd), deps.memory ? deps.memory().catch(() => null) : Promise.resolve(null)]);
-  let repo = git.repo;
+  const [git2, memory] = await Promise.all([gitInfo(deps.exec, cwd), deps.memory ? deps.memory().catch(() => null) : Promise.resolve(null)]);
+  let repo = git2.repo;
   if (!repo) for (const s of [...resolved ? [resolved] : [], ...cfg.servers]) repo ??= repoForPath(cwd, s.repos);
   const targets = local && !local.off && local.targets.length ? storedTargets(cfg, resolved, local.targets) : presenceTargets(cfg, resolved, repo, benflowTool);
   if (benflowTool && resolved) addEntry(targets, resolved);
@@ -1226,8 +1226,8 @@ async function presenceHook(deps) {
     session: key,
     state,
     repo,
-    branch: git.branch,
-    folder: git.folder,
+    branch: git2.branch,
+    folder: git2.folder,
     machineId: typeof cfg.machineId === "string" && MACHINE_ID_RE.test(cfg.machineId) ? cfg.machineId : null,
     machineName: machineNameOf((deps.hostname ?? os3.hostname)()),
     platform: deps.platform ?? process.platform,
@@ -1438,12 +1438,12 @@ async function mirrorHook(deps) {
   const targets = storedTargets(cfg, resolved, presence?.targets.length ? presence.targets : mine?.targets ?? []);
   if (!targets.length) return "fora";
   const cwd = input.cwd || deps.cwd || process.cwd();
-  const git = await gitInfo(deps.exec, cwd);
-  let repo = git.repo;
+  const git2 = await gitInfo(deps.exec, cwd);
+  let repo = git2.repo;
   if (!repo) for (const s of [...resolved ? [resolved] : [], ...cfg.servers]) repo ??= repoForPath(cwd, s.repos);
   if (!repo && input.event !== "SessionEnd") return "fora";
   const now = (deps.now ?? Date.now)();
-  const place = { repo, branch: git.branch, folder: git.folder, machineName: machineNameOf((deps.hostname ?? os4.hostname)()) };
+  const place = { repo, branch: git2.branch, folder: git2.folder, machineName: machineNameOf((deps.hostname ?? os4.hostname)()) };
   let body;
   if (input.event === "UserPromptSubmit") {
     const prompt = cut((input.prompt ?? "").trim(), MIRROR_TEXT_MAX);
@@ -1482,6 +1482,62 @@ async function mirrorHook(deps) {
 import { mkdirSync as mkdirSync5, readFileSync as readFileSync6, writeFileSync as writeFileSync5 } from "node:fs";
 import os5 from "node:os";
 import { basename as basename4, dirname as dirname5, isAbsolute, join as join6, resolve as resolve2 } from "node:path";
+
+// connector/branchSend.ts
+import { execFile } from "node:child_process";
+var ENV_BRANCHES = /* @__PURE__ */ new Set(["main", "master", "develop", "development", "dev", "homolog", "homologacao", "homologation", "hml", "staging", "stage", "stg", "qa", "production", "producao", "prod", "release", "trunk", "gh-pages", "preview"]);
+var ENV_PREFIX = /^(?:release|hotfix|lote)\//i;
+function isEnvironmentBranch(branch) {
+  return ENV_BRANCHES.has(branch.toLowerCase()) || ENV_PREFIX.test(branch);
+}
+function git(cwd, args, timeoutMs = 6e4) {
+  return new Promise((done) => {
+    const env = { ...process.env, GIT_TERMINAL_PROMPT: "0" };
+    execFile("git", ["-C", cwd, ...args], { timeout: timeoutMs, maxBuffer: 4 * 1024 * 1024, env }, (err, stdout, stderr) => {
+      const code = err ? typeof err.code === "number" ? err.code : 1 : 0;
+      done({ code, stdout: String(stdout ?? ""), stderr: String(stderr ?? "") });
+    });
+  });
+}
+function lastLine(text) {
+  return (text.split("\n").map((s) => s.trim()).filter(Boolean).pop() ?? "").slice(0, 300);
+}
+async function remoteSha(root, branch) {
+  const res = await git(root, ["ls-remote", "--heads", "origin", `refs/heads/${branch}`]);
+  if (res.code !== 0) return null;
+  return res.stdout.split(/\s+/)[0]?.trim() || "";
+}
+var sendCardBranch = async (cwd, branch) => {
+  if (isEnvironmentBranch(branch)) return { status: "fora", reason: "ambiente" };
+  const top = await git(cwd, ["rev-parse", "--show-toplevel"], 1e4);
+  const root = top.stdout.trim();
+  if (top.code !== 0 || !root) return { status: "fora", reason: "sem_repositorio" };
+  if ((await git(root, ["remote", "get-url", "origin"], 1e4)).code !== 0) return { status: "fora", reason: "sem_repositorio" };
+  const head = await git(root, ["symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD"], 1e4);
+  if (head.code === 0 && head.stdout.trim() === `origin/${branch}`) return { status: "fora", reason: "ambiente" };
+  const local = await git(root, ["rev-parse", "--verify", "--quiet", `refs/heads/${branch}^{commit}`], 1e4);
+  const sha = local.code === 0 ? local.stdout.trim() : "";
+  if (!sha) return { status: "fora", reason: "sem_branch_aqui" };
+  if (await remoteSha(root, branch) === sha) return { status: "ja_estava", sha };
+  const push = await git(root, ["push", "origin", `refs/heads/${branch}:refs/heads/${branch}`], 12e4);
+  if (push.code === 0) return { status: "enviada", sha };
+  const text = `${push.stderr}
+${push.stdout}`;
+  if (/rejected|non-fast-forward|fetch first/i.test(text)) {
+    const fetched = await git(root, ["fetch", "--quiet", "origin", `refs/heads/${branch}`]);
+    if (fetched.code === 0 && (await git(root, ["merge-base", "--is-ancestor", sha, "FETCH_HEAD"], 1e4)).code === 0) return { status: "ja_estava", sha };
+    return {
+      status: "erro",
+      problem: `O GitHub j\xE1 tem a branch ${branch} com commits que n\xE3o est\xE3o nesta pasta (${root}). Traga com git fetch origin ${branch} e git merge origin/${branch}, rode os testes, mande com git push origin ${branch} (nunca com --force) e chame o concluir_local de novo.`
+    };
+  }
+  return {
+    status: "erro",
+    problem: `A branch ${branch} n\xE3o chegou ao GitHub (${lastLine(text) || `git push saiu com ${push.code}`}). Na pasta ${root}, rode git push -u origin ${branch} (nunca com --force) e chame o concluir_local de novo: o Benflow publica pela c\xF3pia do GitHub, e sem ela a subida do card para.`
+  };
+};
+
+// connector/terminalWork.ts
 var FILE_TOOLS = /* @__PURE__ */ new Set(["Edit", "Write", "MultiEdit", "NotebookEdit"]);
 var START_TOOL_RE = /^mcp__(?:plugin_[\w-]+_)?benflow__iniciar_execucao$/;
 var COMMIT_RE = /\bgit\s+(?:-C\s+\S+\s+)?commit\b/;
@@ -1625,10 +1681,10 @@ async function workHook(deps) {
   const turn = typeof prompt?.turn === "number" ? prompt.turn : 0;
   if ((event === "mudanca" || event === "testes") && state.card && state.sent[event] === turn) return result("nada", { event, card: state.card });
   const dir = found.file ? dirname5(isAbsolute(found.file) ? found.file : join6(cwd, found.file)) : (event === "fim" || event === "fechou") && state.repoDir ? state.repoDir : cwd;
-  const git = await gitAt(deps.exec, dir);
-  if (!git) return result("fora", { event });
-  if (found.file && !inside(isAbsolute(found.file) ? found.file : join6(cwd, found.file), git.top)) return result("fora", { event });
-  if (git.repo && state.off.includes(git.repo.toLowerCase())) return result("fora", { event });
+  const git2 = await gitAt(deps.exec, dir);
+  if (!git2) return result("fora", { event });
+  if (found.file && !inside(isAbsolute(found.file) ? found.file : join6(cwd, found.file), git2.top)) return result("fora", { event });
+  if (git2.repo && state.off.includes(git2.repo.toLowerCase())) return result("fora", { event });
   let cfg;
   let resolved = null;
   try {
@@ -1637,21 +1693,21 @@ async function workHook(deps) {
   } catch {
     return result("sem-config", { event });
   }
-  const targets = targetsFor(cfg, resolved, git.repo, git.top);
+  const targets = targetsFor(cfg, resolved, git2.repo, git2.top);
   if (!targets.length) return result("fora", { event });
   const body = {
     session: key,
     event,
-    repo: git.repo,
-    branch: git.branch,
-    folder: basename4(git.top) || null,
+    repo: git2.repo,
+    branch: git2.branch,
+    folder: basename4(git2.top) || null,
     machineName: machineNameOf((deps.hostname ?? os5.hostname)())
   };
   if (event === "mudanca" || event === "commit") {
     body.prompt = (prompt?.prompt || readTranscriptTurn(input.transcriptPath).prompt || "").slice(0, PROMPT_MAX) || null;
   }
   if (event === "commit") {
-    const log = await deps.exec("git", ["log", "-1", "--format=%H%x1f%ct%x1f%s"], { cwd: git.top, timeoutMs: 3e3 }).catch(() => null);
+    const log = await deps.exec("git", ["log", "-1", "--format=%H%x1f%ct%x1f%s"], { cwd: git2.top, timeoutMs: 3e3 }).catch(() => null);
     const [sha, at, subject] = log && log.code === 0 ? log.stdout.trim().split("") : [];
     const now = (deps.now ?? Date.now)();
     if (!sha || !/^[0-9a-f]{40}$/.test(sha) || now - Number(at) * 1e3 > COMMIT_FRESH_MS) return result("nada", { event });
@@ -1663,8 +1719,12 @@ async function workHook(deps) {
     body.executionId = id;
   }
   if (event === "fim") {
-    const status = await deps.exec("git", ["status", "--porcelain", "--untracked-files=no"], { cwd: git.top, timeoutMs: 3e3 }).catch(() => null);
+    const status = await deps.exec("git", ["status", "--porcelain", "--untracked-files=no"], { cwd: git2.top, timeoutMs: 3e3 }).catch(() => null);
     body.clean = !!status && status.code === 0 && status.stdout.trim() === "";
+    if (body.clean && git2.branch) {
+      const sent2 = await (deps.sendBranch ?? sendCardBranch)(git2.top, git2.branch).catch(() => null);
+      if (sent2?.status === "erro") body.remoteProblem = sent2.problem.split(git2.top).join(basename4(git2.top));
+    }
   }
   const version = deps.version ?? connectorVersion();
   const results = await Promise.allSettled(
@@ -1677,8 +1737,8 @@ async function workHook(deps) {
   );
   const answers = results.map((r, i) => ({ entry: targets[i], value: r.status === "fulfilled" ? r.value : null }));
   const tracked = answers.filter((a) => a.value?.tracked);
-  if (git.repo && answers.every((a) => a.value && !a.value.tracked)) {
-    writeJson(workFile, { ...state, off: [...state.off, git.repo.toLowerCase()] });
+  if (git2.repo && answers.every((a) => a.value && !a.value.tracked)) {
+    writeJson(workFile, { ...state, off: [...state.off, git2.repo.toLowerCase()] });
     return result("fora", { event });
   }
   const main = tracked.find((a) => a.value?.card) ?? tracked[0];
@@ -1687,14 +1747,14 @@ async function workHook(deps) {
   const sent = { ...state.sent };
   if (main?.value?.card && (event === "mudanca" || event === "testes")) sent[event] = turn;
   if (opened) sent.mudanca = turn;
-  writeJson(workFile, { sent, card: main?.value?.card ?? state.card, base: main?.value?.card ? main.entry.url : state.base, repoDir: git.top, off: state.off });
+  writeJson(workFile, { sent, card: main?.value?.card ?? state.card, base: main?.value?.card ? main.entry.url : state.base, repoDir: git2.top, off: state.off });
   const output = opened && main?.value?.card && input.event === "PostToolUse" && event !== "ligar" ? JSON.stringify({ hookSpecificOutput: { hookEventName: "PostToolUse", additionalContext: contextText(main.value.card, main.entry.url) } }) : null;
   return result(tracked.length ? "enviado" : "fora", { event, card, opened, output });
 }
 
 // connector/presenca.ts
 var exec = (cmd, args, opts = {}) => new Promise((done) => {
-  execFile(cmd, args, { cwd: opts.cwd, timeout: opts.timeoutMs ?? 3e3, windowsHide: true, encoding: "utf8" }, (err, stdout, stderr) => {
+  execFile2(cmd, args, { cwd: opts.cwd, timeout: opts.timeoutMs ?? 3e3, windowsHide: true, encoding: "utf8" }, (err, stdout, stderr) => {
     const code = err ? typeof err.code === "number" ? err.code : 1 : 0;
     done({ code, stdout: String(stdout ?? ""), stderr: String(stderr ?? "") });
   });
