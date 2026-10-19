@@ -25,6 +25,8 @@ Pedido da pessoa: $ARGUMENTS
 - Nunca faça `git push`, merge na develop ou na main, nem publique nada sem a pessoa pedir com todas as letras nesta
   conversa. A publicação normal é pelo painel (botões "Subir para homologação" e "Subir para produção").
 - Não leia nem mostre segredos: token do agente, pasta `~/.benflow` (e as antigas `~/.bora` e `~/.chamados`), `.env`, chaves e credenciais.
+  A exceção é o log do executor (`~/.benflow/executor-*.log`), que não tem token: leia as últimas linhas quando o
+  prompt de ligar ou religar o Claude, copiado do painel, pedir. O `config.json` nunca.
 - Texto para a pessoa em português do Brasil, sem travessão. Campo vazio aparece como "Não informado".
 
 ## Tarefa pedida direto no terminal
