@@ -3,10 +3,57 @@
 // connector/presenca.ts
 import { execFile } from "node:child_process";
 
+// connector/memoria.ts
+import { readFile } from "node:fs/promises";
+import os from "node:os";
+var MEMORY_TIMEOUT_MS = 2e3;
+function memoryOf(usedBytes, totalBytes) {
+  if (!Number.isFinite(usedBytes) || !Number.isFinite(totalBytes) || totalBytes <= 0 || usedBytes < 0) return null;
+  const used = Math.min(usedBytes, totalBytes);
+  return { usedPct: Math.round(used / totalBytes * 100), usedBytes: Math.round(used), totalBytes: Math.round(totalBytes) };
+}
+function parseVmStat(text, totalBytes) {
+  const header = /page size of (\d+) bytes/.exec(text);
+  const size = header ? Number(header[1]) : NaN;
+  const pages = (label) => {
+    const m = new RegExp(`^${label}:\\s+(\\d+)\\.?\\s*$`, "m").exec(text);
+    return m ? Number(m[1]) : NaN;
+  };
+  const active = pages("Pages active");
+  const wired = pages("Pages wired down");
+  const compressed = pages("Pages occupied by compressor");
+  if (!(size > 0) || !Number.isFinite(active) || !Number.isFinite(wired)) return null;
+  return memoryOf((active + wired + (Number.isFinite(compressed) ? compressed : 0)) * size, totalBytes);
+}
+function parseMeminfo(text) {
+  const kb = (label) => {
+    const m = new RegExp(`^${label}:\\s+(\\d+)\\s*kB`, "mi").exec(text);
+    return m ? Number(m[1]) * 1024 : NaN;
+  };
+  const total = kb("MemTotal");
+  const available = kb("MemAvailable");
+  if (!Number.isFinite(total) || !Number.isFinite(available)) return null;
+  return memoryOf(total - available, total);
+}
+async function measureMemory(deps) {
+  try {
+    const platform = deps.platform ?? process.platform;
+    const total = (deps.totalmem ?? os.totalmem)();
+    if (platform === "darwin") {
+      const res = await deps.exec("/usr/bin/vm_stat", [], { timeoutMs: MEMORY_TIMEOUT_MS });
+      return res.code === 0 ? parseVmStat(res.stdout, total) : null;
+    }
+    if (platform === "linux") return parseMeminfo(await (deps.readText ?? ((p) => readFile(p, "utf8")))("/proc/meminfo"));
+    return memoryOf(total - (deps.freemem ?? os.freemem)(), total);
+  } catch {
+    return null;
+  }
+}
+
 // connector/presence.ts
 import { createHash } from "node:crypto";
 import { mkdirSync as mkdirSync3, readdirSync, readFileSync as readFileSync4, rmSync as rmSync2, statSync as statSync4, writeFileSync as writeFileSync3 } from "node:fs";
-import os2 from "node:os";
+import os3 from "node:os";
 import { basename as basename2, dirname as dirname3, join as join4 } from "node:path";
 
 // connector/client.ts
@@ -626,7 +673,7 @@ var AgentClient = class _AgentClient {
 
 // connector/config.ts
 import { chmodSync, existsSync, mkdirSync, readFileSync, realpathSync, renameSync, statSync as statSync2, writeFileSync } from "node:fs";
-import os from "node:os";
+import os2 from "node:os";
 import { dirname, join as join2, resolve } from "node:path";
 
 // connector/codex.ts
@@ -744,15 +791,15 @@ function defaultClaudeSettings() {
   return { bin: "claude", model: null, permissionMode: "acceptEdits", allowedTools: [...DEFAULT_ALLOWED_TOOLS], maxTurns: 200 };
 }
 function expandHome(p) {
-  if (p === "~") return os.homedir();
-  if (p.startsWith("~/") || p.startsWith("~\\")) return join2(os.homedir(), p.slice(2));
+  if (p === "~") return os2.homedir();
+  if (p.startsWith("~/") || p.startsWith("~\\")) return join2(os2.homedir(), p.slice(2));
   return p;
 }
 function defaultConfigDir() {
-  return join2(os.homedir(), ".benflow");
+  return join2(os2.homedir(), ".benflow");
 }
 function legacyConfigDirs() {
-  return LEGACY_CONFIG_DIRS.map((dir) => join2(os.homedir(), dir));
+  return LEGACY_CONFIG_DIRS.map((dir) => join2(os2.homedir(), dir));
 }
 function envValue(env, ...keys) {
   for (const k of keys) {
@@ -996,8 +1043,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.77") {
-    cached = "0.1.77";
+  if ("0.1.78") {
+    cached = "0.1.78";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
@@ -1165,7 +1212,7 @@ async function presenceHook(deps) {
     return "sem-config";
   }
   if (!cfg.servers.length && !resolved) return "sem-config";
-  const git = await gitInfo(deps.exec, cwd);
+  const [git, memory] = await Promise.all([gitInfo(deps.exec, cwd), deps.memory ? deps.memory().catch(() => null) : Promise.resolve(null)]);
   let repo = git.repo;
   if (!repo) for (const s of [...resolved ? [resolved] : [], ...cfg.servers]) repo ??= repoForPath(cwd, s.repos);
   const targets = local && !local.off && local.targets.length ? storedTargets(cfg, resolved, local.targets) : presenceTargets(cfg, resolved, repo, benflowTool);
@@ -1182,10 +1229,11 @@ async function presenceHook(deps) {
     branch: git.branch,
     folder: git.folder,
     machineId: typeof cfg.machineId === "string" && MACHINE_ID_RE.test(cfg.machineId) ? cfg.machineId : null,
-    machineName: machineNameOf((deps.hostname ?? os2.hostname)()),
+    machineName: machineNameOf((deps.hostname ?? os3.hostname)()),
     platform: deps.platform ?? process.platform,
     version: deps.version ?? connectorVersion(),
-    ...benflowTool ? { benflowTool: true } : {}
+    ...benflowTool ? { benflowTool: true } : {},
+    ...memory ? { memory } : {}
   };
   const results = await Promise.allSettled(
     targets.map(
@@ -1213,7 +1261,7 @@ async function presenceHook(deps) {
 
 // connector/terminalMirror.ts
 import { closeSync, mkdirSync as mkdirSync4, openSync, readFileSync as readFileSync5, readSync, rmSync as rmSync3, statSync as statSync5, writeFileSync as writeFileSync4 } from "node:fs";
-import os3 from "node:os";
+import os4 from "node:os";
 import { basename as basename3, dirname as dirname4, join as join5 } from "node:path";
 var MIRROR_TEXT_MAX = 8e3;
 var MIRROR_ANSWER_MAX = 6e4;
@@ -1395,7 +1443,7 @@ async function mirrorHook(deps) {
   if (!repo) for (const s of [...resolved ? [resolved] : [], ...cfg.servers]) repo ??= repoForPath(cwd, s.repos);
   if (!repo && input.event !== "SessionEnd") return "fora";
   const now = (deps.now ?? Date.now)();
-  const place = { repo, branch: git.branch, folder: git.folder, machineName: machineNameOf((deps.hostname ?? os3.hostname)()) };
+  const place = { repo, branch: git.branch, folder: git.folder, machineName: machineNameOf((deps.hostname ?? os4.hostname)()) };
   let body;
   if (input.event === "UserPromptSubmit") {
     const prompt = cut((input.prompt ?? "").trim(), MIRROR_TEXT_MAX);
@@ -1432,7 +1480,7 @@ async function mirrorHook(deps) {
 
 // connector/terminalWork.ts
 import { mkdirSync as mkdirSync5, readFileSync as readFileSync6, writeFileSync as writeFileSync5 } from "node:fs";
-import os4 from "node:os";
+import os5 from "node:os";
 import { basename as basename4, dirname as dirname5, isAbsolute, join as join6, resolve as resolve2 } from "node:path";
 var FILE_TOOLS = /* @__PURE__ */ new Set(["Edit", "Write", "MultiEdit", "NotebookEdit"]);
 var START_TOOL_RE = /^mcp__(?:plugin_[\w-]+_)?benflow__iniciar_execucao$/;
@@ -1597,7 +1645,7 @@ async function workHook(deps) {
     repo: git.repo,
     branch: git.branch,
     folder: basename4(git.top) || null,
-    machineName: machineNameOf((deps.hostname ?? os4.hostname)())
+    machineName: machineNameOf((deps.hostname ?? os5.hostname)())
   };
   if (event === "mudanca" || event === "commit") {
     body.prompt = (prompt?.prompt || readTranscriptTurn(input.transcriptPath).prompt || "").slice(0, PROMPT_MAX) || null;
@@ -1698,7 +1746,7 @@ readStdin(1500).then(async (stdinText) => {
     await Promise.allSettled([presenceHook({ exec, stdinText }), mirrorHook({ exec, stdinText }), workHook({ exec, stdinText, timeoutMs: 3500 })]);
     return;
   }
-  await presenceHook({ exec, stdinText }).catch(() => null);
+  await presenceHook({ exec, stdinText, memory: () => measureMemory({ exec }) }).catch(() => null);
   await mirrorHook({ exec, stdinText }).catch(() => null);
   if (event === "Stop") await workHook({ exec, stdinText }).catch(() => null);
 }).catch(() => null).finally(() => {

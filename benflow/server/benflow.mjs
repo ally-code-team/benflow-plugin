@@ -8605,8 +8605,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.77") {
-    cached = "0.1.77";
+  if ("0.1.78") {
+    cached = "0.1.78";
     return cached;
   }
   let dir = dirname3(fileURLToPath(import.meta.url));
@@ -8890,6 +8890,9 @@ var CONNECTOR_CAPABILITIES = [
   "paralelo",
   // Vídeo de evidência depois do trabalho (gravar_video): o servidor só pede a gravação à parte a quem sabe rodá-la.
   "gravar-video",
+  // Evidências depois no modo automático (card #260): o trabalho do automático não tira prints nem grava vídeo, e o
+  // gravar_video com prints faz os dois logo depois do concluir_local. O servidor só manda os campos a quem tem a marca.
+  "evidencias-depois",
   // O vídeo do trabalho entregue é gravado no ambiente (homologação ou, só navegando, produção), numa pasta à parte, sem
   // a branch do card, e a tela de login é preenchida com o usuário de teste de Ambientes (passo entrar).
   "gravar-video-ambiente",
@@ -9565,7 +9568,7 @@ var AgentClient = class _AgentClient {
 import { execFile as execFile5, execFileSync, spawn as spawn8 } from "node:child_process";
 import { existsSync as existsSync18, mkdirSync as mkdirSync13, mkdtempSync as mkdtempSync9, readFileSync as readFileSync18, realpathSync as realpathSync10, rmSync as rmSync13, statSync as statSync16, writeFileSync as writeFileSync14 } from "node:fs";
 import { createRequire } from "node:module";
-import os17 from "node:os";
+import os18 from "node:os";
 import { isAbsolute as isAbsolute7, join as join28, relative as relative6, resolve as resolve12 } from "node:path";
 import { createInterface as createInterface2 } from "node:readline";
 import { fileURLToPath as fileURLToPath2, pathToFileURL } from "node:url";
@@ -11954,7 +11957,7 @@ function header(input2, title) {
   return lines3;
 }
 function jobVideoMode(job) {
-  if (job.type === "gravar_video") return "agora";
+  if (job.type === "gravar_video") return job.prints && job.video === false ? "nao" : "agora";
   if (job.video === false || isAnalysisOnly(job)) return "nao";
   if (job.type === "testar") return "agora";
   if (job.video === true && !job.qaEnvironment) return "depois";
@@ -11962,8 +11965,14 @@ function jobVideoMode(job) {
 }
 var VIDEO_LATER_TEXT = "N\xE3o grave o v\xEDdeo agora: com o v\xEDdeo de evid\xEAncia ligado, o Benflow pede a grava\xE7\xE3o logo depois do concluir_local, num trabalho \xE0 parte que retoma esta sess\xE3o e grava em paralelo com a subida (o gravar_tela recusa neste trabalho). S\xF3 os prints entram aqui.";
 var VIDEO_OFF_TEXT = "Este trabalho est\xE1 sem v\xEDdeo de evid\xEAncia (desligado no card ou no Executar): fa\xE7a s\xF3 os prints, sem gravar_tela.";
+function jobEvidenceLater(job) {
+  return (job.type === "executar_chamado" || job.type === "continuar") && job.evidence === "depois" && !job.qaEnvironment && !isAnalysisOnly(job);
+}
+var EVIDENCE_LATER_TEXT = "N\xE3o tire prints nem grave v\xEDdeo neste trabalho: no modo autom\xE1tico o Benflow pede as evid\xEAncias (os prints de cada tela que mudou e o v\xEDdeo) num trabalho \xE0 parte, logo depois do concluir_local, em paralelo com a subida. O capturar_tela s\xF3 serve com registrar false, para voc\xEA conferir a tela, e o gravar_tela recusa.";
+var EVIDENCE_NO_SCREEN_PREFIX = "Sem tela para evid\xEAncia:";
 function evidenceStep(input2) {
   const n2 = input2.job.taskNumber;
+  if (jobEvidenceLater(input2.job)) return `9. Evid\xEAncias depois: ${EVIDENCE_LATER_TEXT} Siga para o concluir_local assim que os testes passarem.`;
   const prints = `9. Prints do que foi feito: se a mudan\xE7a tiver tela, suba o servidor de desenvolvimento (passo 6) e registre um print de cada tela que mudou com capturar_tela (numero ${n2}, a url local da tela e um t\xEDtulo que diga o que o print mostra, como "Lista de pedidos com o filtro de prazo"). Quando der, tire tamb\xE9m o antes, ainda sem a mudan\xE7a, com "antes" no t\xEDtulo. Se a tela pedir login, entre pelas acoes do capturar_tela com o usu\xE1rio de teste do projeto (seed ou README; nunca senha real). Os prints aparecem junto do resumo no relat\xF3rio de valida\xE7\xE3o e \xE9 por eles que quem valida em homologa\xE7\xE3o confere.`;
   const mode = jobVideoMode(input2.job);
   if (mode === "depois") return `${prints} ${VIDEO_LATER_TEXT} Se n\xE3o der para capturar, diga o motivo no resumo.`;
@@ -12108,13 +12117,14 @@ function continuarPrompt(input2) {
     input2.copy ? `1. Siga a instru\xE7\xE3o nas pastas listadas (j\xE1 na branch ${branch}; n\xE3o troque de branch)${syncTodo(input2) ? ", depois de fazer os merges que a Vers\xE3o nova do Git pede" : ""}. Se precisar rever o chamado, chame ver_chamado com numero ${n2}.` : `1. Siga a instru\xE7\xE3o nas mesmas pastas e na branch ${branch}${input2.sync ? ` (se a pasta n\xE3o estiver nela, git checkout ${branch})` : ""}${syncTodo(input2) ? ", depois de fazer os merges que a Vers\xE3o nova do Git pede" : ""}. Se precisar rever o chamado, chame ver_chamado com numero ${n2}.`,
     "2. Chame atualizar_progresso a cada mudan\xE7a de etapa (desenvolvimento, testes, evidencias), com o percentual e uma frase do que est\xE1 fazendo.",
     coversJob(job, conventionalRepos(job)) ? `3. Fa\xE7a commits no padr\xE3o do reposit\xF3rio (Conventional Commits) com a etiqueta no fim da primeira linha, por exemplo: "fix: ajusta o texto do bot\xE3o [${tag}]".` : `3. Fa\xE7a commits com a etiqueta no in\xEDcio da mensagem, por exemplo: "[${tag}] Ajusta o texto do bot\xE3o".`,
-    `4. Rode os testes de novo e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se subir um servidor de desenvolvimento, chame informar_ambiente_local. ${jobVideoMode(job) === "depois" ? `Se a instru\xE7\xE3o mudou alguma tela, registre o print novo de cada uma com capturar_tela. ${VIDEO_LATER_TEXT}` : jobVideoMode(job) === "nao" ? `Se a instru\xE7\xE3o mudou alguma tela, registre o print novo de cada uma com capturar_tela. ${VIDEO_OFF_TEXT}` : "Se a instru\xE7\xE3o mudou alguma tela, registre o print novo de cada uma com capturar_tela e grave um v\xEDdeo novo com gravar_tela at\xE9 o que mudou."}`,
+    `4. Rode os testes de novo e registre com registrar_evidencia tipo "teste" (passou, total, falhas). Se subir um servidor de desenvolvimento, chame informar_ambiente_local. ${jobEvidenceLater(job) ? EVIDENCE_LATER_TEXT : jobVideoMode(job) === "depois" ? `Se a instru\xE7\xE3o mudou alguma tela, registre o print novo de cada uma com capturar_tela. ${VIDEO_LATER_TEXT}` : jobVideoMode(job) === "nao" ? `Se a instru\xE7\xE3o mudou alguma tela, registre o print novo de cada uma com capturar_tela. ${VIDEO_OFF_TEXT}` : "Se a instru\xE7\xE3o mudou alguma tela, registre o print novo de cada uma com capturar_tela e grave um v\xEDdeo novo com gravar_tela at\xE9 o que mudou."}`,
     "5. No fim, chame concluir_local com o resumo atualizado, como_testar (o passo a passo de quem vai validar em homologa\xE7\xE3o), a branch e os commits.",
     `6. N\xC3O fa\xE7a push e N\xC3O mexa na main. Se a instru\xE7\xE3o pedir algo fora do objetivo do chamado ou das regras, chame parar_trabalho com situacao "precisa_da_equipe", o motivo e o que a equipe decide. ${WORK_STOP_RULE}`
   ].join("\n");
 }
 function gravarVideoPrompt(input2) {
   const { job } = input2;
+  if (job.prints) return evidenciasPrompt(input2);
   const n2 = job.taskNumber;
   const branch = jobBranch(job, input2.tag);
   const resumed = !!jobSessionId(job);
@@ -12131,6 +12141,28 @@ function gravarVideoPrompt(input2) {
     "6. Termine assim que o v\xEDdeo for registrado, dizendo em uma frase o que ele mostra. N\xC3O fa\xE7a push e N\xC3O mexa na main."
   ].join("\n");
 }
+function evidenciasPrompt(input2) {
+  const { job } = input2;
+  const n2 = job.taskNumber;
+  const branch = jobBranch(job, input2.tag);
+  const resumed = !!jobSessionId(job);
+  const video = job.video !== false;
+  const homolog = job.videoTarget === "homologacao" && typeof job.videoUrl === "string" && /^https?:\/\//i.test(job.videoUrl) ? job.videoUrl : null;
+  return [
+    ...header(
+      input2,
+      `Registre as evid\xEAncias do chamado #${n2}${orgPart(input2.orgName)}: ${video ? "os prints de cada tela que mudou e o v\xEDdeo" : "os prints de cada tela que mudou"}. O trabalho j\xE1 est\xE1 pronto e seguindo para a publica\xE7\xE3o: este trabalho \xE9 s\xF3 das evid\xEAncias, feitas em paralelo, para quem valida conferir no card.`
+    ),
+    "",
+    "Passo a passo:",
+    `1. N\xE3o altere c\xF3digo, n\xE3o fa\xE7a commit nem push e n\xE3o chame atualizar_progresso nem concluir_local. ${resumed ? "Voc\xEA est\xE1 retomando a sess\xE3o do trabalho: j\xE1 sabe o que mudou e em que telas." : `Chame ver_chamado com numero ${n2} e leia o resumo e o como testar do trabalho mais recente para saber o que mudou e em que telas.`}`,
+    `2. Se a mudan\xE7a n\xE3o tem tela (s\xF3 API, regra, teste ou texto que n\xE3o aparece), n\xE3o tire print nem grave: chame comentar (publico false) com o texto come\xE7ando por "${EVIDENCE_NO_SCREEN_PREFIX}" e o motivo em uma frase, e termine.`,
+    homolog ? `3. O trabalho j\xE1 est\xE1 publicado em homologa\xE7\xE3o: use ${inlineData("url", homolog, 300)}, sem subir servidor local. Se a tela pedir login, entre com o usu\xE1rio de teste da homologa\xE7\xE3o, se o projeto tiver um (nunca senha real). Se n\xE3o houver como entrar, suba o servidor de desenvolvimento desta pasta (branch ${branch}) em segundo plano, numa porta livre, e chame informar_ambiente_local.` : `3. Suba o servidor de desenvolvimento desta pasta (branch ${branch}) em segundo plano, numa porta livre, e chame informar_ambiente_local. Se faltarem as depend\xEAncias do projeto na pasta, instale com o comando do projeto. Se a tela pedir login, use o usu\xE1rio de teste do projeto (seed ou README; nunca senha real).`,
+    `4. Registre um print de cada tela que mudou com capturar_tela (numero ${n2}, a url da tela e um t\xEDtulo que diga o que o print mostra, como "Lista de pedidos com o filtro de prazo"). Quando der, tire tamb\xE9m o antes, com "antes" no t\xEDtulo: a mesma tela na homologa\xE7\xE3o, que ainda n\xE3o tem a mudan\xE7a. Confira cada print com Read; se ele mostrar a tela de login, um erro ou outra tela, ajuste as acoes e capture de novo. Os prints aparecem no relat\xF3rio de valida\xE7\xE3o e \xE9 por eles que quem valida confere.`,
+    video ? `5. Depois dos prints, grave UM v\xEDdeo curto com gravar_tela (numero ${n2}, a url onde come\xE7a, um t\xEDtulo que diga o que o v\xEDdeo mostra e os passos: entrar se a tela pedir login, clicar at\xE9 cada tela que mudou e destacar cada mudan\xE7a, com uma legenda curta do que mudou, como "Bot\xE3o Salvar agora em verde" ou "Campo CPF novo"). Se a grava\xE7\xE3o falhar num passo, ajuste o passo e grave de novo (at\xE9 3 tentativas). ${VIDEO_SKIP_RULE}` : `5. ${VIDEO_OFF_TEXT}`,
+    `6. Termine assim que ${video ? "os prints e o v\xEDdeo forem registrados" : "os prints forem registrados"}, dizendo em uma frase o que eles mostram. N\xC3O fa\xE7a push e N\xC3O mexa na main.`
+  ].join("\n");
+}
 var VIDEO_SKIP_PREFIX = "V\xEDdeo n\xE3o gravado:";
 var VIDEO_SKIP_RULE = `Se a mudan\xE7a n\xE3o tem tela ou n\xE3o houver como gravar, n\xE3o grave: chame comentar (publico false) com o texto come\xE7ando por "${VIDEO_SKIP_PREFIX}" e o motivo em linguagem de quem usa, com o que fazer (ex.: "${VIDEO_SKIP_PREFIX} A homologa\xE7\xE3o pediu login e o projeto n\xE3o tem usu\xE1rio de teste. Cadastre em Ambientes."), e termine. Esse texto aparece no card como o motivo.`;
 function buildVideoEnvPrompt(job, orgName) {
@@ -12138,8 +12170,10 @@ function buildVideoEnvPrompt(job, orgName) {
   const prod = job.videoTarget === "producao";
   const envName = prod ? "produ\xE7\xE3o" : "homologa\xE7\xE3o";
   const url2 = typeof job.videoUrl === "string" && /^https?:\/\//i.test(job.videoUrl) ? job.videoUrl : null;
+  const prints = !!job.prints;
+  const video = !prints || job.video !== false;
   const lines3 = [
-    `Grave o v\xEDdeo de evid\xEAncia do chamado #${n2}${orgPart(orgName)} na ${envName}${url2 ? ` (${inlineData("url", url2, 300)})` : ""}, usando as ferramentas do MCP "benflow". O trabalho do card j\xE1 foi entregue: este trabalho \xE9 s\xF3 o v\xEDdeo, para quem valida assistir no card.`,
+    prints ? `Registre as evid\xEAncias do chamado #${n2}${orgPart(orgName)} na ${envName}${url2 ? ` (${inlineData("url", url2, 300)})` : ""}, usando as ferramentas do MCP "benflow": ${video ? "os prints de cada tela que mudou e o v\xEDdeo" : "os prints de cada tela que mudou"}. O trabalho do card j\xE1 foi entregue: este trabalho \xE9 s\xF3 das evid\xEAncias, para quem valida conferir no card.` : `Grave o v\xEDdeo de evid\xEAncia do chamado #${n2}${orgPart(orgName)} na ${envName}${url2 ? ` (${inlineData("url", url2, 300)})` : ""}, usando as ferramentas do MCP "benflow". O trabalho do card j\xE1 foi entregue: este trabalho \xE9 s\xF3 o v\xEDdeo, para quem valida assistir no card.`,
     "",
     "Dados da grava\xE7\xE3o:",
     `- Chamado: #${n2}`,
@@ -12155,10 +12189,10 @@ function buildVideoEnvPrompt(job, orgName) {
     "Passo a passo:",
     `1. Chame ver_chamado com numero ${n2} e leia o pedido e o resumo do trabalho mais recente para saber o que mudou e em que telas.${guide ? " Use o como testar acima como roteiro." : ""}`,
     `2. Abra a tela com capturar_tela (registrar false) na ${envName}, a partir do endere\xE7o acima, e confira com Read o que apareceu. Se a tela pedir login, use a a\xE7\xE3o entrar: o Benflow preenche a tela de login com o usu\xE1rio de teste cadastrado em Ambientes, sem voc\xEA ver a senha. Nunca digite senha nenhuma.`,
-    `3. Grave UM v\xEDdeo curto com gravar_tela (numero ${n2}, a url onde come\xE7a, um t\xEDtulo que diga o que o v\xEDdeo mostra e os passos: entrar se a tela pedir login, clicar at\xE9 cada tela que mudou e destacar cada mudan\xE7a, com uma legenda curta do que mudou, como "Bot\xE3o Salvar agora em verde" ou "Campo CPF novo"). Se a grava\xE7\xE3o falhar num passo, ajuste o passo e grave de novo (at\xE9 3 tentativas).`,
+    prints ? `3. Se a mudan\xE7a n\xE3o tem tela, chame comentar (publico false) com o texto come\xE7ando por "${EVIDENCE_NO_SCREEN_PREFIX}" e o motivo em uma frase, e termine. Sen\xE3o, registre um print de cada tela que mudou com capturar_tela (numero ${n2}, a url da tela e um t\xEDtulo que diga o que o print mostra) e confira cada um com Read.${video ? " Depois, grave UM v\xEDdeo curto com gravar_tela (numero " + n2 + ", a url onde come\xE7a, um t\xEDtulo e os passos at\xE9 cada tela que mudou, destacando cada mudan\xE7a com uma legenda curta). Se a grava\xE7\xE3o falhar num passo, ajuste o passo e grave de novo (at\xE9 3 tentativas)." : ` ${VIDEO_OFF_TEXT}`}` : `3. Grave UM v\xEDdeo curto com gravar_tela (numero ${n2}, a url onde come\xE7a, um t\xEDtulo que diga o que o v\xEDdeo mostra e os passos: entrar se a tela pedir login, clicar at\xE9 cada tela que mudou e destacar cada mudan\xE7a, com uma legenda curta do que mudou, como "Bot\xE3o Salvar agora em verde" ou "Campo CPF novo"). Se a grava\xE7\xE3o falhar num passo, ajuste o passo e grave de novo (at\xE9 3 tentativas).`,
     prod ? "4. Na produ\xE7\xE3o, s\xF3 navegue e confira: n\xE3o clique em nada que salve, envie, publique, pague ou apague, e n\xE3o preencha formul\xE1rios (o sistema \xE9 o de verdade). Se mostrar a mudan\xE7a exige mudar dados, mostre s\xF3 a tela e destaque o que mudou." : "4. Na homologa\xE7\xE3o, prefira navegar e destacar; n\xE3o apague nem mude dados que n\xE3o sejam de teste.",
     `5. ${VIDEO_SKIP_RULE}`,
-    "6. Termine assim que o v\xEDdeo for registrado, dizendo em uma frase o que ele mostra. N\xE3o chame atualizar_progresso nem concluir_local."
+    prints ? `6. Termine assim que ${video ? "os prints e o v\xEDdeo forem registrados" : "os prints forem registrados"}, dizendo em uma frase o que eles mostram. N\xE3o chame atualizar_progresso nem concluir_local.` : "6. Termine assim que o v\xEDdeo for registrado, dizendo em uma frase o que ele mostra. N\xE3o chame atualizar_progresso nem concluir_local."
   );
   return lines3.join("\n");
 }
@@ -36821,6 +36855,53 @@ var ProjectRepoKeeper = class {
   }
 };
 
+// connector/memoria.ts
+import { readFile as readFile3 } from "node:fs/promises";
+import os17 from "node:os";
+var MEMORY_TIMEOUT_MS = 2e3;
+function memoryOf(usedBytes, totalBytes) {
+  if (!Number.isFinite(usedBytes) || !Number.isFinite(totalBytes) || totalBytes <= 0 || usedBytes < 0) return null;
+  const used = Math.min(usedBytes, totalBytes);
+  return { usedPct: Math.round(used / totalBytes * 100), usedBytes: Math.round(used), totalBytes: Math.round(totalBytes) };
+}
+function parseVmStat(text2, totalBytes) {
+  const header2 = /page size of (\d+) bytes/.exec(text2);
+  const size = header2 ? Number(header2[1]) : NaN;
+  const pages = (label) => {
+    const m = new RegExp(`^${label}:\\s+(\\d+)\\.?\\s*$`, "m").exec(text2);
+    return m ? Number(m[1]) : NaN;
+  };
+  const active = pages("Pages active");
+  const wired = pages("Pages wired down");
+  const compressed = pages("Pages occupied by compressor");
+  if (!(size > 0) || !Number.isFinite(active) || !Number.isFinite(wired)) return null;
+  return memoryOf((active + wired + (Number.isFinite(compressed) ? compressed : 0)) * size, totalBytes);
+}
+function parseMeminfo(text2) {
+  const kb = (label) => {
+    const m = new RegExp(`^${label}:\\s+(\\d+)\\s*kB`, "mi").exec(text2);
+    return m ? Number(m[1]) * 1024 : NaN;
+  };
+  const total = kb("MemTotal");
+  const available = kb("MemAvailable");
+  if (!Number.isFinite(total) || !Number.isFinite(available)) return null;
+  return memoryOf(total - available, total);
+}
+async function measureMemory(deps) {
+  try {
+    const platform = deps.platform ?? process.platform;
+    const total = (deps.totalmem ?? os17.totalmem)();
+    if (platform === "darwin") {
+      const res = await deps.exec("/usr/bin/vm_stat", [], { timeoutMs: MEMORY_TIMEOUT_MS });
+      return res.code === 0 ? parseVmStat(res.stdout, total) : null;
+    }
+    if (platform === "linux") return parseMeminfo(await (deps.readText ?? ((p) => readFile3(p, "utf8")))("/proc/meminfo"));
+    return memoryOf(total - (deps.freemem ?? os17.freemem)(), total);
+  } catch {
+    return null;
+  }
+}
+
 // connector/executor.ts
 var ACCOUNT_REFRESH_MS = 25e3;
 var ACCOUNT_READ_TIMEOUT_MS = 5e3;
@@ -36831,7 +36912,7 @@ function limitText(limit) {
   return `${m.title}. ${m.detail}`;
 }
 var UPDATE_LOCK_MS = 10 * 6e4;
-function takeUpdateLock(dir = join28(os17.homedir(), ".benflow"), now = Date.now()) {
+function takeUpdateLock(dir = join28(os18.homedir(), ".benflow"), now = Date.now()) {
   const file2 = join28(dir, "atualizando-plugin.json");
   try {
     const cur = JSON.parse(readFileSync18(file2, "utf8"));
@@ -36977,7 +37058,7 @@ async function claudeVersionOf(exec, bin, launch = resolveClaudeLaunch(bin)) {
   if (res.code !== 0) return null;
   return res.stdout.trim().split(/\r?\n/)[0]?.trim() || null;
 }
-function claudeConfigOf(env = process.env, home = os17.homedir()) {
+function claudeConfigOf(env = process.env, home = os18.homedir()) {
   let settings = {};
   try {
     const dir = env.CLAUDE_CONFIG_DIR?.trim() || join28(home, ".claude");
@@ -37009,7 +37090,7 @@ async function collectHeartbeat(entry, busyExecutionId, deps) {
   const vault = entry.personalVault;
   return {
     version: deps.version ?? connectorVersion(),
-    machine: (deps.hostname ?? os17.hostname)(),
+    machine: (deps.hostname ?? os18.hostname)(),
     repos,
     personalVault: vault ? { path: vault, notes: await (deps.vaultNotes ?? countNotes)(vault) } : null,
     busyExecutionId,
@@ -37036,8 +37117,13 @@ async function collectHeartbeat(entry, busyExecutionId, deps) {
     ...deps.quota ? { quota: deps.quota } : {},
     repoKeys: listRepoKeys(deps.home),
     cloneDir: cloneBase([entry]),
-    ...deps.claudeAccount ? { claudeAccount: await deps.claudeAccount().catch(() => null) } : {}
+    ...deps.claudeAccount ? { claudeAccount: await deps.claudeAccount().catch(() => null) } : {},
+    ...await memoryField(deps.memory)
   };
+}
+async function memoryField(read) {
+  const memory = read ? await read().catch(() => null) : null;
+  return memory ? { memory } : {};
 }
 var EFFORT_LEVELS = ["low", "medium", "high", "xhigh", "max"];
 function isSafeModel(model) {
@@ -37629,7 +37715,7 @@ async function runInRepos(opts, job, w, h) {
   const { tag, instructions, sessionId, repos } = w;
   const { finish: finish2, redact, sink } = h;
   const input2 = { job, tag, repos, instructions, copy: w.copy, sync: w.sync ?? [], preparo: w.preparo ?? [] };
-  const tmp = mkdtempSync9(join28(os17.tmpdir(), "benflow-job-"));
+  const tmp = mkdtempSync9(join28(os18.tmpdir(), "benflow-job-"));
   const scratch = join28(tmp, "arquivos");
   mkdirSync13(scratch, { mode: 448 });
   const addDirs = [...repos.slice(1).map((r) => r.path), scratch];
@@ -37662,7 +37748,10 @@ async function runInRepos(opts, job, w, h) {
           ...job.type === "continuar" && job.qaEnvironment === "producao" ? { CHAMADOS_QA_PRODUCAO: "1" } : {},
           // Vídeo de evidência neste trabalho: agora (o gravar_video e o trabalho de antes da opção), depois (o Benflow
           // grava num trabalho à parte; o gravar_tela recusa) ou nao (só os prints).
-          CHAMADOS_VIDEO: jobVideoMode(job)
+          CHAMADOS_VIDEO: jobVideoMode(job),
+          // Evidências depois (trabalho do modo automático): o capturar_tela só tira o print sem registrar e o gravar_tela
+          // recusa; o Benflow pede os prints e o vídeo no trabalho de evidências.
+          ...jobEvidenceLater(job) ? { CHAMADOS_EVIDENCIAS: "depois" } : {}
         }
       }
     }
@@ -37793,7 +37882,7 @@ async function runTesteJob(opts, job, h) {
   } catch (err) {
     log(`N\xE3o foi poss\xEDvel ler o chamado #${job.taskNumber} antes do teste: ${msgOf(err)}`);
   }
-  const tmp = mkdtempSync9(join28(os17.tmpdir(), "benflow-teste-"));
+  const tmp = mkdtempSync9(join28(os18.tmpdir(), "benflow-teste-"));
   try {
     const work = join28(tmp, "teste");
     mkdirSync13(work, { mode: 448 });
@@ -37854,7 +37943,7 @@ async function runVideoEnvJob(opts, job, h) {
   } catch (err) {
     log(`N\xE3o foi poss\xEDvel ler o chamado #${job.taskNumber} antes da grava\xE7\xE3o: ${msgOf(err)}`);
   }
-  const tmp = mkdtempSync9(join28(os17.tmpdir(), "benflow-video-"));
+  const tmp = mkdtempSync9(join28(os18.tmpdir(), "benflow-video-"));
   try {
     const work = join28(tmp, "video");
     mkdirSync13(work, { mode: 448 });
@@ -37945,7 +38034,7 @@ async function runSugestoesJob(opts, job, finish2, redact) {
   let prompt = req.prompt;
   try {
     if (req.analyzeCode && req.codeRepos?.length) {
-      base = mkdtempSync9(join28(os17.tmpdir(), "benflow-codigo-"));
+      base = mkdtempSync9(join28(os18.tmpdir(), "benflow-codigo-"));
       for (const fullName of req.codeRepos) {
         if (ctrl.signal.aborted) break;
         const path2 = opts.entry.repos[fullName];
@@ -37967,7 +38056,7 @@ Pastas do c\xF3digo nesta m\xE1quina: ${checked.map((r, i) => `${r} = ${i === 0 
     }
     const wanted = (Array.isArray(req.files) ? req.files : []).filter((f) => f && Number.isSafeInteger(f.id) && f.id > 0).slice(0, MAX_SUGGESTION_FILES);
     if (wanted.length && !ctrl.signal.aborted) {
-      filesDir = mkdtempSync9(join28(os17.tmpdir(), "benflow-referencias-"));
+      filesDir = mkdtempSync9(join28(os18.tmpdir(), "benflow-referencias-"));
       const files = [];
       for (const f of wanted) {
         const name = typeof f.name === "string" ? f.name : "";
@@ -38151,7 +38240,7 @@ async function runOrganizarJob(opts, job, req, fail, finish2, redact) {
   const log = opts.log ?? (() => {
   });
   const started = Date.now();
-  const base = mkdtempSync9(join28(os17.tmpdir(), "benflow-base-codigo-"));
+  const base = mkdtempSync9(join28(os18.tmpdir(), "benflow-base-codigo-"));
   const closers = [];
   try {
     const code = [];
@@ -38230,7 +38319,7 @@ async function runConversa(opts, job, h) {
   }
   const cwd = repos.length ? repos[0].path : noRepoFolder(opts.configFile, entry);
   const text2 = jobInstruction({ ...job, type: "continuar" }) ?? "";
-  const tmp = mkdtempSync9(join28(os17.tmpdir(), "benflow-conversa-"));
+  const tmp = mkdtempSync9(join28(os18.tmpdir(), "benflow-conversa-"));
   try {
     const filesDir = join28(tmp, "arquivos");
     mkdirSync13(filesDir, { mode: 448 });
@@ -38783,7 +38872,8 @@ var Executor = class {
           claudeAccount: () => this.claudeAccount(),
           canSelfUpdate: () => !!this.opts.restartOnUpdate && isPluginManaged(this.selfScript, this.opts.claudeFs),
           quota: this.quota,
-          aiModels: this.codexModels
+          aiModels: this.codexModels,
+          memory: () => measureMemory({ exec: this.exec })
         });
         const pluginAck = this.pluginUpdateAck;
         if (pluginAck) body.pluginUpdateAck = pluginAck;
@@ -39017,7 +39107,7 @@ var Executor = class {
         servers = [];
       }
       const otherVaults = servers.filter((s2) => !sameEntry(s2, this.opts.entry)).map((s2) => s2.projectVault).filter((p) => !!p && isDirectory(p));
-      const found = await findVaultFolder({ paths, otherVaults, drives: await driveRoots(this.opts.home ?? os17.homedir()) });
+      const found = await findVaultFolder({ paths, otherVaults, drives: await driveRoots(this.opts.home ?? os18.homedir()) });
       if (!found || this.opts.entry.projectVault && isDirectory(this.opts.entry.projectVault)) return;
       this.opts.entry.projectVault = found;
       const cfg = loadConfig(this.opts.configFile);
@@ -39608,7 +39698,7 @@ var KeepAwake = class {
 
 // connector/mcp.ts
 import { closeSync as closeSync4, mkdirSync as mkdirSync14, mkdtempSync as mkdtempSync10, openSync as openSync4, readFileSync as readFileSync19, readSync as readSync2, realpathSync as realpathSync11, rmSync as rmSync14, statSync as statSync17 } from "node:fs";
-import os18 from "node:os";
+import os19 from "node:os";
 import { basename as basename7, extname as extname3, isAbsolute as isAbsolute8, join as join29, resolve as resolve13, sep as sep7 } from "node:path";
 
 // ../benflow/node_modules/zod/v3/helpers/util.js
@@ -50179,7 +50269,7 @@ function posixLower(p) {
   return p.split(sep7).join("/").toLowerCase();
 }
 function isSensitivePath(fullPath) {
-  const home = posixLower(os18.homedir()).replace(/\/+$/, "");
+  const home = posixLower(os19.homedir()).replace(/\/+$/, "");
   const lower = posixLower(fullPath);
   const name = lower.split("/").pop() ?? "";
   if (SECRET_DIRS.some((d) => lower === `${home}/${d}` || lower.startsWith(`${home}/${d}/`))) return true;
@@ -50250,7 +50340,7 @@ function resolveEvidenceFile(input2, opts) {
   return { path: real3, upload: { name: basename7(real3), data: Buffer.from(opts.redact(text2), "utf8"), type: guessMime(real3) } };
 }
 function resolveAttachmentFile(input2, opts) {
-  const abs = isAbsolute8(input2) ? input2 : resolve13(opts.cwd, input2.replace(/^~(?=$|\/)/, os18.homedir()));
+  const abs = isAbsolute8(input2) ? input2 : resolve13(opts.cwd, input2.replace(/^~(?=$|\/)/, os19.homedir()));
   const real3 = realOrNull(abs);
   if (!real3) throw new Error(`Arquivo n\xE3o encontrado: ${abs}`);
   const st = statSync17(real3);
@@ -50279,11 +50369,11 @@ function parseFolders(raw) {
   }
 }
 function defaultEvidenceRoots(entry, cwd, extra = [], workDir = null) {
-  const home = realOrNull(os18.homedir()) ?? os18.homedir();
+  const home = realOrNull(os19.homedir()) ?? os19.homedir();
   const roots = [...Object.values(entry.repos)];
   if (workDir) roots.push(workDir);
   else {
-    roots.push(os18.tmpdir());
+    roots.push(os19.tmpdir());
     if (process.platform !== "win32") roots.push("/tmp");
   }
   const realCwd = realOrNull(cwd);
@@ -50435,7 +50525,7 @@ ${text2}` : text2;
       mkdirSync14(downloadDir, { recursive: true, mode: 448 });
     }
     if (!downloadDir) {
-      downloadDir = mkdtempSync10(join29(os18.tmpdir(), "benflow-anexos-"));
+      downloadDir = mkdtempSync10(join29(os19.tmpdir(), "benflow-anexos-"));
       const dir = downloadDir;
       process.once("exit", () => rmSync14(dir, { recursive: true, force: true }));
     }
@@ -51139,6 +51229,8 @@ ${wrapData("nota", note.content)}`;
   const videoMode = videoRaw === "depois" || videoRaw === "nao" ? videoRaw : "agora";
   const MSG_VIDEO_LATER = "Neste trabalho o v\xEDdeo de evid\xEAncia \xE9 gravado depois do concluir_local, num trabalho \xE0 parte que retoma esta sess\xE3o e grava em paralelo com a subida. N\xE3o grave agora: registre s\xF3 os prints e siga para o concluir_local.";
   const MSG_VIDEO_OFF = "Este trabalho est\xE1 sem v\xEDdeo de evid\xEAncia (desligado no card ou no Executar). Registre s\xF3 os prints com capturar_tela.";
+  const evidenceLater = jobMode && benflowEnv(env, "EVIDENCIAS") === "depois";
+  const MSG_EVIDENCE_LATER = "Neste trabalho do modo autom\xE1tico as evid\xEAncias saem depois: o Benflow pede os prints e o v\xEDdeo num trabalho \xE0 parte, logo depois do concluir_local, em paralelo com a subida. Para s\xF3 conferir a tela, use capturar_tela com registrar false; sen\xE3o, siga para o concluir_local.";
   let screen = null;
   const screenOf = () => screen ??= createScreenCapture({ env });
   const capture = deps.capture ?? ((req) => screenOf().capture(req));
@@ -51194,7 +51286,7 @@ ${wrapData("nota", note.content)}`;
       mkdirSync14(captureDir, { recursive: true, mode: 448 });
     }
     if (!captureDir) {
-      captureDir = mkdtempSync10(join29(os18.tmpdir(), "benflow-capturas-"));
+      captureDir = mkdtempSync10(join29(os19.tmpdir(), "benflow-capturas-"));
       const dir = captureDir;
       process.once("exit", () => rmSync14(dir, { recursive: true, force: true }));
     }
@@ -51226,6 +51318,7 @@ ${wrapData("nota", note.content)}`;
       }
     },
     async (a) => {
+      if (evidenceLater && a.registrar !== false) throw new Error(MSG_EVIDENCE_LATER);
       if (!(await urlCheck())(a.url)) throw new Error(MSG_URL_SCREEN);
       const acoes = a.acoes ?? [];
       const problem = actionsProblem(acoes);
@@ -51275,6 +51368,7 @@ ${wrapData("nota", note.content)}`;
       }
     },
     async (a) => {
+      if (evidenceLater) throw new Error(MSG_EVIDENCE_LATER);
       if (videoMode === "depois") throw new Error(MSG_VIDEO_LATER);
       if (videoMode === "nao") throw new Error(MSG_VIDEO_OFF);
       const allowUrl = await urlCheck();
