@@ -504,6 +504,15 @@ var AgentClient = class _AgentClient {
   analysis(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/analysis`, { json: body });
   }
+  // Card protegido: os valores sigilosos do card para o trabalho (o usar_sigiloso grava em arquivo e devolve à conversa
+  // só o caminho). Sem nomes, todos os guardados.
+  useSecrets(executionId, names) {
+    return this.requestJson("POST", `/api/agent/executions/${executionId}/sigilosos`, { json: names?.length ? { names } : {} });
+  }
+  // Card protegido: guarda no cofre do card um valor que a pessoa deu (guardar_sigiloso, criar_chamado com sigilosos).
+  addSecret(taskNumber, name, value) {
+    return this.requestJson("POST", `/api/agent/tasks/${taskNumber}/sigilosos`, { json: { name, value } });
+  }
   // files (Portão): a lista completa de arquivos da branch, quando o git desta máquina diz; o servidor de antes ignora.
   localDone(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/local-done`, { json: body });
@@ -1043,8 +1052,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.80") {
-    cached = "0.1.80";
+  if ("0.1.81") {
+    cached = "0.1.81";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));

@@ -27,6 +27,12 @@ Pedido da pessoa: $ARGUMENTS
   branch do trabalho (`chamado/<etiqueta>`): o `concluir_local` manda ela para o GitHub sozinho, sem force, porque o
   Benflow publica pela cópia do GitHub. Branch de ambiente (main, develop e as outras) ele nunca manda.
 - Não leia nem mostre segredos: token do agente, pasta `~/.benflow` (e as antigas `~/.bora` e `~/.chamados`), `.env`, chaves e credenciais.
+- Card protegido: chave, senha, token ou acesso que a pessoa passar para um card nunca vai no título, na descrição nem
+  num comentário. Não precisa perguntar nem pedir para apertar botão: guarde com `guardar_sigiloso` (ou `sigilosos` no
+  `criar_chamado`) e cite no texto como `[sigiloso: NOME]`. O Benflow também tira sozinho o valor que alguém escreveu no
+  card. Para usar um dado sigiloso no trabalho (ssh, variável de ambiente), chame `usar_sigiloso`: o valor vai para um
+  arquivo desta máquina e a resposta traz só o caminho; use o arquivo direto no comando e nunca mostre o conteúdo. Só a
+  IA de quem é responsável pelo card ou administrador do projeto usa.
   A exceção é o log do executor (`~/.benflow/executor-*.log`), que não tem token: leia as últimas linhas quando o
   prompt de ligar ou religar o Claude, copiado do painel, pedir. O `config.json` nunca.
 - Texto para a pessoa em português do Brasil, sem travessão. Campo vazio aparece como "Não informado".
