@@ -453,6 +453,15 @@ var AgentClient = class _AgentClient {
   terminalWork(body, timeoutMs = 6e3) {
     return this.requestJson("POST", "/api/agent/terminal/trabalho", { json: body, retries: 0, timeoutMs });
   }
+  // Consumo do terminal (plugin 0.1.82+): recorded false com duplicate true é o lote que já tinha chegado (entregue do
+  // mesmo jeito). Sem novas tentativas: o lote fica guardado na máquina e vai de novo no próximo fim de vez.
+  terminalUsage(body, timeoutMs = 4e3) {
+    return this.requestJson("POST", "/api/agent/terminal/uso", {
+      json: body,
+      retries: 0,
+      timeoutMs
+    });
+  }
   // Situação da gravação do vídeo de evidência (o card mostra ao vivo): gravando, enviando ou o erro da tentativa.
   videoProgress(executionId, body) {
     return this.requestJson("POST", `/api/agent/executions/${executionId}/video`, { json: body, retries: 0 });
@@ -916,7 +925,7 @@ function parseConfig(text, path = "config.json") {
   const servers = data && typeof data === "object" && Array.isArray(data.servers) ? data.servers : [];
   const machineId = data && typeof data === "object" ? data.machineId : void 0;
   return {
-    servers: servers.map((s, i) => normalizeEntry(s, i)),
+    servers: servers.map((s2, i) => normalizeEntry(s2, i)),
     ...typeof machineId === "string" && MACHINE_ID_RE.test(machineId) ? { machineId } : {}
   };
 }
@@ -936,16 +945,16 @@ function loadConfig(requested = configPath(), warn = () => {
 function pickServer(cfg, orgSlug, url, provider) {
   const slug = orgSlug?.trim();
   const rawUrl = url?.trim();
-  const servers = provider ? cfg.servers.filter((s) => entryProvider(s) === provider) : [...cfg.servers.filter((s) => entryProvider(s) === "claude"), ...cfg.servers.filter((s) => entryProvider(s) !== "claude")];
+  const servers = provider ? cfg.servers.filter((s2) => entryProvider(s2) === provider) : [...cfg.servers.filter((s2) => entryProvider(s2) === "claude"), ...cfg.servers.filter((s2) => entryProvider(s2) !== "claude")];
   const which = provider ? ` com o ${providerName(provider)}` : "";
   if (rawUrl) {
     const wanted = normalizeUrl(rawUrl);
-    const found = servers.find((s) => s.url === wanted && (!slug || s.orgSlug === slug));
+    const found = servers.find((s2) => s2.url === wanted && (!slug || s2.orgSlug === slug));
     if (!found) throw new Error(`Este computador n\xE3o est\xE1 ligado a ${wanted}${slug ? ` (organiza\xE7\xE3o "${slug}")` : ""}${which}. Gere um token na Equipe IA desse painel e rode o configurar.`);
     return found;
   }
   if (slug) {
-    const found = servers.find((s) => s.orgSlug === slug);
+    const found = servers.find((s2) => s2.orgSlug === slug);
     if (!found) throw new Error(`Nenhum servidor configurado para a organiza\xE7\xE3o "${slug}"${which}.`);
     return found;
   }
@@ -964,11 +973,11 @@ function resolveServer(cfg, env = process.env, cwd = process.cwd()) {
   const token = benflowEnv(env, "TOKEN", "CLAUDE_PLUGIN_OPTION_TOKEN");
   const org = orgFromEnv(env);
   const provider = providerFromEnv(env);
-  const ordered = provider ? { ...cfg, servers: [...cfg.servers.filter((s) => entryProvider(s) === provider), ...cfg.servers.filter((s) => entryProvider(s) !== provider)] } : cfg;
+  const ordered = provider ? { ...cfg, servers: [...cfg.servers.filter((s2) => entryProvider(s2) === provider), ...cfg.servers.filter((s2) => entryProvider(s2) !== provider)] } : cfg;
   if (rawUrl && token) {
     const url = normalizeUrl(rawUrl);
-    const same = ordered.servers.filter((s) => s.url === url);
-    const base = same.find((s) => s.token === token) ?? (org ? same.find((s) => s.orgSlug === org) : void 0) ?? (same.length === 1 ? same[0] : void 0);
+    const same = ordered.servers.filter((s2) => s2.url === url);
+    const base = same.find((s2) => s2.token === token) ?? (org ? same.find((s2) => s2.orgSlug === org) : void 0) ?? (same.length === 1 ? same[0] : void 0);
     return {
       url,
       token,
@@ -981,13 +990,13 @@ function resolveServer(cfg, env = process.env, cwd = process.cwd()) {
     };
   }
   if (!ordered.servers.length) return null;
-  if (rawUrl) return pickServer(ordered, org, rawUrl, provider && ordered.servers.some((s) => s.url === normalizeUrl(rawUrl) && entryProvider(s) === provider) ? provider : null);
+  if (rawUrl) return pickServer(ordered, org, rawUrl, provider && ordered.servers.some((s2) => s2.url === normalizeUrl(rawUrl) && entryProvider(s2) === provider) ? provider : null);
   if (!org) {
     const here = serverForFolder(ordered.servers, provider === "codex" && env.PWD ? env.PWD : cwd);
     if (here) return here;
   }
   if (provider && !org) return ordered.servers[0];
-  return pickServer(ordered, org, null, provider && ordered.servers.some((s) => entryProvider(s) === provider && (!org || s.orgSlug === org)) ? provider : null);
+  return pickServer(ordered, org, null, provider && ordered.servers.some((s2) => entryProvider(s2) === provider && (!org || s2.orgSlug === org)) ? provider : null);
 }
 function realOrSelf(p) {
   try {
@@ -1002,11 +1011,11 @@ function serverForFolder(servers, folder) {
     return process.platform === "win32" || process.platform === "darwin" ? r.toLowerCase() : r;
   };
   const here = norm2(folder);
-  for (const s of servers) {
-    for (const path of Object.values(s.repos ?? {})) {
+  for (const s2 of servers) {
+    for (const path of Object.values(s2.repos ?? {})) {
       if (!path) continue;
       const repo = norm2(path);
-      if (here === repo || here.startsWith(`${repo}/`) || here.startsWith(`${repo}\\`)) return s;
+      if (here === repo || here.startsWith(`${repo}/`) || here.startsWith(`${repo}\\`)) return s2;
     }
   }
   return null;
@@ -1015,8 +1024,8 @@ function serverForFolder(servers, folder) {
 // connector/local.ts
 import { chmodSync as chmodSync2, existsSync as existsSync2, mkdirSync as mkdirSync2, readFileSync as readFileSync2, readlinkSync, realpathSync as realpathSync2, renameSync as renameSync2, rmSync, statSync as statSync3, writeFileSync as writeFileSync2 } from "node:fs";
 function norm(p, platform) {
-  const s = p.replace(/\\/g, "/").replace(/\/+$/, "");
-  return platform === "darwin" || platform === "win32" ? s.toLowerCase() : s;
+  const s2 = p.replace(/\\/g, "/").replace(/\/+$/, "");
+  return platform === "darwin" || platform === "win32" ? s2.toLowerCase() : s2;
 }
 function realOr(p) {
   try {
@@ -1052,8 +1061,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.81") {
-    cached = "0.1.81";
+  if ("0.1.82") {
+    cached = "0.1.82";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
@@ -1087,8 +1096,8 @@ function parseInput(text) {
   if (!text) return empty;
   try {
     const d = JSON.parse(text);
-    const s = (v) => typeof v === "string" && v ? v : null;
-    return { sessionId: s(d.session_id), cwd: s(d.cwd), event: s(d.hook_event_name), toolName: s(d.tool_name) };
+    const s2 = (v) => typeof v === "string" && v ? v : null;
+    return { sessionId: s2(d.session_id), cwd: s2(d.cwd), event: s2(d.hook_event_name), toolName: s2(d.tool_name) };
   } catch {
     return empty;
   }
@@ -1176,7 +1185,7 @@ function addEntry(list, e) {
 function presenceTargets(cfg, resolved, repo, benflowTool) {
   const out = [];
   if (repo) {
-    for (const s of cfg.servers) if (Object.keys(s.repos).some((r) => sameRepo(r, repo))) addEntry(out, s);
+    for (const s2 of cfg.servers) if (Object.keys(s2.repos).some((r) => sameRepo(r, repo))) addEntry(out, s2);
   }
   if (resolved && (benflowTool || repo && !out.length)) addEntry(out, resolved);
   return out;
@@ -1185,7 +1194,7 @@ function storedTargets(cfg, resolved, stored) {
   const all = [...resolved ? [resolved] : [], ...cfg.servers];
   const out = [];
   for (const t of stored) {
-    const e = all.find((s) => s.url === t.url && (s.orgSlug ?? null) === t.org);
+    const e = all.find((s2) => s2.url === t.url && (s2.orgSlug ?? null) === t.org);
     if (e) addEntry(out, e);
   }
   return out;
@@ -1223,7 +1232,7 @@ async function presenceHook(deps) {
   if (!cfg.servers.length && !resolved) return "sem-config";
   const [git2, memory] = await Promise.all([gitInfo(deps.exec, cwd), deps.memory ? deps.memory().catch(() => null) : Promise.resolve(null)]);
   let repo = git2.repo;
-  if (!repo) for (const s of [...resolved ? [resolved] : [], ...cfg.servers]) repo ??= repoForPath(cwd, s.repos);
+  if (!repo) for (const s2 of [...resolved ? [resolved] : [], ...cfg.servers]) repo ??= repoForPath(cwd, s2.repos);
   const targets = local && !local.off && local.targets.length ? storedTargets(cfg, resolved, local.targets) : presenceTargets(cfg, resolved, repo, benflowTool);
   if (benflowTool && resolved) addEntry(targets, resolved);
   if (!targets.length) {
@@ -1283,8 +1292,8 @@ function parseInput2(text) {
   if (!text) return empty;
   try {
     const d = JSON.parse(text);
-    const s = (v) => typeof v === "string" && v ? v : null;
-    return { sessionId: s(d.session_id), cwd: s(d.cwd), event: s(d.hook_event_name), prompt: s(d.prompt), transcriptPath: s(d.transcript_path), lastMessage: s(d.last_assistant_message) };
+    const s2 = (v) => typeof v === "string" && v ? v : null;
+    return { sessionId: s2(d.session_id), cwd: s2(d.cwd), event: s2(d.hook_event_name), prompt: s2(d.prompt), transcriptPath: s2(d.transcript_path), lastMessage: s2(d.last_assistant_message) };
   } catch {
     return empty;
   }
@@ -1316,15 +1325,15 @@ function writeMirror(file, state) {
   }
 }
 function toolStep(name, input) {
-  const s = (v) => typeof v === "string" && v.trim() ? v.trim() : null;
-  const file = (v) => s(v) ? basename3(s(v)) : null;
+  const s2 = (v) => typeof v === "string" && v.trim() ? v.trim() : null;
+  const file = (v) => s2(v) ? basename3(s2(v)) : null;
   const benflow = /^mcp__(?:plugin_[\w-]+_)?benflow__(.+)$/.exec(name);
   if (benflow) return `Benflow: ${benflow[1]}`;
   const mcp = /^mcp__[\w-]+__(.+)$/.exec(name);
   if (mcp) return mcp[1];
   switch (name) {
     case "Bash":
-      return s(input.description) ? `Comando: ${s(input.description)}` : "Rodou um comando no terminal";
+      return s2(input.description) ? `Comando: ${s2(input.description)}` : "Rodou um comando no terminal";
     case "Read":
       return file(input.file_path) ? `Leu ${file(input.file_path)}` : "Leu um arquivo";
     case "Edit":
@@ -1342,14 +1351,14 @@ function toolStep(name, input) {
       return "Pesquisou na web";
     case "WebFetch": {
       try {
-        return `Abriu ${new URL(s(input.url) ?? "").host}`;
+        return `Abriu ${new URL(s2(input.url) ?? "").host}`;
       } catch {
         return "Abriu uma p\xE1gina";
       }
     }
     case "Task":
     case "Agent":
-      return s(input.description) ? `Subagente: ${s(input.description)}` : "Chamou um subagente";
+      return s2(input.description) ? `Subagente: ${s2(input.description)}` : "Chamou um subagente";
     case "TodoWrite":
     case "TaskCreate":
     case "TaskUpdate":
@@ -1449,7 +1458,7 @@ async function mirrorHook(deps) {
   const cwd = input.cwd || deps.cwd || process.cwd();
   const git2 = await gitInfo(deps.exec, cwd);
   let repo = git2.repo;
-  if (!repo) for (const s of [...resolved ? [resolved] : [], ...cfg.servers]) repo ??= repoForPath(cwd, s.repos);
+  if (!repo) for (const s2 of [...resolved ? [resolved] : [], ...cfg.servers]) repo ??= repoForPath(cwd, s2.repos);
   if (!repo && input.event !== "SessionEnd") return "fora";
   const now = (deps.now ?? Date.now)();
   const place = { repo, branch: git2.branch, folder: git2.folder, machineName: machineNameOf((deps.hostname ?? os4.hostname)()) };
@@ -1487,10 +1496,309 @@ async function mirrorHook(deps) {
   return "enviado";
 }
 
+// connector/terminalUsage.ts
+import { randomBytes } from "node:crypto";
+import { closeSync as closeSync2, mkdirSync as mkdirSync5, openSync as openSync2, readdirSync as readdirSync2, readFileSync as readFileSync6, readSync as readSync2, renameSync as renameSync3, rmSync as rmSync4, statSync as statSync6, writeFileSync as writeFileSync5 } from "node:fs";
+import { basename as basename4, dirname as dirname5, join as join6 } from "node:path";
+var READ_MAX_BYTES = 8 * 1024 * 1024;
+var SEEN_KEEP = 400;
+var OUTBOX_MAX = 200;
+var SEND_MAX = 6;
+var SEND_TIMEOUT_MS = 4e3;
+var LOCK_STALE_MS = 6e4;
+var TURN_MAX_MS = 6 * 60 * 6e4;
+var asObj = (v) => v && typeof v === "object" && !Array.isArray(v) ? v : {};
+var n = (v) => typeof v === "number" && Number.isFinite(v) && v > 0 ? Math.round(v) : 0;
+var s = (v) => typeof v === "string" && v.trim() ? v.trim() : null;
+function isPrompt(e) {
+  if (e.type !== "user" || e.isMeta === true || e.isSidechain === true || e.isCompactSummary === true) return false;
+  const c = asObj(e.message).content;
+  if (typeof c === "string") return !!c.trim();
+  return Array.isArray(c) && !c.some((b) => asObj(b).type === "tool_result");
+}
+function usageFromLines(text, opts) {
+  const models = /* @__PURE__ */ new Map();
+  let messages = 0;
+  let lastAt = null;
+  let durationMs = 0;
+  let turnStart = null;
+  let turnLast = null;
+  const closeTurn = () => {
+    if (turnStart !== null && turnLast !== null && turnLast > turnStart) durationMs += Math.min(turnLast - turnStart, TURN_MAX_MS);
+    turnStart = null;
+    turnLast = null;
+  };
+  for (const raw of text.split("\n")) {
+    if (!raw || !raw.includes('"assistant"') && !raw.includes('"user"')) continue;
+    let e;
+    try {
+      e = asObj(JSON.parse(raw));
+    } catch {
+      continue;
+    }
+    if (typeof e.sessionId === "string" && e.sessionId && e.sessionId !== opts.sessionId) continue;
+    const at = s(e.timestamp);
+    const t = at ? Date.parse(at) : NaN;
+    if (opts.main && e.type === "user") {
+      if (isPrompt(e)) {
+        closeTurn();
+        if (Number.isFinite(t)) turnStart = turnLast = t;
+      } else if (Number.isFinite(t) && turnStart !== null) turnLast = t;
+      continue;
+    }
+    if (e.type !== "assistant") continue;
+    if (opts.main && Number.isFinite(t)) {
+      if (turnStart === null) turnStart = t;
+      turnLast = t;
+    }
+    const msg = asObj(e.message);
+    const model = s(msg.model);
+    const usage = asObj(msg.usage);
+    if (!model || model === "<synthetic>" || !Object.keys(usage).length) continue;
+    const id = s(msg.id) ?? s(e.uuid);
+    if (!id || opts.seen.has(id)) continue;
+    opts.seen.add(id);
+    const acc = models.get(model) ?? { model, input: 0, output: 0, cacheRead: 0, cacheCreation: 0, messages: 0 };
+    acc.input += n(usage.input_tokens);
+    acc.output += n(usage.output_tokens);
+    acc.cacheRead += n(usage.cache_read_input_tokens);
+    acc.cacheCreation += n(usage.cache_creation_input_tokens);
+    acc.messages += 1;
+    models.set(model, acc);
+    messages += 1;
+    if (at && (!lastAt || at > lastAt)) lastAt = at;
+  }
+  closeTurn();
+  return { models: [...models.values()], messages, durationMs, lastAt };
+}
+function mergeChunks(chunks) {
+  const models = /* @__PURE__ */ new Map();
+  let messages = 0;
+  let durationMs = 0;
+  let lastAt = null;
+  for (const c of chunks) {
+    for (const m of c.models) {
+      const acc = models.get(m.model) ?? { model: m.model, input: 0, output: 0, cacheRead: 0, cacheCreation: 0, messages: 0 };
+      acc.input += m.input;
+      acc.output += m.output;
+      acc.cacheRead += m.cacheRead;
+      acc.cacheCreation += m.cacheCreation;
+      acc.messages += m.messages;
+      models.set(m.model, acc);
+    }
+    messages += c.messages;
+    durationMs += c.durationMs;
+    if (c.lastAt && (!lastAt || c.lastAt > lastAt)) lastAt = c.lastAt;
+  }
+  return { models: [...models.values()], messages, durationMs, lastAt };
+}
+function sessionFiles(transcriptPath, sessionId) {
+  const out = [transcriptPath];
+  const dir = join6(dirname5(transcriptPath), basename4(transcriptPath, ".jsonl") || sessionId, "subagents");
+  try {
+    for (const name of readdirSync2(dir).sort()) if (name.endsWith(".jsonl")) out.push(join6(dir, name));
+  } catch {
+  }
+  return out;
+}
+function readNew(file, offset, maxBytes = READ_MAX_BYTES) {
+  let size;
+  try {
+    size = statSync6(file).size;
+  } catch {
+    return null;
+  }
+  const reset = size < offset;
+  const from = reset ? 0 : offset;
+  if (size <= from) return { text: "", next: from, reset };
+  const len = Math.min(size - from, maxBytes);
+  const buf = Buffer.alloc(len);
+  const fd = openSync2(file, "r");
+  try {
+    readSync2(fd, buf, 0, len, from);
+  } finally {
+    closeSync2(fd);
+  }
+  const end = buf.lastIndexOf(10);
+  if (end < 0) {
+    return len === maxBytes ? { text: "", next: from + len, reset } : { text: "", next: from, reset };
+  }
+  return { text: buf.subarray(0, end + 1).toString("utf8"), next: from + end + 1, reset };
+}
+function readJson(file) {
+  try {
+    return JSON.parse(readFileSync6(file, "utf8"));
+  } catch {
+    return null;
+  }
+}
+function readUsageState(file) {
+  const d = readJson(file);
+  const files = {};
+  for (const [k, v] of Object.entries(d?.files && typeof d.files === "object" ? d.files : {})) {
+    const mark = asObj(v);
+    files[k] = { offset: n(mark.offset), seen: Array.isArray(mark.seen) ? mark.seen.filter((x) => typeof x === "string").slice(-SEEN_KEEP) : [] };
+  }
+  const outbox = Array.isArray(d?.outbox) ? d.outbox.filter((p) => !!p && typeof p.batch === "string" && typeof p.url === "string") : [];
+  return { files, outbox };
+}
+function writeUsageState(file, state) {
+  try {
+    mkdirSync5(dirname5(file), { recursive: true, mode: 448 });
+    const tmp = `${file}.${process.pid}.tmp`;
+    writeFileSync5(tmp, JSON.stringify(state), { mode: 384 });
+    renameSync3(tmp, file);
+  } catch {
+  }
+}
+function takeLock(file, now) {
+  for (let i = 0; i < 2; i++) {
+    try {
+      mkdirSync5(dirname5(file), { recursive: true, mode: 448 });
+      closeSync2(openSync2(file, "wx", 384));
+      return true;
+    } catch {
+      try {
+        if (now - statSync6(file).mtimeMs < LOCK_STALE_MS) return false;
+        rmSync4(file, { force: true });
+      } catch {
+        return false;
+      }
+    }
+  }
+  return false;
+}
+function dropLock(file) {
+  try {
+    rmSync4(file, { force: true });
+  } catch {
+  }
+}
+function parseInput3(text) {
+  const empty = { sessionId: null, transcriptPath: null, event: null };
+  if (!text) return empty;
+  try {
+    const d = JSON.parse(text);
+    return { sessionId: s(d.session_id), transcriptPath: s(d.transcript_path), event: s(d.hook_event_name) };
+  } catch {
+    return empty;
+  }
+}
+function targetOf(cfg, resolved, stored, cardBase) {
+  const known = storedTargets(cfg, resolved, stored);
+  if (cardBase) {
+    const base = cardBase.replace(/\/+$/, "");
+    const hit = known.find((e) => e.url.replace(/\/+$/, "") === base);
+    if (hit) return hit;
+  }
+  return known[0] ?? null;
+}
+function entryFor(cfg, resolved, p) {
+  const all = [...resolved ? [resolved] : [], ...cfg.servers];
+  return all.find((e) => e.url === p.url && (e.orgSlug ?? null) === p.org) ?? all.find((e) => e.url === p.url) ?? null;
+}
+function permanent(err) {
+  return err instanceof ApiError && err.status >= 400 && err.status < 500 && err.status !== 408 && err.status !== 429;
+}
+async function usageHook(deps) {
+  const result = (outcome, batches = 0) => ({ outcome, batches });
+  const env = deps.env ?? process.env;
+  if (benflowEnv(env, "EXECUTOR") === "1" || benflowEnv(env, "EXECUTION_ID")) return result("executor");
+  for (const name of ["PRESENCA", "USO"]) {
+    const v = benflowEnv(env, name);
+    if (v && OFF_VALUES.has(v.trim().toLowerCase())) return result("desligado");
+  }
+  const input = parseInput3(deps.stdinText);
+  if (!input.sessionId || input.event !== "Stop" && input.event !== "SessionEnd") return result("ignorado");
+  const key = presenceSessionKey(input.sessionId);
+  const dir = stateDir(env);
+  const presence = readState(join6(dir, `${key}.json`));
+  const card = readJson(join6(dir, `${key}.trabalho.json`));
+  const cardBase = card?.card && typeof card.card.number === "number" && typeof card.base === "string" ? card.base : null;
+  const now = (deps.now ?? Date.now)();
+  const stateFile = join6(dir, `${key}.uso.json`);
+  const lockFile = join6(dir, `${key}.uso.lock`);
+  let cfg;
+  let resolved = null;
+  try {
+    cfg = loadConfig(readableConfigPath(configPath(env)));
+    resolved = resolveServer(cfg, env);
+  } catch {
+    return result("sem-config");
+  }
+  if (!cfg.servers.length && !resolved) return result("sem-config");
+  if (!takeLock(lockFile, now)) return result("ocupado");
+  try {
+    const state = readUsageState(stateFile);
+    const counts = !!presence && !presence.off && presence.targets.length > 0;
+    const target = counts ? targetOf(cfg, resolved, presence.targets, cardBase) : null;
+    if (target && input.transcriptPath && input.transcriptPath.endsWith(".jsonl")) {
+      const chunks = [];
+      for (const file of sessionFiles(input.transcriptPath, input.sessionId)) {
+        const mark = state.files[file] ?? { offset: 0, seen: [] };
+        const got = readNew(file, mark.offset);
+        if (!got) continue;
+        const seen = new Set(mark.seen);
+        if (got.text) chunks.push(usageFromLines(got.text, { sessionId: input.sessionId, seen, main: file === input.transcriptPath }));
+        state.files[file] = { offset: got.next, seen: [...seen].slice(-SEEN_KEEP) };
+      }
+      const chunk = mergeChunks(chunks);
+      if (chunk.models.length) {
+        state.outbox.push({
+          url: target.url,
+          org: target.orgSlug ?? null,
+          session: key,
+          batch: `t${now.toString(36)}${randomBytes(9).toString("base64url")}`,
+          models: chunk.models,
+          messages: chunk.messages,
+          durationMs: chunk.durationMs,
+          lastAt: chunk.lastAt
+        });
+        if (state.outbox.length > OUTBOX_MAX) state.outbox.splice(0, state.outbox.length - OUTBOX_MAX);
+      }
+    } else if (!counts && !state.outbox.length) {
+      return result("fora");
+    }
+    if (!state.outbox.length) {
+      writeUsageState(stateFile, state);
+      return result("nada");
+    }
+    writeUsageState(stateFile, state);
+    const version = deps.version ?? connectorVersion();
+    let sent = 0;
+    for (const p of [...state.outbox].slice(0, SEND_MAX)) {
+      const entry = entryFor(cfg, resolved, p);
+      if (!entry) {
+        state.outbox = state.outbox.filter((x) => x !== p);
+        continue;
+      }
+      const { url: _url, org: _org, ...body } = p;
+      try {
+        await new AgentClient({ url: entry.url, token: entry.token, fetch: deps.fetch, retries: 0, timeoutMs: deps.timeoutMs ?? SEND_TIMEOUT_MS, userAgent: `benflow-conector/${version} uso` }).terminalUsage(
+          body,
+          deps.timeoutMs ?? SEND_TIMEOUT_MS
+        );
+        state.outbox = state.outbox.filter((x) => x !== p);
+        sent++;
+      } catch (err) {
+        if (permanent(err)) {
+          state.outbox = state.outbox.filter((x) => x !== p);
+          continue;
+        }
+        break;
+      }
+    }
+    writeUsageState(stateFile, state);
+    return result(state.outbox.length ? "guardado" : "enviado", sent);
+  } finally {
+    dropLock(lockFile);
+  }
+}
+
 // connector/terminalWork.ts
-import { mkdirSync as mkdirSync5, readFileSync as readFileSync6, writeFileSync as writeFileSync5 } from "node:fs";
+import { mkdirSync as mkdirSync6, readFileSync as readFileSync7, writeFileSync as writeFileSync6 } from "node:fs";
 import os5 from "node:os";
-import { basename as basename4, dirname as dirname5, isAbsolute, join as join6, resolve as resolve2 } from "node:path";
+import { basename as basename5, dirname as dirname6, isAbsolute, join as join7, resolve as resolve2 } from "node:path";
 
 // connector/branchSend.ts
 import { execFile } from "node:child_process";
@@ -1509,7 +1817,7 @@ function git(cwd, args, timeoutMs = 6e4) {
   });
 }
 function lastLine(text) {
-  return (text.split("\n").map((s) => s.trim()).filter(Boolean).pop() ?? "").slice(0, 300);
+  return (text.split("\n").map((s2) => s2.trim()).filter(Boolean).pop() ?? "").slice(0, 300);
 }
 async function remoteSha(root, branch) {
   const res = await git(root, ["ls-remote", "--heads", "origin", `refs/heads/${branch}`]);
@@ -1555,34 +1863,34 @@ var TEST_RE = /\b(?:npm|pnpm|yarn|bun)\s+(?:run\s+)?(?:test|t)(?:\b|:)|\bnpx\s+(
 var COMMIT_FRESH_MS = 10 * 6e4;
 var PROMPT_MAX = 8e3;
 var WORK_TIMEOUT_MS = 6e3;
-function parseInput3(text) {
+function parseInput4(text) {
   const empty = { sessionId: null, cwd: null, event: null, toolName: null, toolInput: {}, toolResponse: null, prompt: null, transcriptPath: null };
   if (!text) return empty;
   try {
     const d = JSON.parse(text);
-    const s = (v) => typeof v === "string" && v ? v : null;
+    const s2 = (v) => typeof v === "string" && v ? v : null;
     const input = d.tool_input && typeof d.tool_input === "object" ? d.tool_input : {};
-    return { sessionId: s(d.session_id), cwd: s(d.cwd), event: s(d.hook_event_name), toolName: s(d.tool_name), toolInput: input, toolResponse: d.tool_response ?? null, prompt: s(d.prompt), transcriptPath: s(d.transcript_path) };
+    return { sessionId: s2(d.session_id), cwd: s2(d.cwd), event: s2(d.hook_event_name), toolName: s2(d.tool_name), toolInput: input, toolResponse: d.tool_response ?? null, prompt: s2(d.prompt), transcriptPath: s2(d.transcript_path) };
   } catch {
     return empty;
   }
 }
-function readJson(file) {
+function readJson2(file) {
   try {
-    return JSON.parse(readFileSync6(file, "utf8"));
+    return JSON.parse(readFileSync7(file, "utf8"));
   } catch {
     return null;
   }
 }
 function writeJson(file, data) {
   try {
-    mkdirSync5(dirname5(file), { recursive: true, mode: 448 });
-    writeFileSync5(file, JSON.stringify(data), { mode: 384 });
+    mkdirSync6(dirname6(file), { recursive: true, mode: 448 });
+    writeFileSync6(file, JSON.stringify(data), { mode: 384 });
   } catch {
   }
 }
 function readWork(file) {
-  const d = readJson(file);
+  const d = readJson2(file);
   return {
     sent: d?.sent && typeof d.sent === "object" ? d.sent : {},
     card: d?.card && typeof d.card === "object" && typeof d.card.number === "number" ? d.card : null,
@@ -1594,8 +1902,8 @@ function readWork(file) {
 function startedExecutionId(response) {
   const text = typeof response === "string" ? response : JSON.stringify(response ?? "");
   const m = /Execu\S{1,8}o #(\d+) iniciada/i.exec(text);
-  const n = m ? Number(m[1]) : NaN;
-  return Number.isSafeInteger(n) && n > 0 ? n : null;
+  const n2 = m ? Number(m[1]) : NaN;
+  return Number.isSafeInteger(n2) && n2 > 0 ? n2 : null;
 }
 function workEventOf(toolName, toolInput) {
   if (!toolName) return null;
@@ -1627,7 +1935,7 @@ function inside(file, top) {
 }
 function targetsFor(cfg, resolved, repo, dir) {
   let name = repo;
-  if (!name) for (const s of [...resolved ? [resolved] : [], ...cfg.servers]) name ??= repoForPath(dir, s.repos);
+  if (!name) for (const s2 of [...resolved ? [resolved] : [], ...cfg.servers]) name ??= repoForPath(dir, s2.repos);
   return presenceTargets(cfg, resolved, name, false);
 }
 function contextText(card, base) {
@@ -1650,17 +1958,17 @@ function promptContextText(card, base) {
 function workPromptHook(deps) {
   const env = deps.env ?? process.env;
   if (benflowEnv(env, "EXECUTOR") === "1" || benflowEnv(env, "EXECUTION_ID")) return null;
-  const input = parseInput3(deps.stdinText);
+  const input = parseInput4(deps.stdinText);
   if (!input.sessionId || input.event !== "UserPromptSubmit") return null;
   const key = presenceSessionKey(input.sessionId);
-  const file = join6(stateDir(env), `${key}.pedido.json`);
-  const old = readJson(file);
+  const file = join7(stateDir(env), `${key}.pedido.json`);
+  const old = readJson2(file);
   writeJson(file, { turn: (typeof old?.turn === "number" ? old.turn : 0) + 1, prompt: (input.prompt ?? "").trim().slice(0, PROMPT_MAX) });
   for (const name of ["PRESENCA", "CARD_TERMINAL"]) {
     const v = benflowEnv(env, name);
     if (v && OFF_VALUES.has(v.trim().toLowerCase())) return null;
   }
-  const work = readWork(join6(stateDir(env), `${key}.trabalho.json`));
+  const work = readWork(join7(stateDir(env), `${key}.trabalho.json`));
   if (!work.card) return null;
   return JSON.stringify({ hookSpecificOutput: { hookEventName: "UserPromptSubmit", additionalContext: promptContextText(work.card, work.base) } });
 }
@@ -1672,10 +1980,10 @@ async function workHook(deps) {
     const v = benflowEnv(env, name);
     if (v && OFF_VALUES.has(v.trim().toLowerCase())) return result("desligado");
   }
-  const input = parseInput3(deps.stdinText);
+  const input = parseInput4(deps.stdinText);
   if (!input.sessionId) return result("ignorado");
   const key = presenceSessionKey(input.sessionId);
-  const workFile = join6(stateDir(env), `${key}.trabalho.json`);
+  const workFile = join7(stateDir(env), `${key}.trabalho.json`);
   const state = readWork(workFile);
   const cwd = input.cwd || deps.cwd || process.cwd();
   let found;
@@ -1686,13 +1994,13 @@ async function workHook(deps) {
   if (!found) return result("nada");
   const event = found.event;
   if ((event === "testes" || event === "push") && !state.card) return result("nada", { event });
-  const prompt = readJson(join6(stateDir(env), `${key}.pedido.json`));
+  const prompt = readJson2(join7(stateDir(env), `${key}.pedido.json`));
   const turn = typeof prompt?.turn === "number" ? prompt.turn : 0;
   if ((event === "mudanca" || event === "testes") && state.card && state.sent[event] === turn) return result("nada", { event, card: state.card });
-  const dir = found.file ? dirname5(isAbsolute(found.file) ? found.file : join6(cwd, found.file)) : (event === "fim" || event === "fechou") && state.repoDir ? state.repoDir : cwd;
+  const dir = found.file ? dirname6(isAbsolute(found.file) ? found.file : join7(cwd, found.file)) : (event === "fim" || event === "fechou") && state.repoDir ? state.repoDir : cwd;
   const git2 = await gitAt(deps.exec, dir);
   if (!git2) return result("fora", { event });
-  if (found.file && !inside(isAbsolute(found.file) ? found.file : join6(cwd, found.file), git2.top)) return result("fora", { event });
+  if (found.file && !inside(isAbsolute(found.file) ? found.file : join7(cwd, found.file), git2.top)) return result("fora", { event });
   if (git2.repo && state.off.includes(git2.repo.toLowerCase())) return result("fora", { event });
   let cfg;
   let resolved = null;
@@ -1709,7 +2017,7 @@ async function workHook(deps) {
     event,
     repo: git2.repo,
     branch: git2.branch,
-    folder: basename4(git2.top) || null,
+    folder: basename5(git2.top) || null,
     machineName: machineNameOf((deps.hostname ?? os5.hostname)())
   };
   if (event === "mudanca" || event === "commit") {
@@ -1732,7 +2040,16 @@ async function workHook(deps) {
     body.clean = !!status && status.code === 0 && status.stdout.trim() === "";
     if (body.clean && git2.branch) {
       const sent2 = await (deps.sendBranch ?? sendCardBranch)(git2.top, git2.branch).catch(() => null);
-      if (sent2?.status === "erro") body.remoteProblem = sent2.problem.split(git2.top).join(basename4(git2.top));
+      if (sent2?.status === "erro") body.remoteProblem = sent2.problem.split(git2.top).join(basename5(git2.top));
+    }
+    const [refs, head] = await Promise.all([
+      deps.exec("git", ["for-each-ref", "--contains", "HEAD", "--count=100", "--format=%(refname:short)", "refs/remotes/origin"], { cwd: git2.top, timeoutMs: 3e3 }).catch(() => null),
+      deps.exec("git", ["log", "-1", "--format=%H%x1f%s"], { cwd: git2.top, timeoutMs: 3e3 }).catch(() => null)
+    ]);
+    const [headSha, headSubject] = head && head.code === 0 ? head.stdout.trim().split("") : [];
+    if (refs && refs.code === 0 && headSha && /^[0-9a-f]{40}$/.test(headSha)) {
+      body.remotes = refs.stdout.split(/\r?\n/).map((r) => r.trim()).filter(Boolean).slice(0, 100);
+      body.head = { sha: headSha, message: (headSubject ?? "").slice(0, 500) || null };
     }
   }
   const version = deps.version ?? connectorVersion();
@@ -1812,12 +2129,17 @@ readStdin(1500).then(async (stdinText) => {
   }
   const event = eventOf(stdinText);
   if (event === "SessionEnd") {
-    await Promise.allSettled([presenceHook({ exec, stdinText }), mirrorHook({ exec, stdinText }), workHook({ exec, stdinText, timeoutMs: 3500 })]);
+    await Promise.allSettled([usageHook({ exec, stdinText, timeoutMs: 3500 }), presenceHook({ exec, stdinText }), mirrorHook({ exec, stdinText }), workHook({ exec, stdinText, timeoutMs: 3500 })]);
     return;
   }
   await presenceHook({ exec, stdinText, memory: () => measureMemory({ exec }) }).catch(() => null);
-  await mirrorHook({ exec, stdinText }).catch(() => null);
-  if (event === "Stop") await workHook({ exec, stdinText }).catch(() => null);
+  await Promise.allSettled([
+    (async () => {
+      await mirrorHook({ exec, stdinText }).catch(() => null);
+      if (event === "Stop") await workHook({ exec, stdinText }).catch(() => null);
+    })(),
+    event === "Stop" ? usageHook({ exec, stdinText }) : Promise.resolve(null)
+  ]);
 }).catch(() => null).finally(() => {
   clearTimeout(guard);
   process.exit(0);
