@@ -1061,8 +1061,8 @@ import { fileURLToPath } from "node:url";
 var cached = null;
 function connectorVersion() {
   if (cached) return cached;
-  if ("0.1.82") {
-    cached = "0.1.82";
+  if ("0.1.83") {
+    cached = "0.1.83";
     return cached;
   }
   let dir = dirname2(fileURLToPath(import.meta.url));
@@ -1504,6 +1504,8 @@ var READ_MAX_BYTES = 8 * 1024 * 1024;
 var SEEN_KEEP = 400;
 var OUTBOX_MAX = 200;
 var SEND_MAX = 6;
+var LIVE_INTERVAL_MS = 2e4;
+var LIVE_EVENTS = /* @__PURE__ */ new Set(["PostToolUse", "SubagentStop"]);
 var SEND_TIMEOUT_MS = 4e3;
 var LOCK_STALE_MS = 6e4;
 var TURN_MAX_MS = 6 * 60 * 6e4;
@@ -1521,8 +1523,9 @@ function usageFromLines(text, opts) {
   let messages = 0;
   let lastAt = null;
   let durationMs = 0;
-  let turnStart = null;
-  let turnLast = null;
+  const carry = opts.main && typeof opts.openAt === "number" && Number.isFinite(opts.openAt) ? opts.openAt : null;
+  let turnStart = carry;
+  let turnLast = carry;
   const closeTurn = () => {
     if (turnStart !== null && turnLast !== null && turnLast > turnStart) durationMs += Math.min(turnLast - turnStart, TURN_MAX_MS);
     turnStart = null;
@@ -1568,8 +1571,9 @@ function usageFromLines(text, opts) {
     messages += 1;
     if (at && (!lastAt || at > lastAt)) lastAt = at;
   }
+  const openAt = opts.main && turnStart !== null ? turnLast : null;
   closeTurn();
-  return { models: [...models.values()], messages, durationMs, lastAt };
+  return { models: [...models.values()], messages, durationMs, lastAt, openAt };
 }
 function mergeChunks(chunks) {
   const models = /* @__PURE__ */ new Map();
@@ -1637,10 +1641,14 @@ function readUsageState(file) {
   const files = {};
   for (const [k, v] of Object.entries(d?.files && typeof d.files === "object" ? d.files : {})) {
     const mark = asObj(v);
-    files[k] = { offset: n(mark.offset), seen: Array.isArray(mark.seen) ? mark.seen.filter((x) => typeof x === "string").slice(-SEEN_KEEP) : [] };
+    files[k] = {
+      offset: n(mark.offset),
+      seen: Array.isArray(mark.seen) ? mark.seen.filter((x) => typeof x === "string").slice(-SEEN_KEEP) : [],
+      turn: n(mark.turn) || null
+    };
   }
   const outbox = Array.isArray(d?.outbox) ? d.outbox.filter((p) => !!p && typeof p.batch === "string" && typeof p.url === "string") : [];
-  return { files, outbox };
+  return { files, outbox, at: n(d?.at) || void 0 };
 }
 function writeUsageState(file, state) {
   try {
@@ -1709,14 +1717,20 @@ async function usageHook(deps) {
     if (v && OFF_VALUES.has(v.trim().toLowerCase())) return result("desligado");
   }
   const input = parseInput3(deps.stdinText);
-  if (!input.sessionId || input.event !== "Stop" && input.event !== "SessionEnd") return result("ignorado");
+  const live = !!input.event && LIVE_EVENTS.has(input.event);
+  if (!input.sessionId || input.event !== "Stop" && input.event !== "SessionEnd" && !live) return result("ignorado");
   const key = presenceSessionKey(input.sessionId);
   const dir = stateDir(env);
-  const presence = readState(join6(dir, `${key}.json`));
-  const card = readJson(join6(dir, `${key}.trabalho.json`));
-  const cardBase = card?.card && typeof card.card.number === "number" && typeof card.base === "string" ? card.base : null;
   const now = (deps.now ?? Date.now)();
   const stateFile = join6(dir, `${key}.uso.json`);
+  if (live) {
+    const at = n(readJson(stateFile)?.at);
+    if (at && now - at < LIVE_INTERVAL_MS && now >= at) return result("cedo");
+  }
+  const presence = readState(join6(dir, `${key}.json`));
+  if (live && (!presence || presence.off || !presence.targets.length)) return result("fora");
+  const card = readJson(join6(dir, `${key}.trabalho.json`));
+  const cardBase = card?.card && typeof card.card.number === "number" && typeof card.base === "string" ? card.base : null;
   const lockFile = join6(dir, `${key}.uso.lock`);
   let cfg;
   let resolved = null;
@@ -1730,6 +1744,8 @@ async function usageHook(deps) {
   if (!takeLock(lockFile, now)) return result("ocupado");
   try {
     const state = readUsageState(stateFile);
+    if (live && state.at && now - state.at < LIVE_INTERVAL_MS && now >= state.at) return result("cedo");
+    state.at = now;
     const counts = !!presence && !presence.off && presence.targets.length > 0;
     const target = counts ? targetOf(cfg, resolved, presence.targets, cardBase) : null;
     if (target && input.transcriptPath && input.transcriptPath.endsWith(".jsonl")) {
@@ -1739,8 +1755,14 @@ async function usageHook(deps) {
         const got = readNew(file, mark.offset);
         if (!got) continue;
         const seen = new Set(mark.seen);
-        if (got.text) chunks.push(usageFromLines(got.text, { sessionId: input.sessionId, seen, main: file === input.transcriptPath }));
-        state.files[file] = { offset: got.next, seen: [...seen].slice(-SEEN_KEEP) };
+        const main = file === input.transcriptPath;
+        let turn = main ? mark.turn ?? null : null;
+        if (got.text) {
+          const chunk2 = usageFromLines(got.text, { sessionId: input.sessionId, seen, main, openAt: turn });
+          chunks.push(chunk2);
+          turn = chunk2.openAt ?? null;
+        }
+        state.files[file] = { offset: got.next, seen: [...seen].slice(-SEEN_KEEP), ...main && live && turn !== null ? { turn } : {} };
       }
       const chunk = mergeChunks(chunks);
       if (chunk.models.length) {
@@ -2128,6 +2150,10 @@ readStdin(1500).then(async (stdinText) => {
     return;
   }
   const event = eventOf(stdinText);
+  if (event === "SubagentStop") {
+    await usageHook({ exec, stdinText }).catch(() => null);
+    return;
+  }
   if (event === "SessionEnd") {
     await Promise.allSettled([usageHook({ exec, stdinText, timeoutMs: 3500 }), presenceHook({ exec, stdinText }), mirrorHook({ exec, stdinText }), workHook({ exec, stdinText, timeoutMs: 3500 })]);
     return;
@@ -2138,7 +2164,7 @@ readStdin(1500).then(async (stdinText) => {
       await mirrorHook({ exec, stdinText }).catch(() => null);
       if (event === "Stop") await workHook({ exec, stdinText }).catch(() => null);
     })(),
-    event === "Stop" ? usageHook({ exec, stdinText }) : Promise.resolve(null)
+    event === "Stop" || event === "PostToolUse" ? usageHook({ exec, stdinText }) : Promise.resolve(null)
   ]);
 }).catch(() => null).finally(() => {
   clearTimeout(guard);
